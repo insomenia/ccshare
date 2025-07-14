@@ -1,0 +1,26 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Help me create a React component",
+      "timestamp": "2024-01-01T10:00:00Z"
+    },
+    {
+      "role": "assistant", 
+      "content": "I'll help you create a React component. Here's a simple example...",
+      "timestamp": "2024-01-01T10:00:30Z"
+    },
+    {
+      "role": "user",
+      "content": "Can you add TypeScript types to it?",
+      "timestamp": "2024-01-01T10:01:00Z"
+    }
+  ],
+  "fileChanges": [
+    {
+      "type": "create",
+      "path": "src/components/Button.tsx",
+      "content": "export const Button = () => <button>Click me</button>"
+    }
+  ]
+}
