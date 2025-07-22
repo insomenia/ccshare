@@ -45,6 +45,10 @@ export interface ProjectInfo {
     prompts: number;
     filesChanged: number;
   }>;
+  fileDiffs?: Array<{
+    path: string;
+    diff: string;
+  }>;
 }
 
 export async function analyzeProject(): Promise<ProjectInfo> {
@@ -109,7 +113,7 @@ export async function analyzeProject(): Promise<ProjectInfo> {
       // Get diff and code changes for modified files
       if (type === 'modified') {
         try {
-          const diff = execSync(`git diff --unified=5 "${filePath}"`, { 
+          const diff = execSync(`git diff --unified=10 "${filePath}"`, { // More context lines 
             encoding: 'utf-8',
             stdio: ['pipe', 'pipe', 'ignore']
           });
@@ -143,7 +147,7 @@ export async function analyzeProject(): Promise<ProjectInfo> {
               });
             } else if (!line.startsWith('\\') && line.length > 0 && !line.startsWith('diff') && !line.startsWith('index')) {
               // Context line
-              if (codeChanges.length > 0 && codeChanges.length < 20) {
+              if (codeChanges.length > 0) { // Remove limit
                 codeChanges.push({
                   lineNumber: currentLine++,
                   type: 'context',
@@ -157,14 +161,14 @@ export async function analyzeProject(): Promise<ProjectInfo> {
           
           fileChange.additions = additions;
           fileChange.deletions = deletions;
-          fileChange.diff = diff.substring(0, 1000) + (diff.length > 1000 ? '...' : '');
-          fileChange.codeChanges = codeChanges.slice(0, 30); // Limit to 30 lines
+          fileChange.diff = diff; // Full diff without truncation
+          fileChange.codeChanges = codeChanges; // All code changes
           
           // Get before/after content for modified files
           try {
             // Current content (after)
             const afterCode = await fs.readFile(path.join(info.projectPath, filePath), 'utf-8');
-            fileChange.afterCode = afterCode.substring(0, 500) + (afterCode.length > 500 ? '...' : '');
+            fileChange.afterCode = afterCode; // Full content
             
             // Original content (before) - from git
             try {
@@ -172,7 +176,7 @@ export async function analyzeProject(): Promise<ProjectInfo> {
                 encoding: 'utf-8',
                 stdio: ['pipe', 'pipe', 'ignore']
               });
-              fileChange.beforeCode = beforeCode.substring(0, 500) + (beforeCode.length > 500 ? '...' : '');
+              fileChange.beforeCode = beforeCode; // Full content
             } catch {
               // File might be new in working directory
             }
@@ -184,14 +188,14 @@ export async function analyzeProject(): Promise<ProjectInfo> {
       if (type === 'created') {
         try {
           const content = await fs.readFile(path.join(info.projectPath, filePath), 'utf-8');
-          fileChange.afterCode = content.substring(0, 500) + (content.length > 500 ? '...' : '');
+          fileChange.afterCode = content; // Full content
           
           // Count lines for new files
           const lines = content.split('\n');
           fileChange.additions = lines.length;
           
-          // Show first few lines as code changes
-          fileChange.codeChanges = lines.slice(0, 20).map((line, index) => ({
+          // Show all lines as code changes
+          fileChange.codeChanges = lines.map((line, index) => ({
             lineNumber: index + 1,
             type: 'added' as const,
             content: line
@@ -204,9 +208,18 @@ export async function analyzeProject(): Promise<ProjectInfo> {
 
     const totalChanges = info.changes.files.length;
     info.changes.summary = `${totalChanges} file(s) changed`;
+    
+    // Create simplified fileDiffs array for output
+    info.fileDiffs = info.changes.files
+      .filter(f => f.diff)
+      .map(f => ({
+        path: f.path,
+        diff: f.diff || ''
+      }));
   } catch {
     // Not a git repo or git not available
     info.changes.summary = 'Git history not available';
+    info.fileDiffs = [];
   }
 
   // Analyze project type

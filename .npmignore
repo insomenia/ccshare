@@ -5,3 +5,9 @@ tsconfig.json
 .env
 coverage/
 .nyc_output/
+test-session.json
+.claude-sessions/
+ccshare-reports/
+CLAUDE.md
+.git/
+.DS_Store

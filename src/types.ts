@@ -16,6 +16,7 @@ export interface Prompt {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  associatedFiles?: string[];
 }
 
 export interface FileChange {

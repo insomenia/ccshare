@@ -1,0 +1,14 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "과거에 했던 질문입니다",
+      "timestamp": "2025-01-01T10:00:00Z"
+    },
+    {
+      "role": "assistant",
+      "content": "과거에 받은 답변입니다",
+      "timestamp": "2025-01-01T10:00:30Z"
+    }
+  ]
+}

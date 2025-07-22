@@ -7,6 +7,14 @@ import { captureSession } from './capture.js';
 import { uploadSession } from './upload.js';
 import { analyzeProject } from './analyze.js';
 import { SessionData } from './types.js';
+import { generateHtml } from './html-generator.js';
+import { detectTechStack } from './tech-detector.js';
+import fs from 'fs/promises';
+import path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 const program = new Command();
 
@@ -14,16 +22,131 @@ program
   .name('ccshare')
   .description('Share Claude Code prompts and results')
   .version('0.1.0')
-  .action(async () => {
-    // Default action - show project info
+  .option('-s, --session <path>', 'Path to session file or directory')
+  .option('-a, --all', 'Include all session history')
+  .option('-n, --no-select', 'Skip prompt selection')
+  .action(async (options) => {
+    // Default action - generate HTML report and open it
     try {
-      const spinner = ora('Analyzing project...').start();
+      const spinner = ora('Analyzing Claude Code session...').start();
+      
+      // Find and capture session
+      const sessionData = await captureSession(options.session, options.all);
+      
+      // Get git diffs for changed files
       const projectInfo = await analyzeProject();
+      
       spinner.succeed('Analysis complete');
       
-      console.log('\n' + chalk.blue('📊 CCShare Project Analysis'));
-      console.log(chalk.gray('─'.repeat(50)));
-      console.log(JSON.stringify(projectInfo, null, 2));
+      // Build data for HTML with prompts grouped with their changes
+      let userPrompts = sessionData.prompts.filter(p => p.role === 'user');
+      const allDiffs = projectInfo.fileDiffs || [];
+      
+      // Allow user to select prompts if not disabled
+      if (options.select !== false && userPrompts.length > 0) {
+        const promptChoices = userPrompts.map((prompt, index) => {
+          const cleanContent = prompt.content.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+          const displayContent = cleanContent.substring(0, 80);
+          return {
+            name: `${index + 1}. ${displayContent}${cleanContent.length > 80 ? '...' : ''}`,
+            value: index,
+            checked: true
+          };
+        });
+        
+        const { selectedPrompts } = await inquirer.prompt([
+          {
+            type: 'checkbox',
+            name: 'selectedPrompts',
+            message: '선택할 프롬프트를 체크하세요 (스페이스바로 선택/해제):',
+            choices: promptChoices,
+            pageSize: 15
+          }
+        ]);
+        
+        // Filter prompts based on selection
+        userPrompts = userPrompts.filter((_, index) => selectedPrompts.includes(index));
+        
+        if (userPrompts.length === 0) {
+          console.log(chalk.yellow('\n선택된 프롬프트가 없습니다.'));
+          process.exit(0);
+        }
+      }
+      
+      // Match file diffs with prompts based on associated files
+      const promptsWithChanges = userPrompts.map((prompt) => {
+        let associatedDiffs: typeof allDiffs = [];
+        
+        if (prompt.associatedFiles && prompt.associatedFiles.length > 0) {
+          // Find diffs for files associated with this prompt
+          associatedDiffs = allDiffs.filter(diff => 
+            prompt.associatedFiles!.some((file: string) => diff.path.includes(file))
+          );
+        }
+        
+        return {
+          prompt: prompt.content,
+          timestamp: prompt.timestamp,
+          sourceFile: (prompt as any).sourceFile,
+          fileDiffs: associatedDiffs
+        };
+      });
+      
+      // Detect tech stack
+      const techStack = await detectTechStack(process.cwd());
+      
+      // Calculate session info
+      let sessionInfo = undefined;
+      if (options.session || options.all) {
+        const timestamps = userPrompts
+          .map(p => new Date(p.timestamp))
+          .filter(d => !isNaN(d.getTime()));
+        
+        const sources = [...new Set(userPrompts
+          .map((p: any) => p.sourceFile)
+          .filter(Boolean))];
+        
+        sessionInfo = {
+          totalPrompts: userPrompts.length,
+          timeRange: timestamps.length >= 2 ? 
+            `${timestamps[0].toLocaleDateString('ko-KR')} ~ ${timestamps[timestamps.length - 1].toLocaleDateString('ko-KR')}` : 
+            undefined,
+          sources: sources.length > 0 ? sources : undefined
+        };
+      }
+      
+      const htmlData = {
+        promptsWithChanges,
+        sessionInfo,
+        techStack
+      };
+      
+      // Generate HTML
+      const html = generateHtml(htmlData);
+      
+      // Create reports directory if it doesn't exist
+      const reportsDir = path.join(process.cwd(), 'ccshare-reports');
+      await fs.mkdir(reportsDir, { recursive: true });
+      
+      // Save HTML file
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      const filename = `claude-session-${timestamp}.html`;
+      const filepath = path.join(reportsDir, filename);
+      
+      await fs.writeFile(filepath, html, 'utf-8');
+      
+      console.log(chalk.green(`\n✅ HTML report generated: ccshare-reports/${filename}`));
+      
+      // Open the file
+      const openCommand = process.platform === 'darwin' ? 'open' : 
+                         process.platform === 'win32' ? 'start' : 'xdg-open';
+      
+      try {
+        await execAsync(`${openCommand} "${filepath}"`);
+        console.log(chalk.cyan('📄 Opening in your default browser...'));
+      } catch (err) {
+        console.log(chalk.yellow('⚠️  Could not auto-open file. Please open manually.'));
+      }
       
     } catch (error: any) {
       console.error(chalk.red('Error:'), error.message);
