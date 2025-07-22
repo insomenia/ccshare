@@ -4,13 +4,13 @@ Share your Claude Code sessions as beautiful HTML reports with syntax-highlighte
 
 ## Features
 
-- =Ý Export Claude Code conversations to HTML
-- <¨ Beautiful, responsive HTML reports with syntax highlighting
-- =Ê Automatic tech stack detection (languages, frameworks, tools, databases)
-- = Interactive prompt selection (choose which prompts to include)
-- =Á Reads Claude's project-specific history files
-- <¯ Associates file changes with specific prompts
-- =Â Organized output in `ccshare-reports/` folder
+- ðŸ“ Export Claude Code conversations to HTML
+- ðŸŽ¨ Beautiful, responsive HTML reports with syntax highlighting
+- ðŸ“Š Automatic tech stack detection (languages, frameworks, tools, databases)
+- ðŸ” Interactive prompt selection (choose which prompts to include)
+- ðŸ“ Reads Claude's project-specific history files
+- ðŸŽ¯ Associates file changes with specific prompts
+- ðŸ“‚ Organized output in `ccshare-reports/` folder
 
 ## Installation
 
@@ -73,6 +73,23 @@ HTML reports include:
 - **File Changes**: Syntax-highlighted diffs associated with each prompt
 - **Session Info**: Summary of total prompts, time range, and sources
 
+## Local Session Storage
+
+You can also store sessions locally in `.claude-sessions/` folder for:
+- Team collaboration (sharing session files)
+- Archiving important problem-solving sessions
+- Demo/tutorial sessions
+- Importing sessions from other AI tools
+
+Example:
+```bash
+# Copy a session to local folder
+cp ~/Downloads/shared-session.json .claude-sessions/
+
+# Include it in the report
+ccshare --all
+```
+
 ## Examples
 
 ### Share current session with prompt selection
@@ -99,7 +116,7 @@ ccshare -s ~/my-session.json
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/ccshare.git
+git clone https://github.com/insomenia/ccshare.git
 cd ccshare
 
 # Install dependencies
@@ -122,4 +139,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Issues
 
-If you find any bugs or have feature requests, please create an issue on [GitHub](https://github.com/yourusername/ccshare/issues).
+If you find any bugs or have feature requests, please create an issue on [GitHub](https://github.com/insomenia/ccshare/issues).
