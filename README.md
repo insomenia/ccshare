@@ -14,15 +14,30 @@ Share your Claude Code sessions as beautiful HTML reports with syntax-highlighte
 
 ## Installation
 
+### Global Installation
 ```bash
 npm install -g ccshare
+```
+
+### Direct Execution (without installation)
+You can also run ccshare directly using npx or bunx:
+
+```bash
+# Using npx
+npx ccshare --share
+
+# Using bunx (if you have Bun installed)
+bunx ccshare --share
+
+# Run a specific version
+npx ccshare@0.2.0 --share
 ```
 
 ## Usage
 
 ### Basic Usage
 
-Generate an HTML report from your current Claude Code session:
+Share your Claude Code session to ccshare.cc:
 
 ```bash
 ccshare
@@ -30,8 +45,73 @@ ccshare
 
 This will:
 1. Show an interactive prompt selector (use spacebar to select/deselect)
-2. Generate an HTML report with selected prompts
-3. Open the report in your default browser
+2. Share selected prompts to ccshare.cc
+3. Open the share page in your browser
+
+### Advanced Usage
+
+```bash
+# Generate HTML report locally (instead of sharing)
+ccshare --html
+
+# Share with custom API URL
+ccshare --api-url https://myapi.com/shares
+
+# Output JSON format
+ccshare --json
+
+# Include only the N most recent prompts
+ccshare --recent 5
+
+# Exclude auto-generated prompts (commands, system messages)
+ccshare --exclude-auto
+
+# Include CLAUDE.md without asking
+ccshare --include-claude-md
+```
+
+### Watch Mode (Real-time tracking)
+
+Watch mode allows you to track prompts in real-time and share whenever you want:
+
+```bash
+# Start watch mode
+ccshare watch
+
+# Watch with custom options
+ccshare watch --exclude-auto --api-url https://myapi.com/shares
+```
+
+In watch mode:
+- Press **[S]** to share the current session
+- Press **[C]** to clear the screen
+- Press **[Q]** to quit
+- New prompts are displayed as they are detected
+- File changes are tracked in real-time
+
+### Load and Execute Shared Prompts
+
+You can load prompts from a shared session and execute them with Claude:
+
+```bash
+# Load and execute all prompts from a share
+ccshare load AdsrMP
+
+# Preview prompts without executing (dry run)
+ccshare load AdsrMP --dry-run
+
+# Select which prompts to execute
+ccshare load AdsrMP --select
+
+# Use a custom API URL
+ccshare load AdsrMP --api-url https://myapi.com/shares
+```
+
+This will:
+1. Fetch the shared session from the API
+2. Extract user prompts (excluding auto-generated ones)
+3. Execute each prompt sequentially using `claude -p`
+4. Show progress and handle errors gracefully
 
 ### Command Options
 
@@ -44,6 +124,7 @@ ccshare --all
 
 # Specify a custom session file
 ccshare -s /path/to/session.json
+ccshare --session /path/to/session.json
 
 # Specify a directory containing session files
 ccshare -s /path/to/sessions/
