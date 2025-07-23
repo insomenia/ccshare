@@ -14,6 +14,7 @@ export interface SessionData {
     mcpServers?: MCPServer[];  // MCP servers if any
   };
   toolCalls?: ToolCall[];  // All tool calls made
+  assistantActions?: AssistantAction[];  // Track what assistant did
 }
 
 export interface Prompt {
@@ -85,4 +86,12 @@ export interface ToolCall {
 export interface MCPServer {
   name: string;
   tools: string[];
+}
+
+export interface AssistantAction {
+  type: 'explanation' | 'code_change' | 'file_read' | 'command_execution' | 'analysis';
+  description: string;
+  timestamp: string;
+  promptId?: string;  // Link to the user prompt that triggered this
+  details?: any;  // Additional details specific to the action type
 }

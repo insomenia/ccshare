@@ -33,6 +33,7 @@ program
   .option('--json', 'Output JSON format instead of HTML')
   .option('--include-claude-md', 'Include CLAUDE.md file without asking')
   .option('--exclude-auto', 'Exclude auto-generated prompts')
+  .option('--file-window <minutes>', 'Time window in minutes after prompts to include file changes (default: 5)', parseInt)
   .action(async (options) => {
     // Default action - share to API, or generate HTML if --html flag is used
     try {
@@ -94,54 +95,44 @@ program
         }
       }
       
-      // Match file diffs with prompts
-      const promptsWithChanges = userPrompts.map((prompt, index) => {
-        let associatedDiffs: Array<{ path: string; diff: string }> = [];
-        
-        // First, check if we have file changes from toolUseResult
-        if (prompt.associatedFiles && prompt.associatedFiles.length > 0) {
-          // Find changes from sessionData.changes that match this prompt's files
-          const relatedChanges = sessionData.changes.filter(change => 
-            prompt.associatedFiles!.includes(change.path) && change.diff
-          );
+      // Prepare prompts data
+      const promptsData = userPrompts.map(prompt => ({
+        prompt: prompt.content,
+        timestamp: prompt.timestamp,
+        sourceFile: (prompt as any).sourceFile
+      }));
+      
+      // Collect file diffs based on prompt timestamps
+      // Get the timestamp range from selected prompts
+      const promptTimestamps = userPrompts.map(p => new Date(p.timestamp).getTime());
+      const earliestPromptTime = Math.min(...promptTimestamps);
+      const latestPromptTime = Math.max(...promptTimestamps);
+      
+      // Filter file changes that occurred after the earliest prompt
+      // and within a reasonable time window after the latest prompt
+      const timeWindowMinutes = options.fileWindow || 5;
+      const timeWindowMs = timeWindowMinutes * 60 * 1000;
+      
+      const fileDiffs = sessionData.changes
+        .filter(change => {
+          if (!change.diff || !change.timestamp) return false;
           
-          associatedDiffs = relatedChanges.map(change => ({
-            path: change.path,
-            diff: change.diff!
-          }));
-          
-          // Debug log
-          if (process.env.DEBUG_FILE_CHANGES) {
-            console.log(`\nPrompt ${index + 1}: "${prompt.content.substring(0, 50)}..."`);
-            console.log(`Associated files: ${prompt.associatedFiles.join(', ')}`);
-            console.log(`Found ${associatedDiffs.length} diffs`);
-          }
-        }
-        
-        // Fallback: For the last prompt, include all recent file changes
-        if (associatedDiffs.length === 0 && index === userPrompts.length - 1 && sessionData.changes.length > 0) {
-          // Get the most recent changes (up to 10)
-          const recentChanges = sessionData.changes
-            .filter(change => change.diff)
-            .slice(-10);
-          
-          associatedDiffs = recentChanges.map(change => ({
-            path: change.path,
-            diff: change.diff!
-          }));
-          
-          if (process.env.DEBUG_FILE_CHANGES) {
-            console.log(`\nLast prompt fallback: found ${associatedDiffs.length} recent changes`);
-          }
-        }
-        
-        return {
-          prompt: prompt.content,
-          timestamp: prompt.timestamp,
-          sourceFile: (prompt as any).sourceFile,
-          fileDiffs: associatedDiffs
-        };
-      });
+          const changeTime = new Date(change.timestamp).getTime();
+          // Include changes that happened after the first prompt
+          // and within 5 minutes after the last prompt
+          return changeTime >= earliestPromptTime && 
+                 changeTime <= (latestPromptTime + timeWindowMs);
+        })
+        .map(change => ({
+          path: change.path,
+          diff: change.diff!
+        }));
+      
+      if (process.env.DEBUG_FILE_CHANGES) {
+        console.log(`\n[DEBUG] Prompt time range: ${new Date(earliestPromptTime).toISOString()} to ${new Date(latestPromptTime).toISOString()}`);
+        console.log(`[DEBUG] Total file changes: ${sessionData.changes.length}`);
+        console.log(`[DEBUG] Filtered file changes: ${fileDiffs.length}`);
+      }
       
       // Detect tech stack
       const techStack = await detectTechStack(process.cwd());
@@ -168,8 +159,13 @@ program
         };
       }
       
+      // Extract assistant actions if available
+      const assistantActions = sessionData.assistantActions || [];
+      
       const htmlData = {
-        promptsWithChanges,
+        prompts: promptsData,
+        fileDiffs,
+        assistantActions,
         sessionInfo,
         techStack
       };
@@ -338,7 +334,7 @@ program
 program
   .command('watch')
   .description('Watch for new prompts and share on demand')
-  .option('--api-url <url>', 'Custom API URL for sharing', 'http://localhost:3000/shares')
+  .option('--api-url <url>', 'Custom API URL for sharing', 'https://ccshare.cc/shares')
   .option('--include-claude-md', 'Include CLAUDE.md file without asking')
   .option('--exclude-auto', 'Exclude auto-generated prompts')
   .action(async (options) => {
@@ -359,7 +355,7 @@ program
 program
   .command('load <slug>')
   .description('Load prompts from a shared slug and execute with claude -p')
-  .option('--api-url <url>', 'Custom API URL', 'http://localhost:3000/shares')
+  .option('--api-url <url>', 'Custom API URL', 'https://ccshare.cc/shares')
   .option('--dry-run', 'Show prompts without executing')
   .option('--select', 'Select which prompts to execute')
   .action(async (slug, options) => {

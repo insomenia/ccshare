@@ -2,14 +2,19 @@ import { escape } from 'html-escaper';
 import { TechStack } from './tech-detector.js';
 
 export interface HtmlData {
-  promptsWithChanges: Array<{
+  prompts: Array<{
     prompt: string;
     timestamp?: string;
     sourceFile?: string;
-    fileDiffs: Array<{
-      path: string;
-      diff: string;
-    }>;
+  }>;
+  fileDiffs: Array<{
+    path: string;
+    diff: string;
+  }>;
+  assistantActions?: Array<{
+    type: string;
+    description: string;
+    timestamp: string;
   }>;
   sessionInfo?: {
     totalPrompts: number;
@@ -22,7 +27,7 @@ export interface HtmlData {
 }
 
 export function generateHtml(data: HtmlData): string {
-  const { promptsWithChanges, sessionInfo, techStack } = data;
+  const { prompts, fileDiffs, assistantActions, sessionInfo, techStack } = data;
 
   return `<!DOCTYPE html>
 <html lang="en" class="h-full">
@@ -57,14 +62,14 @@ export function generateHtml(data: HtmlData): string {
     }
   </style>
   <script>
-    function copyPromptOnly(index) {
+    function copyPrompt(index) {
       const promptElement = document.querySelector(\`#prompt-\${index} .prompt-content\`);
       const promptText = promptElement.textContent.trim();
       
       const markdown = \`## Prompt #\${index + 1}\\n\\n\${promptText}\`;
       
       navigator.clipboard.writeText(markdown).then(() => {
-        const btn = document.querySelector(\`#copy-prompt-only-\${index}\`);
+        const btn = document.querySelector(\`#copy-prompt-\${index}\`);
         const originalText = btn.textContent;
         btn.textContent = 'Copied!';
         btn.classList.add('bg-green-600');
@@ -75,21 +80,15 @@ export function generateHtml(data: HtmlData): string {
       });
     }
     
-    function copyPromptWithChanges(index) {
-      const promptElement = document.querySelector(\`#prompt-\${index} .prompt-content\`);
-      const promptText = promptElement.textContent.trim();
+    function copyFileDiff(index) {
+      const fileChange = document.querySelector(\`#file-\${index}\`);
+      const filePath = fileChange.querySelector('.file-path').textContent.trim();
+      const diffContent = fileChange.querySelector('.diff-content pre').textContent.trim();
       
-      let markdown = \`## Prompt #\${index + 1}\\n\\n\${promptText}\\n\\n### File Changes\\n\`;
-      
-      const fileChanges = document.querySelectorAll(\`#prompt-\${index} .file-change\`);
-      fileChanges.forEach((fileChange) => {
-        const filePath = fileChange.querySelector('.file-path').textContent.trim();
-        const diffContent = fileChange.querySelector('.diff-content pre').textContent.trim();
-        markdown += \`\\n#### \${filePath}\\n\\n\\\`\\\`\\\`diff\\n\${diffContent}\\n\\\`\\\`\\\`\\n\`;
-      });
+      const markdown = \`#### \${filePath}\\n\\n\\\`\\\`\\\`diff\\n\${diffContent}\\n\\\`\\\`\\\`\`;
       
       navigator.clipboard.writeText(markdown).then(() => {
-        const btn = document.querySelector(\`#copy-with-changes-\${index}\`);
+        const btn = document.querySelector(\`#copy-file-\${index}\`);
         const originalText = btn.textContent;
         btn.textContent = 'Copied!';
         btn.classList.add('bg-green-600');
@@ -107,7 +106,7 @@ export function generateHtml(data: HtmlData): string {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 class="text-3xl text-white">
         <span class="font-bold">Claude Code</span>
-        <span class="font-light">Prompts</span>
+        <span class="font-light">Session</span>
       </h1>
       <div class="text-gray-400 mt-2 text-sm">
         ${new Date().toLocaleString('en-US')}
@@ -156,36 +155,26 @@ export function generateHtml(data: HtmlData): string {
       </div>
     ` : ''}
     
-    <!-- Prompts and Changes -->
-    <div class="bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-700">
+    <!-- Prompts Section -->
+    <div class="bg-gray-800 rounded-lg shadow-sm p-6 mb-8 border border-gray-700">
       <h2 class="text-2xl font-semibold text-gray-200 mb-6 pb-4 border-b border-gray-700">
-        Prompts and Changes (${promptsWithChanges.length})
+        Prompts (${prompts.length})
       </h2>
       
-      ${promptsWithChanges.length > 0 ? `
-        <div class="space-y-8">
-          ${promptsWithChanges.map((item, index) => `
+      ${prompts.length > 0 ? `
+        <div class="space-y-6">
+          ${prompts.map((item, index) => `
             <div id="prompt-${index}" class="border-l-4 border-orange-500 pl-6">
-              <!-- Prompt -->
-              <div class="bg-gray-700 rounded-r-lg p-4 mb-4">
+              <div class="bg-gray-700 rounded-r-lg p-4">
                 <div class="flex justify-between items-start mb-2">
                   <div class="font-semibold text-orange-400">Prompt #${index + 1}</div>
-                  <div class="flex gap-2">
-                    <button
-                      id="copy-prompt-only-${index}"
-                      onclick="copyPromptOnly(${index})"
-                      class="px-3 py-1 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-md transition-colors"
-                    >
-                      Copy Prompt
-                    </button>
-                    <button
-                      id="copy-with-changes-${index}"
-                      onclick="copyPromptWithChanges(${index})"
-                      class="px-3 py-1 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-md transition-colors"
-                    >
-                      Copy with Changes
-                    </button>
-                  </div>
+                  <button
+                    id="copy-prompt-${index}"
+                    onclick="copyPrompt(${index})"
+                    class="px-3 py-1 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-md transition-colors"
+                  >
+                    Copy
+                  </button>
                 </div>
                 <div class="prompt-content text-gray-200 whitespace-pre-wrap">${escape(item.prompt)}</div>
                 ${item.timestamp || item.sourceFile ? `
@@ -203,42 +192,6 @@ export function generateHtml(data: HtmlData): string {
                   </div>
                 ` : ''}
               </div>
-              
-              <!-- File Changes -->
-              ${item.fileDiffs.length > 0 ? `
-                <div class="ml-4">
-                  <h3 class="text-lg font-medium text-gray-300 mb-4">
-                    Changed Files (${item.fileDiffs.length})
-                  </h3>
-                  <div class="space-y-4">
-                    ${item.fileDiffs.map(file => {
-                      const parsedLines = parseDiff(file.diff);
-                      return `
-                        <div class="file-change border border-gray-600 rounded-lg overflow-hidden">
-                          <div class="file-path bg-gray-900 text-gray-200 px-4 py-2 text-sm font-mono">
-                            ${escape(file.path)}
-                          </div>
-                          <div class="diff-content bg-gray-800 overflow-x-auto max-h-96">
-                            <pre class="p-4 text-sm">${parsedLines.map(line => {
-                              let className = 'diff-line block px-2 ';
-                              if (line.type === 'added') className += 'diff-added';
-                              else if (line.type === 'removed') className += 'diff-removed';
-                              else if (line.type === 'header') className += 'diff-header font-semibold py-1';
-                              else className += 'diff-context';
-                              
-                              return `<span class="${className}">${escape(line.content)}</span>`;
-                            }).join('')}</pre>
-                          </div>
-                        </div>
-                      `;
-                    }).join('')}
-                  </div>
-                </div>
-              ` : `
-                <div class="ml-4 text-gray-400 italic">
-                  No file changes for this prompt
-                </div>
-              `}
             </div>
           `).join('')}
         </div>
@@ -248,6 +201,96 @@ export function generateHtml(data: HtmlData): string {
         </div>
       `}
     </div>
+
+    <!-- File Changes Section -->
+    ${fileDiffs && fileDiffs.length > 0 ? `
+      <div class="bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-700">
+        <h2 class="text-2xl font-semibold text-gray-200 mb-6 pb-4 border-b border-gray-700">
+          File Changes (${fileDiffs.length})
+        </h2>
+        
+        <div class="space-y-4">
+          ${fileDiffs.map((file, index) => {
+            const parsedLines = parseDiff(file.diff);
+            return `
+              <div id="file-${index}" class="file-change border border-gray-600 rounded-lg overflow-hidden">
+                <div class="file-path bg-gray-900 text-gray-200 px-4 py-2 text-sm font-mono flex justify-between items-center">
+                  <span>${escape(file.path)}</span>
+                  <button
+                    id="copy-file-${index}"
+                    onclick="copyFileDiff(${index})"
+                    class="px-2 py-1 text-xs font-medium text-white bg-gray-700 hover:bg-gray-600 rounded transition-colors"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <div class="diff-content bg-gray-800 overflow-x-auto max-h-96">
+                  <pre class="p-4 text-sm">${parsedLines.map(line => {
+                    let className = 'diff-line block px-2 ';
+                    if (line.type === 'added') className += 'diff-added';
+                    else if (line.type === 'removed') className += 'diff-removed';
+                    else if (line.type === 'header') className += 'diff-header font-semibold py-1';
+                    else className += 'diff-context';
+                    
+                    return `<span class="${className}">${escape(line.content)}</span>`;
+                  }).join('')}</pre>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    <!-- Assistant Actions Section -->
+    ${assistantActions && assistantActions.length > 0 ? `
+      <div class="bg-gray-800 rounded-lg shadow-sm p-6 mb-8 border border-gray-700">
+        <h2 class="text-2xl font-semibold text-gray-200 mb-6 pb-4 border-b border-gray-700">
+          Assistant Actions (${assistantActions.length})
+        </h2>
+        
+        <div class="space-y-3">
+          ${assistantActions.map((action, index) => {
+            let icon = '📝';
+            let colorClass = 'text-gray-400';
+            
+            switch(action.type) {
+              case 'explanation':
+                icon = '💡';
+                colorClass = 'text-blue-400';
+                break;
+              case 'analysis':
+                icon = '🔍';
+                colorClass = 'text-purple-400';
+                break;
+              case 'code_change':
+                icon = '✏️';
+                colorClass = 'text-green-400';
+                break;
+              case 'file_read':
+                icon = '📖';
+                colorClass = 'text-yellow-400';
+                break;
+              case 'command_execution':
+                icon = '⚡';
+                colorClass = 'text-orange-400';
+                break;
+            }
+            
+            return `
+              <div class="flex items-start space-x-3 p-3 rounded-lg bg-gray-700/50">
+                <span class="text-2xl flex-shrink-0">${icon}</span>
+                <div class="flex-1">
+                  <div class="${colorClass} font-medium capitalize">${action.type.replace('_', ' ')}</div>
+                  <div class="text-gray-300 text-sm mt-1">${escape(action.description)}</div>
+                  <div class="text-gray-500 text-xs mt-1">${new Date(action.timestamp).toLocaleTimeString()}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    ` : ''}
   </main>
   
   <!-- Footer -->

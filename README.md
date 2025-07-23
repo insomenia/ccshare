@@ -1,16 +1,19 @@
 # ccshare
 
-Share your Claude Code sessions as beautiful HTML reports with syntax-highlighted code diffs and project tech stack information.
+Share your Claude Code sessions instantly on ccshare.cc with beautiful syntax-highlighted code diffs and automatic tech stack detection.
 
 ## Features
 
-- 📝 Export Claude Code conversations to HTML
-- 🎨 Beautiful, responsive HTML reports with syntax highlighting
+- 🚀 Instant sharing to ccshare.cc with one command
+- 📝 Export Claude Code conversations (online or as HTML)
+- 🎨 Beautiful, responsive reports with syntax highlighting
 - 📊 Automatic tech stack detection (languages, frameworks, tools, databases)
 - 🔍 Interactive prompt selection (choose which prompts to include)
-- 📁 Reads Claude's project-specific history files
+- 📁 Reads Claude's project-specific history files automatically
 - 🎯 Associates file changes with specific prompts
-- 📂 Organized output in `ccshare-reports/` folder
+- 👀 Real-time watch mode for live session tracking
+- 🔄 Load and execute shared prompts from other sessions
+- 💡 Tracks assistant actions (explanations, analysis, code changes)
 
 ## Installation
 
@@ -24,13 +27,13 @@ You can also run ccshare directly using npx or bunx:
 
 ```bash
 # Using npx
-npx ccshare --share
+npx ccshare
 
 # Using bunx (if you have Bun installed)
-bunx ccshare --share
+bunx ccshare
 
 # Run a specific version
-npx ccshare@0.2.0 --share
+npx ccshare@latest
 ```
 
 ## Usage
@@ -68,6 +71,9 @@ ccshare --exclude-auto
 
 # Include CLAUDE.md without asking
 ccshare --include-claude-md
+
+# Control time window for file changes (default: 5 minutes)
+ccshare --file-window 10  # Include file changes within 10 minutes after prompts
 ```
 
 ### Watch Mode (Real-time tracking)
@@ -87,7 +93,11 @@ In watch mode:
 - Press **[C]** to clear the screen
 - Press **[Q]** to quit
 - New prompts are displayed as they are detected
-- File changes are tracked in real-time
+- File changes are tracked and displayed in real-time
+- Shows the latest 10 modified files with timestamps
+- Displays total count of prompts and file changes
+
+**Note**: File change diffs may not be fully captured in watch mode. For complete file change tracking, use the regular `ccshare` command after your Claude Code session.
 
 ### Load and Execute Shared Prompts
 
@@ -136,23 +146,24 @@ ccshare --all --no-select
 ## How It Works
 
 ccshare reads Claude Code session data from:
-1. Current conversation (when no history is available)
-2. Claude's project-specific folders: `~/.claude/projects/{project-path}/`
-3. Custom session files or directories you specify
+1. Claude's project-specific folders: `~/.claude/projects/{project-path}/`
+2. Custom session files or directories you specify with `-s`
+3. Local `.claude-sessions/` folder for archived sessions
 
 The tool automatically:
 - Detects your project's tech stack by analyzing config files
-- Associates file changes with the prompts that caused them
-- Generates clean, readable HTML with syntax highlighting
-- Saves reports in `ccshare-reports/` folder (git-ignored)
+- Associates file changes with the prompts that caused them using UUID tracking
+- Shares to ccshare.cc via secure browser form submission
+- Generates clean, readable HTML reports (when using `--html`)
 
-## Output
+## What Gets Shared
 
-HTML reports include:
-- **Tech Stack Tags**: Visual tags showing detected technologies
-- **Prompts**: User prompts with timestamps and source files
+Shared sessions include:
+- **Tech Stack Tags**: Automatically detected languages, frameworks, and tools
+- **Prompts**: User prompts with timestamps (auto-generated prompts can be excluded)
 - **File Changes**: Syntax-highlighted diffs associated with each prompt
 - **Session Info**: Summary of total prompts, time range, and sources
+- **CLAUDE.md**: Optional project context (you'll be asked)
 
 ## Local Session Storage
 
@@ -183,9 +194,24 @@ ccshare
 ccshare --all --no-select
 ```
 
+### Generate HTML report locally
+```bash
+ccshare --html
+```
+
 ### Share specific session file
 ```bash
 ccshare -s ~/my-session.json
+```
+
+### Share only recent prompts
+```bash
+ccshare --recent 10
+```
+
+### Start watch mode
+```bash
+ccshare watch
 ```
 
 ## Requirements
