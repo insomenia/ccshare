@@ -132,6 +132,12 @@ program
       // Send to API
       const apiUrl = options.apiUrl;
       
+      // Show JSON if requested (for debugging)
+      if (process.env.DEBUG_SHARE) {
+        console.log('\nJSON being sent to API:');
+        console.log(JSON.stringify(payload, null, 2));
+      }
+      
       try {
         const result = await shareToAPIRaw(payload, apiUrl);
         if (result.url) {
