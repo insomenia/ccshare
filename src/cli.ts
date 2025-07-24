@@ -48,9 +48,7 @@ program
   .option('--html', 'Generate HTML report instead of sharing')
   .option('--api-url <url>', 'Custom API URL for sharing', 'https://ccshare.cc/shares')
   .option('--json', 'Output JSON format instead of HTML')
-  .option('--include-claude-md', 'Include CLAUDE.md file without asking')
   .option('--exclude-auto', 'Exclude auto-generated prompts')
-  .option('--file-window <minutes>', 'Time window in minutes after prompts to include file changes (default: 5)', parseInt)
   .option('-l, --limit <number>', 'Maximum number of prompts to fetch from session files', parseInt)
   .action(async (options) => {
     // Default action - share raw session data to API
@@ -222,13 +220,11 @@ program
   .command('watch')
   .description('Watch for new prompts and share on demand')
   .option('--api-url <url>', 'Custom API URL for sharing', 'https://ccshare.cc/shares')
-  .option('--include-claude-md', 'Include CLAUDE.md file without asking')
   .option('--exclude-auto', 'Exclude auto-generated prompts')
   .action(async (options) => {
     try {
       const watcher = new SessionWatcher({
         apiUrl: options.apiUrl,
-        includeClaudeMd: options.includeClaudeMd,
         excludeAuto: options.excludeAuto
       });
       

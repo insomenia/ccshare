@@ -57,6 +57,16 @@ async function getAdditionalMetadata(): Promise<any> {
     // Settings file not available
   }
   
+  // Get CLAUDE.md content if it exists
+  try {
+    const claudeMdPath = path.join(process.cwd(), 'CLAUDE.md');
+    metadata.claudeMd = await fs.readFile(claudeMdPath, 'utf-8');
+  } catch {
+    // CLAUDE.md doesn't exist
+  }
+  
+  metadata.workingDirectory = process.cwd();
+  
   return metadata;
 }
 

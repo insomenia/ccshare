@@ -11,7 +11,6 @@ import readline from 'readline';
 
 export interface WatchOptions {
   apiUrl: string;
-  includeClaudeMd?: boolean;
   excludeAuto?: boolean;
 }
 
@@ -410,16 +409,7 @@ export class SessionWatcher {
 
       const shareData = transformToShareData(htmlData, completeSessionData);
       
-      // Check for CLAUDE.md
-      if (!this.options.includeClaudeMd) {
-        try {
-          const claudeMdPath = path.join(process.cwd(), 'CLAUDE.md');
-          const claudeMdContent = fs.readFileSync(claudeMdPath, 'utf-8');
-          shareData.claudeMd = claudeMdContent;
-        } catch {
-          // CLAUDE.md doesn't exist
-        }
-      }
+      // CLAUDE.md is now automatically included in metadata
 
       // Create and open share form
       const tempHtmlPath = await createAutoPostForm(shareData, this.options.apiUrl);

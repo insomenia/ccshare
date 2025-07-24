@@ -70,12 +70,6 @@ ccshare --limit 50  # Default is 20
 
 # Exclude auto-generated prompts (commands, system messages)
 ccshare --exclude-auto
-
-# Include CLAUDE.md without asking
-ccshare --include-claude-md
-
-# Control time window for file changes (default: 5 minutes)
-ccshare --file-window 10  # Include file changes within 10 minutes after prompts
 ```
 
 ### Watch Mode (Real-time tracking)
@@ -168,6 +162,7 @@ Shared sessions include:
 - **Assistant Responses**: Complete AI responses with tool executions
 - **File Changes**: All edits and modifications tracked from toolUseResult
 - **Session Metadata**: Git info, OS details, Node version, and more
+- **CLAUDE.md**: Project context file if present in your working directory
 - **Raw Session Data**: Complete JSONL entries preserving full context
 
 ## Local Session Storage
