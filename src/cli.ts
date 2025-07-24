@@ -139,6 +139,12 @@ program
         if (!options.json) {
           console.log(chalk.cyan(`\n📝 Limiting to ${options.recent} most recent prompts`));
         }
+      } else if (!options.all && !options.session) {
+        // Default: show last 20 prompts if not showing all or specific session
+        userPrompts = userPrompts.slice(-20);
+        if (!options.json && userPrompts.length === 20) {
+          console.log(chalk.cyan('\n📝 Showing last 20 prompts (use --all to see all)'));
+        }
       }
       
       // Allow user to select prompts if not disabled (skip if JSON output)
