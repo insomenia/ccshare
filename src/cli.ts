@@ -6,7 +6,7 @@ import ora from 'ora';
 import { captureSession, captureRawSession } from './capture.js';
 import { uploadSession } from './upload.js';
 import { SessionData, RawSessionData } from './types.js';
-import { shareToAPIRaw, fetchFromSlug } from './share-service.js';
+import { fetchFromSlug } from './share-service.js';
 import { createAutoPostForm } from './browser-post.js';
 import { SessionWatcher } from './watch.js';
 import fs from 'fs/promises';
@@ -140,7 +140,7 @@ program
         process.exit(0);
       }
       
-      // Send to API
+      // Send to API via browser form submission
       const apiUrl = options.apiUrl;
       
       // Show JSON if requested (for debugging)
@@ -149,25 +149,12 @@ program
         console.log(JSON.stringify(payload, null, 2));
       }
       
-      try {
-        const result = await shareToAPIRaw(payload, apiUrl);
-        if (result.url) {
-          console.log(chalk.green(`\n✅ Shared successfully: ${result.url}`));
-          await openUrl(result.url);
-        }
-      } catch (error: any) {
-        // API might return HTML login page or other errors
-        if (!options.json) {
-          console.log(chalk.yellow('\n⚠️  Direct API sharing failed, using browser submission...'));
-        }
-        
-        // Fallback to form submission
-        const tempFilePath = await createAutoPostForm(payload, apiUrl);
-        if (!options.json) {
-          console.log(chalk.yellow('📤 Opening browser to submit data...'));
-        }
-        await openUrl(`file://${tempFilePath}`);
+      // Always use browser form submission
+      const tempFilePath = await createAutoPostForm(payload, apiUrl);
+      if (!options.json) {
+        console.log(chalk.cyan('📤 Opening browser to share...'));
       }
+      await openUrl(`file://${tempFilePath}`);
       
     } catch (error: any) {
       console.error(chalk.red('Error:'), error.message);
