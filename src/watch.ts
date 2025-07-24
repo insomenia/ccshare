@@ -70,7 +70,8 @@ export class SessionWatcher {
 
     // Find the current session file
     const projectPath = process.cwd();
-    const projectDirName = projectPath.replace(/[\/\.]/g, '-');
+    // Replace all non-alphanumeric characters with dashes, matching Claude's behavior
+    const projectDirName = projectPath.replace(/[^a-zA-Z0-9]/g, '-');
     const claudeProjectPath = path.join(process.env.HOME || '', '.claude', 'projects', projectDirName);
 
     try {

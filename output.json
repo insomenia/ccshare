@@ -1,0 +1,841 @@
+{
+  "title": "Claude Code Prompts",
+  "createdAt": "2025-07-23T07:23:35.181Z",
+  "sessionInfo": {
+    "totalPrompts": 1,
+    "projectPath": "/Users/james/Development/scripts/ccshare",
+    "claudeProjectPath": "/Users/james/.claude/projects/-Users-james-Development-scripts-ccshare"
+  },
+  "techStack": {
+    "languages": [
+      "javascript",
+      "node",
+      "typescript"
+    ],
+    "frameworks": [],
+    "tools": [],
+    "databases": []
+  },
+  "prompts": [
+    {
+      "id": 1,
+      "content": "This session is being continued from a previous conversation that ran out of context. The conversation is summarized below:\nAnalysis:\nLooking through the conversation chronologically:\n\n1. Initial Korean request about dark mode and API URL change\n2. User asked about build behavior and npm link\n3. User pointed out file diffs being attached to wrong prompts - major investigation\n4. Extensive analysis of Claude Code's JSONL structure and parent-child relationships\n5. User requested default behavior change from HTML to sharing\n6. User asked for README update in Korean\n7. User requested file change filtering based on timestamps\n8. User asked about real-time file tracking in watch mode\n9. User confirmed watch mode file tracking works across terminals\n10. User requested npm publish (version 0.3.0)\n11. User asked about tracking assistant explanations/actions\n12. User confirmed tracking works in both modes\n13. User showed example of desired tracking format with ⏺ symbols\n14. User requested separation of tool executions from file diffs\n15. User reported toolExecutions and assistantActions are empty - current debugging\n\nThe main technical work involved:\n- Understanding JSONL parsing and parent-child UUID relationships\n- Modifying capture.ts to properly traverse parent chains\n- Adding timestamp-based file filtering\n- Implementing assistant action tracking\n- Separating tool executions from file diffs\n- Debugging why the new fields are empty\n\nSummary:\n1. Primary Request and Intent:\n   - Initially: Change temporary page style to dark mode for --share option and update default API URL from http://localhost:3000/shares to https://ccshare.cc/shares\n   - Fix file diffs being continuously attached only to the last prompt even when unrelated\n   - Analyze how Claude Code connects prompts with file changes by examining the claude-code folder implementation\n   - Change default ccshare behavior to share instead of HTML generation, with HTML requiring --html flag\n   - Add timestamp-based filtering for file changes\n   - Add real-time file change tracking to watch mode\n   - Track assistant explanations and processing descriptions along with code changes\n   - Include tool execution results (⏺ Bash, ⏺ Update, etc.) in tracking\n   - Separate tool executions from file diffs into different attributes\n   - Debug why toolExecutions and assistantActions are empty in the output\n\n2. Key Technical Concepts:\n   - Claude Code JSONL format with UUID-based parent-child relationships\n   - toolUseResult structure (both old format with oldString/newString and new format with edits array)\n   - Parent chain traversal to find original user prompts\n   - Distinguishing between real user prompts and tool_result messages\n   - File change association with prompts through fileChangesByPrompt Map\n   - ES modules configuration requiring .js extensions\n   - npm link for global package updates\n   - Browser-based form submission for large payloads\n   - Timestamp-based matching for file changes\n   - Assistant action extraction from response content\n   - Tool execution tracking separate from file diffs\n\n3. Files and Code Sections:\n   - src/share-service.ts\n      - Updated default API URLs from 'http://localhost:3000/shares' to 'https://ccshare.cc/shares'\n      - Added ShareAssistantAction and ShareToolExecution interfaces\n      - Modified transformToShareData to handle new data structures\n      ```typescript\n      export interface ShareData {\n        // ... existing fields ...\n        fileDiffs: ShareFileDiff[];  // File diffs at share level\n        assistantActions?: ShareAssistantAction[];  // Assistant actions\n        toolExecutions?: ShareToolExecution[];  // Tool executions\n        // ... rest of fields ...\n      }\n      ```\n\n   - src/capture.ts\n      - Core file for parsing JSONL and associating file changes with prompts\n      - Added extractAssistantActions function to parse assistant responses\n      - Modified to track tool executions separately\n      - Added debug logging for troubleshooting\n      ```typescript\n      function extractAssistantActions(content: string, timestamp: string): AssistantAction[] {\n        const actions: AssistantAction[] = [];\n        const lines = content.split('\\n');\n        \n        // Patterns to detect different types of actions\n        const patterns = {\n          explanation: [\n            /^(I'll|I will|Let me|Let's|Now I'll|Now let me|I'm going to)/i,\n            // ... more patterns\n          ],\n          // ... other pattern types\n        };\n        // ... implementation\n      }\n      ```\n\n   - src/types.ts\n      - Added new interfaces for tracking assistant actions and tool executions\n      ```typescript\n      export interface AssistantAction {\n        type: 'explanation' | 'code_change' | 'file_read' | 'command_execution' | 'analysis';\n        description: string;\n        timestamp: string;\n        promptId?: string;\n        details?: any;\n      }\n      \n      export interface ToolExecution {\n        tool: string;\n        timestamp: string;\n        parameters?: any;\n        result?: string;\n        status?: 'success' | 'error';\n        promptId?: string;\n      }\n      ```\n\n   - src/html-generator.ts\n      - Modified to display prompts and file diffs separately\n      - Added sections for assistant actions and tool executions\n      - Changed from promptsWithChanges to separate prompts and fileDiffs arrays\n\n   - src/cli.ts\n      - Changed default behavior from HTML generation to sharing\n      - Added --file-window option for time-based filtering\n      - Modified to extract assistantActions and toolExecutions\n\n   - src/watch.ts\n      - Added real-time file change tracking\n      - Modified to use same data structures as main command\n      - Added recentFileChanges tracking\n\n4. Errors and fixes:\n   - ES module errors with .js files:\n     - Fixed by renaming analysis scripts to .cjs extension for CommonJS\n   - JSON parsing error \"Unterminated string in JSON at position 56928\":\n     - Fixed by removing progress messages (ora spinner) when --json flag is used\n   - Parent chain infinite loop:\n     - Fixed by adding depth limit of 20 levels and visited set\n   - File changes incorrectly associated with system messages:\n     - Attempted fix by improving parent chain traversal\n     - Issue persists when parent chain exceeds 20 levels\n   - Syntax errors in watch.ts processFile function:\n     - Fixed missing closing braces and if statement structure\n   - TypeScript compilation errors:\n     - Fixed promptId type issues with type assertions\n   - Current issue: toolExecutions and assistantActions are empty:\n     - Added debug logging to track the issue\n     - Found that JSONL structure has tool_use in assistant messages followed by tool_result in user messages\n     - Need to properly parse this structure\n\n5. Problem Solving:\n   - Analyzed JSONL structure and discovered file changes were being associated with output messages instead of user prompts\n   - Created multiple analysis scripts to understand parent-child UUID relationships\n   - Implemented improved parent chain traversal that excludes non-user messages\n   - Added timestamp-based filtering to include only relevant file changes\n   - Separated tool executions from file diffs for cleaner data structure\n   - Currently debugging why assistant actions and tool executions aren't being captured\n\n6. All user messages:\n   - \"ccshare --share을 했을 때 임시로 나오는 페이지의 스타일을 다크모드로 바꿔줘\"\n   - \"--api-url을 넣지 않으면 https://ccshare.cc/shares 로 하게 해줘 현재는 http://localhost:3000/shares 일거야\"\n   - \"빌드\"\n   - \"왜 ccshare을 하면 여전히 localhost:3000으로 하지? 빌드를 하면 다른 터미널 탭에서 바로 적용되는게 아닌가?\"\n   - \"한글로 답해줘\"\n   - \"안녕\"\n   - \"file diffs 가 계속 마지막 프롬프트에만 붙어 있고 해당 프롬프트는 해당 file diffs와 관계 없는데, 프롬프트와 해당 프롬프트로 인한 파일 수정내역을 연결하는 게 가능한가? ../claude-code 폴더에서 실제 claude code의 구현내역을 볼 수 있으니 프롬프트 별 파일 수정내역을 가져오려면 어떻게 해야 하는지 꼼꼼하게 검토해봐\"\n   - \"ccshare 를 하면 디폴트로 html을 만드는데 디폴트가 ccshare.cc로 공유하는 거고 html은 --html 을 해야 만들어지도록 그리고 타임스탬프 기반 매칭이 가능한지 파악해봐\"\n   - \"readme update\"\n   - \"코드 변경 내역 뿐만 아니라 어떤 처리를 했다는 설명 부분도 트래킹할 수 있나?\"\n   - \"ccshare watch 에서 파일 변경내역도 실시간 트래킹 할 수 있나?\"\n   - \"file change detected를 했는데 ccshare을 해보면 파일 변경 내역이 포함이 안 되어 있어. watch에서 파일 변경 내역을 기록한 다음에 ccshare을 할 때 같이 넘길 수 있나?\"\n   - \"한글로 마지막 결과부분 표시해줘\"\n   - \"ccshare watch 를 한 상태로 다른 터미널에서 ccshare을 해도 최근 파일 변경 내역이 잘 첨부가 되나?\"\n   - \"퍼블리시 해줘\"\n   - \"watch를 해야만 해당 내용을 알 수 있나?\"\n   - \"가령 내가 원하는 건 아래처럼 클로드코드가 실행하고 사용자에게 설명한 내용들을 모두 json과 html에 포함시키는 거야\" (with example showing ⏺ format)\n   - \"지금은 fileDiffs에 Update가 포함되어서 나오고 있는데 fileDiff에는 기존처럼 순수한 diff 내용만 포함시키고 Read, Update, Bash 등의 처리 내역은 별도의 attributes로 정리해줘\"\n   - \"toolExecutions와 assistantActions가 비어있어\"\n\n7. Pending Tasks:\n   - Debug why toolExecutions and assistantActions are empty in the output\n\n8. Current Work:\n   Debugging why toolExecutions and assistantActions arrays are empty when running ccshare. Found that:\n   - The JSONL structure has assistant messages with tool_use content\n   - Tool results come as separate user messages with tool_result content\n   - Current parsing logic may not be correctly handling this structure\n   - Added debug logging to track when actions and executions are added\n   - Need to verify the parsing logic matches the actual JSONL format\n\n9. Optional Next Step:\n   Continue debugging by examining how the JSONL entries are being processed. The most recent work showed that the JSONL has a specific structure where:\n   - Assistant messages contain `tool_use` in their content array\n   - User messages follow with `tool_result` content\n   - Need to ensure both parseJSONLSessionData and the assistant message handling correctly process these entries to populate toolExecutions and assistantActions arrays.\nPlease continue the conversation from where we left it off without asking the user any further questions. Continue with the last task that you were asked to work on.",
+      "timestamp": "2025-07-23T07:15:33.159Z",
+      "sourceFile": "533222c8-5a3e-4a67-80fe-472f6843753a.jsonl",
+      "usage": {
+        "input_tokens": 4,
+        "output_tokens": 1,
+        "cache_creation_input_tokens": 28485,
+        "cache_read_input_tokens": 19666,
+        "total_tokens": 48156
+      },
+      "responseTimeMs": 8692,
+      "isAutoGenerated": false,
+      "model": "claude-opus-4-20250514"
+    }
+  ],
+  "fileDiffs": [
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 1 addition\n         1   debugLog(`[DEBUG] Total assistant actions: ${sessionData.assistantActions.length}`);\n         2 +   console.error(`[CAPTURE DEBUG] Assistant actions: ${sessionData.assistantActions.length}`);\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 1 addition\n         1                 sessionData.toolExecutions.push(toolExecution);\n         2                 debugLog(`[DEBUG] Added tool execution: ${item.name}`);\n         3 +                 console.error(`[CAPTURE DEBUG] Tool executions: ${sessionData.toolExecutions.length}`);\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 2 additions\n        13       mcpServers: []\n        14     }\n        15   };\n        16 +   \n        17 +   console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions.length}, toolExecutions: ${sessionData.toolExecutions.length}`);\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 4 additions and 2 removals\n         3     }\n         4   }\n         5   \n         6 -   return sessionData;\n         7 - }\n         6 +   console.error(`[CAPTURE DEBUG] Final counts - prompts: ${sessionData.prompts.length}, assistantActions: ${sessionData.assistantActions?.length || 0}, toolExecutions: ${sessionData.toolExecutions?.length || 0}`);\n         7 +   \n         8 +   return sessionData;\n         9 + }\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 1 addition and 1 removal\n         1 -   console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions.length}, toolExecutions: ${sessionData.toolExecutions.length}`);\n         1 +   console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions?.length || 0}, toolExecutions: ${sessionData.toolExecutions?.length || 0}`);\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 2 additions and 2 removals\n         1 -       assistantActions: [],\n         2 -       toolExecutions: [],\n         1 +       assistantActions: [], // Initialize assistant actions array\n         2 +       toolExecutions: [], // Initialize tool executions array\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/cli.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/cli.ts with 17 additions and 2 removals\n         1       // Extract assistant actions and tool executions if available\n         2 -       const assistantActions = sessionData.assistantActions || [];\n         3 -       const toolExecutions = sessionData.toolExecutions || [];\n         2 +       // Filter by timestamp to match selected prompts\n         3 +       const assistantActions = (sessionData.assistantActions || []).filter(action => {\n         4 +         if (!action.timestamp) return false;\n         5 +         const actionTime = new Date(action.timestamp).getTime();\n         6 +         return actionTime >= earliestPromptTime && \n         7 +                actionTime <= (latestPromptTime + timeWindowMs);\n         8 +       });\n         9 +       \n        10 +       const toolExecutions = (sessionData.toolExecutions || []).filter(exec => {\n        11 +         if (!exec.timestamp) return false;\n        12 +         const execTime = new Date(exec.timestamp).getTime();\n        13 +         return execTime >= earliestPromptTime && \n        14 +                execTime <= (latestPromptTime + timeWindowMs);\n        15 +       });\n        16 +       \n        17 +       console.error(`[CLI DEBUG] Filtered actions: ${assistantActions.length} (from ${sessionData.assistantActions?.length || 0})`);\n        18 +       console.error(`[CLI DEBUG] Filtered executions: ${toolExecutions.length} (from ${sessionData.toolExecutions?.length || 0})`);\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 11 additions and 5 removals\n         1 async function captureAllSessions(): Promise<SessionData> {\n         2   const allPrompts: Prompt[] = [];\n         3   const allChanges: FileChange[] = [];\n         4 -   \n         5 -   // First, add current session\n         6 -   const currentSession = await getCurrentSessionData();\n         7 -   allPrompts.push(...currentSession.prompts);\n         8 -   allChanges.push(...currentSession.changes);\n         4 +   const allAssistantActions: AssistantAction[] = [];\n         5 +   const allToolExecutions: ToolExecution[] = [];\n         6 +   const allToolCalls: ToolCall[] = [];\n         7 +   \n         8 +   // First, add current session\n         9 +   const currentSession = await getCurrentSessionData();\n        10 +   allPrompts.push(...currentSession.prompts);\n        11 +   allChanges.push(...currentSession.changes);\n        12 +   if (currentSession.assistantActions) allAssistantActions.push(...currentSession.assistantActions);\n        13 +   if (currentSession.toolExecutions) allToolExecutions.push(...currentSession.toolExecutions);\n        14 +   if (currentSession.toolCalls) allToolCalls.push(...currentSession.toolCalls);\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 6 additions and 3 removals\n         2     const sessionData = await captureSessionsFromDirectory(claudeProjectPath);\n         3     allPrompts.push(...sessionData.prompts);\n         4     allChanges.push(...sessionData.changes);\n         5 -   } catch (err) {\n         6 -     // Project directory doesn't exist\n         7 -   }\n         5 +     if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n         6 +     if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n         7 +     if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n         8 +   } catch (err) {\n         9 +     // Project directory doesn't exist\n        10 +   }\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 7 additions and 4 removals\n         3       const sessionData = await captureSessionsFromDirectory(dir);\n         4       allPrompts.push(...sessionData.prompts);\n         5       allChanges.push(...sessionData.changes);\n         6 -     } catch {\n         7 -       // Directory doesn't exist or can't be read\n         8 -     }\n         9 -   }\n         6 +       if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n         7 +       if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n         8 +       if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n         9 +     } catch {\n        10 +       // Directory doesn't exist or can't be read\n        11 +     }\n        12 +   }\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 9 additions and 6 removals\n         5     timestamp: new Date().toISOString(),\n         6     prompts: allPrompts,\n         7     changes: allChanges,\n         8 -     metadata: {\n         9 -       platform: process.platform,\n        10 -       workingDirectory: process.cwd(),\n        11 -       claudeProjectPath: claudeProjectPath\n        12 -     }\n        13 -   };\n         8 +     assistantActions: allAssistantActions,\n         9 +     toolExecutions: allToolExecutions,\n        10 +     toolCalls: allToolCalls,\n        11 +     metadata: {\n        12 +       platform: process.platform,\n        13 +       workingDirectory: process.cwd(),\n        14 +       claudeProjectPath: claudeProjectPath\n        15 +     }\n        16 +   };\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 30 additions and 24 removals\n         1   const allPrompts: Prompt[] = [];\n         2   const allChanges: FileChange[] = [];\n         3 -   \n         4 -   for (const file of sessionFiles) {\n         5 -     try {\n         6 -       const filePath = path.join(dirPath, file);\n         7 -       const rawData = await fs.readFile(filePath, 'utf-8');\n         8 -       \n         9 -       let sessionData: SessionData;\n        10 -       if (file.endsWith('.jsonl')) {\n        11 -         sessionData = parseJSONLSessionData(rawData);\n        12 -       } else {\n        13 -         sessionData = parseSessionData(rawData);\n        14 -       }\n        15 -       \n        16 -       // Add file source info to prompts\n        17 -       sessionData.prompts.forEach(prompt => {\n        18 -         (prompt as any).sourceFile = file;\n        19 -       });\n        20 -       \n        21 -       allPrompts.push(...sessionData.prompts);\n        22 -       allChanges.push(...sessionData.changes);\n        23 -     } catch {\n        24 -       // Skip files that can't be parsed\n        25 -     }\n        26 -   }\n         3 +   const allAssistantActions: AssistantAction[] = [];\n         4 +   const allToolExecutions: ToolExecution[] = [];\n         5 +   const allToolCalls: ToolCall[] = [];\n         6 +   \n         7 +   for (const file of sessionFiles) {\n         8 +     try {\n         9 +       const filePath = path.join(dirPath, file);\n        10 +       const rawData = await fs.readFile(filePath, 'utf-8');\n        11 +       \n        12 +       let sessionData: SessionData;\n        13 +       if (file.endsWith('.jsonl')) {\n        14 +         sessionData = parseJSONLSessionData(rawData);\n        15 +       } else {\n        16 +         sessionData = parseSessionData(rawData);\n        17 +       }\n        18 +       \n        19 +       // Add file source info to prompts\n        20 +       sessionData.prompts.forEach(prompt => {\n        21 +         (prompt as any).sourceFile = file;\n        22 +       });\n        23 +       \n        24 +       allPrompts.push(...sessionData.prompts);\n        25 +       allChanges.push(...sessionData.changes);\n        26 +       if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n        27 +       if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n        28 +       if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n        29 +     } catch {\n        30 +       // Skip files that can't be parsed\n        31 +     }\n        32 +   }\n",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 8 additions and 5 removals\n         5     timestamp: new Date().toISOString(),\n         6     prompts: allPrompts,\n         7     changes: allChanges,\n         8 -     metadata: {\n         9 -       platform: process.platform,\n        10 -       workingDirectory: process.cwd()\n        11 -     }\n        12 -   };\n         8 +     assistantActions: allAssistantActions,\n         9 +     toolExecutions: allToolExecutions,\n        10 +     toolCalls: allToolCalls,\n        11 +     metadata: {\n        12 +       platform: process.platform,\n        13 +       workingDirectory: process.cwd()\n        14 +     }\n        15 +   };\n",
+      "additions": 0,
+      "deletions": 0
+    }
+  ],
+  "assistantActions": [
+    {
+      "type": "analysis",
+      "description": "Looking at the code, I can see that the `assistantActions` and `toolExecutions` are being passed through from `sessionData` to `htmlData` in `cli.ts` (lines 163-164), and then transformed in `share-service.ts`. The issue is likely in how these are being populated in the `captureSession` function.",
+      "timestamp": "2025-07-23T07:15:41.851Z",
+      "promptId": "1b346f16-9da8-4bb5-9f41-eec20ac48d27"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me check the capture.ts file to see how these arrays are being populated:",
+      "timestamp": "2025-07-23T07:15:41.851Z",
+      "promptId": "1b346f16-9da8-4bb5-9f41-eec20ac48d27"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result:      1→import fs from 'fs/promises';\n     2→import path from 'path';\n     3→import { SessionData, Prompt, FileChange, ThoughtBlock, ToolCall, MCPServer, AssistantAction, ToolExecution } from './types....",
+      "timestamp": "2025-07-23T07:15:42.807Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: jq: parse error: Invalid numeric literal at line 2, column 2",
+      "timestamp": "2025-07-23T07:15:52.735Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me run this differently:",
+      "timestamp": "2025-07-23T07:15:55.633Z",
+      "promptId": "43b329c9-a455-44c7-97c5-ca6efe486532"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me add some debug logging to understand better:",
+      "timestamp": "2025-07-23T07:16:03.505Z",
+      "promptId": "83155aa4-7fc7-4449-99e1-c088e788ae5e"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   957→                action.promptId = entry...",
+      "timestamp": "2025-07-23T07:16:06.137Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   916→                  timestamp: entry.time...",
+      "timestamp": "2025-07-23T07:16:10.944Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   611→    }\n   612→  };\n   613→}\n   614→\n   6...",
+      "timestamp": "2025-07-23T07:16:20.837Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let's also add debug at the end of the function to see final counts:",
+      "timestamp": "2025-07-23T07:16:24.775Z",
+      "promptId": "925b850f-a8e3-4edc-be17-6df00a2f098a"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: Found 2 matches of the string to replace, but replace_all is false. To replace all occurrences, set replace_all to true. To replace only one occurrence, please provide more context to uniquely identif...",
+      "timestamp": "2025-07-23T07:16:26.325Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n  1064→            }\n  1065→          }\n  1066...",
+      "timestamp": "2025-07-23T07:16:32.771Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: > ccshare@0.3.0 build\n> tsc\n\nsrc/capture.ts(631,83): error TS18048: 'sessionData.assistantActions' is possibly 'undefined'.\nsrc/capture.ts(631,139): error TS18048: 'sessionData.toolExecutions' is poss...",
+      "timestamp": "2025-07-23T07:16:37.394Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me fix the TypeScript errors:",
+      "timestamp": "2025-07-23T07:16:40.909Z",
+      "promptId": "0af16958-6817-4b9d-ac16-e880e1d0822b"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   627→      mcpServers: []\n   628→    }\n   62...",
+      "timestamp": "2025-07-23T07:16:43.518Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. All occurrences of '      assistantActions: [],\n      toolExecutions: [],' were successfully replaced with '      ass...",
+      "timestamp": "2025-07-23T07:16:49.404Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: > ccshare@0.3.0 build\n> tsc",
+      "timestamp": "2025-07-23T07:16:54.456Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me check the Claude project path structure to understand where the sessions are:",
+      "timestamp": "2025-07-23T07:17:05.304Z",
+      "promptId": "9f6b8c5e-10c5-4db3-94e4-57181a8c60dc"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: /Users/james/.claude/projects/-Users-james-Development-ruby-ccshare:\ntotal 2488\ndrwxr-xr-x@  7 james  staff      224  7 22 11:57 .\ndrwxr-xr-x@ 41 james  staff     1312  7 23 15:57 ..\n-rw-r--r--@  1 ja...",
+      "timestamp": "2025-07-23T07:17:07.844Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: total 24728\ndrwxr-xr-x@  9 james  staff      288  7 23 09:37 .\ndrwxr-xr-x@ 41 james  staff     1312  7 23 15:57 ..\n-rw-r--r--@  1 james  staff  6498600  7 23 16:17 533222c8-5a3e-4a67-80fe-472f6843753a...",
+      "timestamp": "2025-07-23T07:17:14.597Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me check one of these JSONL files to understand the structure:",
+      "timestamp": "2025-07-23T07:17:18.458Z",
+      "promptId": "b58bbd8d-724d-4293-8536-651e4e73ee66"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: \"assistant\"\n\"assistant\"\n\"user\"\n\"assistant\"\n\"assistant\"",
+      "timestamp": "2025-07-23T07:17:20.189Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me run ccshare differently to see the output:",
+      "timestamp": "2025-07-23T07:17:30.503Z",
+      "promptId": "5bb716c6-1e68-4ade-80df-0ab29406d339"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: [CAPTURE DEBUG] Final counts - prompts: 354, assistantActions: 204, toolExecutions: 188\n      \"content\": \"This session is being continued from a previous conversation that ran out of context. The conv...",
+      "timestamp": "2025-07-23T07:17:33.296Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me look more carefully at the debug output:",
+      "timestamp": "2025-07-23T07:17:45.275Z",
+      "promptId": "3299da5a-383a-49f6-83cb-42474154370d"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result:       \"isAutoGenerated\": false,\n      \"model\": \"claude-opus-4-20250514\"\n    }\n  ],\n  \"fileDiffs\": [\n    {\n      \"path\": \"/Users/james/Development/scripts/ccshare/src/capture.ts\",\n      \"diff\": \"⏺ Upda...",
+      "timestamp": "2025-07-23T07:17:46.447Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: [CAPTURE DEBUG] Initialized sessionData with assistantActions: 0, toolExecutions: 0\n[CAPTURE DEBUG] Assistant actions: 1\n[CAPTURE DEBUG] Tool executions: 1\n[CAPTURE DEBUG] Tool executions: 2\n[CAPTURE ...",
+      "timestamp": "2025-07-23T07:17:53.249Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result:    155→            undefined,\n   156→          sources: sources.length > 0 ? sources : undefined,\n   157→          projectPath: sessionData.metadata?.workingDirectory,\n   158→          claudeProjectPa...",
+      "timestamp": "2025-07-23T07:18:01.725Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/cli.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   158→          claudeProjectPath: sessionData.me...",
+      "timestamp": "2025-07-23T07:18:13.952Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: > ccshare@0.3.0 build\n> tsc",
+      "timestamp": "2025-07-23T07:18:19.328Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: [CAPTURE DEBUG] Initialized sessionData with assistantActions: 0, toolExecutions: 0\n[CAPTURE DEBUG] Final counts - prompts: 952, assistantActions: 516, toolExecutions: 534\n[CAPTURE DEBUG] Initialized ...",
+      "timestamp": "2025-07-23T07:18:25.087Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me try a different approach - let's check the final output:",
+      "timestamp": "2025-07-23T07:18:28.944Z",
+      "promptId": "072749d5-63d9-4bff-a420-020abad67682"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result:       \"path\": \"/Users/james/Development/scripts/ccshare/src/capture.ts\",\n      \"diff\": \"⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\\n  ⎿  Updated /Users/james/Development/scripts...",
+      "timestamp": "2025-07-23T07:18:31.666Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me check the error output to see the filtering debug:",
+      "timestamp": "2025-07-23T07:18:36.167Z",
+      "promptId": "26bc3685-d1c0-4ee6-b533-bba3f863472e"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: [CLI DEBUG] Filtered actions: 0 (from 0)\n[CLI DEBUG] Filtered executions: 0 (from 0)",
+      "timestamp": "2025-07-23T07:18:37.774Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result:    515→}\n   516→\n   517→async function captureAllSessions(): Promise<SessionData> {\n   518→  const allPrompts: Prompt[] = [];\n   519→  const allChanges: FileChange[] = [];\n   520→  \n   521→  // First,...",
+      "timestamp": "2025-07-23T07:18:44.287Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   513→  \n   514→  return sessionData;\n   515→...",
+      "timestamp": "2025-07-23T07:18:52.813Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   534→  // Replace all special characters (/,...",
+      "timestamp": "2025-07-23T07:19:00.287Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   550→  const possiblePaths = [\n   551→    pa...",
+      "timestamp": "2025-07-23T07:19:07.222Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   563→      // Directory doesn't exist or can...",
+      "timestamp": "2025-07-23T07:19:17.363Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Now let me fix the `captureSessionsFromDirectory` function as well:",
+      "timestamp": "2025-07-23T07:19:21.761Z",
+      "promptId": "accb7904-d0ea-4617-a8dc-e74cdbe65e09"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result:    585→async function captureSessionsFromDirectory(dirPath: string): Promise<SessionData> {\n   586→  const files = await fs.readdir(dirPath);\n   587→  const sessionFiles = files.filter(f => f.endsWith...",
+      "timestamp": "2025-07-23T07:19:23.404Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   585→async function captureSessionsFromDirec...",
+      "timestamp": "2025-07-23T07:19:35.181Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   618→      // Skip files that can't be parse...",
+      "timestamp": "2025-07-23T07:19:44.599Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: > ccshare@0.3.0 build\n> tsc",
+      "timestamp": "2025-07-23T07:19:49.455Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: 45",
+      "timestamp": "2025-07-23T07:19:54.799Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me check what went wrong:",
+      "timestamp": "2025-07-23T07:19:58.310Z",
+      "promptId": "725d0bba-dc9c-47cc-be69-5fcd3b9820c6"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: [CAPTURE DEBUG] Tool executions: 182\n[CAPTURE DEBUG] Tool executions: 183\n[CAPTURE DEBUG] Tool executions: 184\n[CAPTURE DEBUG] Tool executions: 185\n[CAPTURE DEBUG] Tool executions: 186\n[CAPTURE DEBUG]...",
+      "timestamp": "2025-07-23T07:19:59.187Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me check the actual JSON output:",
+      "timestamp": "2025-07-23T07:20:03.899Z",
+      "promptId": "7370e056-c993-47fb-b2fa-d04081856477"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: {\n  \"actionsCount\": 49,\n  \"executionsCount\": 39,\n  \"firstAction\": {\n    \"type\": \"analysis\",\n    \"description\": \"Looking at the code, I can see that the `assistantActions` and `toolExecutions` are bein...",
+      "timestamp": "2025-07-23T07:20:07.197Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable",
+      "timestamp": "2025-07-23T07:20:12.574Z"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: jq: parse error: Unfinished string at EOF at line 524, column 125",
+      "timestamp": "2025-07-23T07:20:18.962Z"
+    },
+    {
+      "type": "explanation",
+      "description": "Let me save the output to a file first:",
+      "timestamp": "2025-07-23T07:20:22.838Z",
+      "promptId": "8ebb793a-26b1-4e99-8b9d-b9768e0e9ce7"
+    },
+    {
+      "type": "command_execution",
+      "description": "Tool result: {\n  \"promptCount\": 3,\n  \"actionsCount\": 75,\n  \"executionsCount\": 64,\n  \"fileDiffsCount\": 30\n}",
+      "timestamp": "2025-07-23T07:20:30.102Z"
+    }
+  ],
+  "toolExecutions": [
+    {
+      "tool": "Read",
+      "timestamp": "2025-07-23T07:15:42.495Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts"
+      },
+      "promptId": "36fb3f94-959c-4475-bd4d-158582771e51"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:15:51.426Z",
+      "parameters": {
+        "command": "DEBUG_PARENT_CHAIN=1 npm run dev -- --json --recent 1 2>/dev/null | jq '{assistantActions: .assistantActions, toolExecutions: .toolExecutions}' | head -20",
+        "description": "Check if assistantActions and toolExecutions are empty in JSON output"
+      },
+      "promptId": "82a6f0ab-40fe-40ae-912f-05595d1f3229"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:15:57.618Z",
+      "parameters": {
+        "command": "npm run dev -- --json --recent 1 2>/dev/null | grep -E \"(assistantActions|toolExecutions)\" | head -10",
+        "description": "Check assistantActions and toolExecutions in output"
+      },
+      "promptId": "366326a0-6d3b-4609-8bf0-de4f279d85c6"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:16:06.081Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "  debugLog(`[DEBUG] Total assistant actions: ${sessionData.assistantActions.length}`);",
+        "new_string": "  debugLog(`[DEBUG] Total assistant actions: ${sessionData.assistantActions.length}`);\n  console.error(`[CAPTURE DEBUG] Assistant actions: ${sessionData.assistantActions.length}`);"
+      },
+      "promptId": "a98b14e6-424e-43d7-a662-8e08290667b5"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:16:10.893Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "                sessionData.toolExecutions.push(toolExecution);\n                debugLog(`[DEBUG] Added tool execution: ${item.name}`);",
+        "new_string": "                sessionData.toolExecutions.push(toolExecution);\n                debugLog(`[DEBUG] Added tool execution: ${item.name}`);\n                console.error(`[CAPTURE DEBUG] Tool executions: ${sessionData.toolExecutions.length}`);"
+      },
+      "promptId": "7ec0b4ca-203c-4e0f-9748-cffc1a2c7c3a"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:16:20.749Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "export function parseJSONLSessionData(rawData: string): SessionData {\n  const sessionData: SessionData = {\n    timestamp: new Date().toISOString(),\n    prompts: [],\n    changes: [],\n    toolCalls: [],\n    assistantActions: [],\n    toolExecutions: [],\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd(),\n      models: [],\n      mcpServers: []\n    }\n  };",
+        "new_string": "export function parseJSONLSessionData(rawData: string): SessionData {\n  const sessionData: SessionData = {\n    timestamp: new Date().toISOString(),\n    prompts: [],\n    changes: [],\n    toolCalls: [],\n    assistantActions: [],\n    toolExecutions: [],\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd(),\n      models: [],\n      mcpServers: []\n    }\n  };\n  \n  console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions.length}, toolExecutions: ${sessionData.toolExecutions.length}`);"
+      },
+      "promptId": "e2ba3a75-6dca-4ec3-b122-3fb4ea342788"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:16:26.266Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "  \n  return sessionData;\n}",
+        "new_string": "  \n  console.error(`[CAPTURE DEBUG] Final counts - prompts: ${sessionData.prompts.length}, assistantActions: ${sessionData.assistantActions?.length || 0}, toolExecutions: ${sessionData.toolExecutions?.length || 0}`);\n  \n  return sessionData;\n}"
+      },
+      "promptId": "c9dbedba-3653-44a2-8f69-8376fa81305e"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:16:32.702Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "    } catch {\n      // Skip malformed JSON lines\n    }\n  }\n  \n  return sessionData;\n}",
+        "new_string": "    } catch {\n      // Skip malformed JSON lines\n    }\n  }\n  \n  console.error(`[CAPTURE DEBUG] Final counts - prompts: ${sessionData.prompts.length}, assistantActions: ${sessionData.assistantActions?.length || 0}, toolExecutions: ${sessionData.toolExecutions?.length || 0}`);\n  \n  return sessionData;\n}"
+      },
+      "promptId": "eb6a4516-cf3f-4ae1-8b80-082ba3efa64d"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:16:36.600Z",
+      "parameters": {
+        "command": "npm run build",
+        "description": "Build the TypeScript project"
+      },
+      "promptId": "a06d9d81-0b8e-4151-b687-79abce624c80"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:16:43.450Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "  console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions.length}, toolExecutions: ${sessionData.toolExecutions.length}`);",
+        "new_string": "  console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions?.length || 0}, toolExecutions: ${sessionData.toolExecutions?.length || 0}`);"
+      },
+      "promptId": "ca2f8e39-c0ce-461b-8a8c-fa03591b3b23"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:16:49.340Z",
+      "parameters": {
+        "replace_all": true,
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "      assistantActions: [],\n      toolExecutions: [],",
+        "new_string": "      assistantActions: [], // Initialize assistant actions array\n      toolExecutions: [], // Initialize tool executions array"
+      },
+      "promptId": "ef070067-3551-457e-9376-29260d4345e6"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:16:53.702Z",
+      "parameters": {
+        "command": "npm run build",
+        "description": "Build the TypeScript project"
+      },
+      "promptId": "350f45d0-ebab-474e-808f-00537e0b215e"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:16:59.937Z",
+      "parameters": {
+        "command": "npm run dev -- --recent 1 2>&1 | grep \"CAPTURE DEBUG\"",
+        "description": "Run ccshare and check debug output"
+      },
+      "promptId": "0637b58c-fb6c-43c4-985b-9ad446f87ed8"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:17:06.604Z",
+      "parameters": {
+        "command": "ls -la ~/.claude/projects/*ccshare* 2>/dev/null | head -20",
+        "description": "Check Claude project directories"
+      },
+      "promptId": "ee1ab0ad-ff92-4ba6-a29f-3344774500da"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:17:13.471Z",
+      "parameters": {
+        "command": "ls -la ~/.claude/projects/*scripts-ccshare* 2>/dev/null | head -20",
+        "description": "Check for scripts/ccshare project directory"
+      },
+      "promptId": "e2939dca-d9ee-4706-8777-64095669d542"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:17:20.123Z",
+      "parameters": {
+        "command": "tail -5 ~/.claude/projects/-Users-james-Development-scripts-ccshare/533222c8-5a3e-4a67-80fe-472f6843753a.jsonl | jq '.type' 2>/dev/null || echo \"Not valid JSON\"",
+        "description": "Check the structure of JSONL entries"
+      },
+      "promptId": "1c428333-a6f9-4198-909e-615e19820bcf"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:17:26.083Z",
+      "parameters": {
+        "command": "npm run dev -- --recent 3 --json 2>&1 | grep -E \"(CAPTURE DEBUG|assistantActions|toolExecutions)\" | head -30",
+        "description": "Run ccshare with debug output"
+      },
+      "promptId": "6e514141-4cbe-42bf-8ab8-0e702fd74b9d"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:17:31.855Z",
+      "parameters": {
+        "command": "node dist/cli.js --recent 1 --json 2>&1 | tail -100 | grep -E \"(assistantActions|toolExecutions)\"",
+        "description": "Check JSON output for arrays"
+      },
+      "promptId": "7816adb3-e899-44a9-ba92-79c76a45ce30"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:17:40.937Z",
+      "parameters": {
+        "command": "node dist/cli.js --recent 1 --json 2>&1 | jq '.assistantActions, .toolExecutions' 2>/dev/null | head -20",
+        "description": "Check the arrays in JSON output"
+      },
+      "promptId": "0ca7e66c-d309-4d59-aee7-54ece6c13950"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:17:46.178Z",
+      "parameters": {
+        "command": "node dist/cli.js --recent 1 --json 2>debug.log | tail -50",
+        "description": "Check end of JSON output"
+      },
+      "promptId": "c8833563-ca62-4811-a177-56e650ae7bc9"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:17:52.319Z",
+      "parameters": {
+        "command": "cat debug.log | grep \"CAPTURE DEBUG\"",
+        "description": "Check debug log"
+      },
+      "promptId": "08fc297a-3625-469e-bccf-c77fa6170360"
+    },
+    {
+      "tool": "Read",
+      "timestamp": "2025-07-23T07:18:01.646Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+        "offset": 155,
+        "limit": 25
+      },
+      "promptId": "848db630-3175-4f6e-9ed7-db33d75de090"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:18:13.882Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+        "old_string": "      // Extract assistant actions and tool executions if available\n      const assistantActions = sessionData.assistantActions || [];\n      const toolExecutions = sessionData.toolExecutions || [];",
+        "new_string": "      // Extract assistant actions and tool executions if available\n      // Filter by timestamp to match selected prompts\n      const assistantActions = (sessionData.assistantActions || []).filter(action => {\n        if (!action.timestamp) return false;\n        const actionTime = new Date(action.timestamp).getTime();\n        return actionTime >= earliestPromptTime && \n               actionTime <= (latestPromptTime + timeWindowMs);\n      });\n      \n      const toolExecutions = (sessionData.toolExecutions || []).filter(exec => {\n        if (!exec.timestamp) return false;\n        const execTime = new Date(exec.timestamp).getTime();\n        return execTime >= earliestPromptTime && \n               execTime <= (latestPromptTime + timeWindowMs);\n      });\n      \n      console.error(`[CLI DEBUG] Filtered actions: ${assistantActions.length} (from ${sessionData.assistantActions?.length || 0})`);\n      console.error(`[CLI DEBUG] Filtered executions: ${toolExecutions.length} (from ${sessionData.toolExecutions?.length || 0})`);"
+      },
+      "promptId": "6da4a68b-101d-4e0f-9b2b-d9bb39059e52"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:18:18.600Z",
+      "parameters": {
+        "command": "npm run build",
+        "description": "Build the project"
+      },
+      "promptId": "c261fbc2-b2ee-462c-801b-ce5834f8f23d"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:18:24.788Z",
+      "parameters": {
+        "command": "node dist/cli.js --recent 1 --json 2>&1 | grep -E \"(CLI DEBUG|assistantActions|toolExecutions)\" | head -10",
+        "description": "Check filtered arrays"
+      },
+      "promptId": "c2eec768-e9a8-4435-9fec-84236c73537f"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:18:30.180Z",
+      "parameters": {
+        "command": "node dist/cli.js --recent 3 --json 2>&1 | tail -20 | grep -B5 -A5 \"assistantActions\"",
+        "description": "Check the end of JSON output for arrays"
+      },
+      "promptId": "677d0cb2-7004-4042-a322-7042e8f94085"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:18:37.401Z",
+      "parameters": {
+        "command": "node dist/cli.js --recent 3 --json 2>debug2.log >/dev/null && cat debug2.log | grep \"CLI DEBUG\"",
+        "description": "Check CLI debug output"
+      },
+      "promptId": "9e822f02-e1fa-44a0-a252-2e6437897dfb"
+    },
+    {
+      "tool": "Read",
+      "timestamp": "2025-07-23T07:18:44.229Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "offset": 515,
+        "limit": 60
+      },
+      "promptId": "308e3c60-30c2-49c6-bccb-af83c9746dbc"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:18:52.537Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "async function captureAllSessions(): Promise<SessionData> {\n  const allPrompts: Prompt[] = [];\n  const allChanges: FileChange[] = [];\n  \n  // First, add current session\n  const currentSession = await getCurrentSessionData();\n  allPrompts.push(...currentSession.prompts);\n  allChanges.push(...currentSession.changes);",
+        "new_string": "async function captureAllSessions(): Promise<SessionData> {\n  const allPrompts: Prompt[] = [];\n  const allChanges: FileChange[] = [];\n  const allAssistantActions: AssistantAction[] = [];\n  const allToolExecutions: ToolExecution[] = [];\n  const allToolCalls: ToolCall[] = [];\n  \n  // First, add current session\n  const currentSession = await getCurrentSessionData();\n  allPrompts.push(...currentSession.prompts);\n  allChanges.push(...currentSession.changes);\n  if (currentSession.assistantActions) allAssistantActions.push(...currentSession.assistantActions);\n  if (currentSession.toolExecutions) allToolExecutions.push(...currentSession.toolExecutions);\n  if (currentSession.toolCalls) allToolCalls.push(...currentSession.toolCalls);"
+      },
+      "promptId": "53baccd8-516c-4f92-b2c0-012c0a4c41dc"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:19:00.212Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "  try {\n    const sessionData = await captureSessionsFromDirectory(claudeProjectPath);\n    allPrompts.push(...sessionData.prompts);\n    allChanges.push(...sessionData.changes);\n  } catch (err) {\n    // Project directory doesn't exist\n  }",
+        "new_string": "  try {\n    const sessionData = await captureSessionsFromDirectory(claudeProjectPath);\n    allPrompts.push(...sessionData.prompts);\n    allChanges.push(...sessionData.changes);\n    if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n    if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n    if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n  } catch (err) {\n    // Project directory doesn't exist\n  }"
+      },
+      "promptId": "8b682782-5f31-4b3a-a8c7-de4558bbc0ee"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:19:07.153Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "  for (const dir of possiblePaths) {\n    try {\n      const sessionData = await captureSessionsFromDirectory(dir);\n      allPrompts.push(...sessionData.prompts);\n      allChanges.push(...sessionData.changes);\n    } catch {\n      // Directory doesn't exist or can't be read\n    }\n  }",
+        "new_string": "  for (const dir of possiblePaths) {\n    try {\n      const sessionData = await captureSessionsFromDirectory(dir);\n      allPrompts.push(...sessionData.prompts);\n      allChanges.push(...sessionData.changes);\n      if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n      if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n      if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n    } catch {\n      // Directory doesn't exist or can't be read\n    }\n  }"
+      },
+      "promptId": "365f7228-df56-4a5a-83f8-a308630ce3e8"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:19:17.295Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "  // Sort prompts by timestamp\n  allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());\n  \n  return {\n    timestamp: new Date().toISOString(),\n    prompts: allPrompts,\n    changes: allChanges,\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd(),\n      claudeProjectPath: claudeProjectPath\n    }\n  };",
+        "new_string": "  // Sort prompts by timestamp\n  allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());\n  \n  return {\n    timestamp: new Date().toISOString(),\n    prompts: allPrompts,\n    changes: allChanges,\n    assistantActions: allAssistantActions,\n    toolExecutions: allToolExecutions,\n    toolCalls: allToolCalls,\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd(),\n      claudeProjectPath: claudeProjectPath\n    }\n  };"
+      },
+      "promptId": "d6339dd3-e368-43ba-8882-4e22fcd5564f"
+    },
+    {
+      "tool": "Read",
+      "timestamp": "2025-07-23T07:19:23.334Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "offset": 585,
+        "limit": 40
+      },
+      "promptId": "9ae6d5f0-b4c1-4897-835c-e0699c0c9f7d"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:19:35.106Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "  const allPrompts: Prompt[] = [];\n  const allChanges: FileChange[] = [];\n  \n  for (const file of sessionFiles) {\n    try {\n      const filePath = path.join(dirPath, file);\n      const rawData = await fs.readFile(filePath, 'utf-8');\n      \n      let sessionData: SessionData;\n      if (file.endsWith('.jsonl')) {\n        sessionData = parseJSONLSessionData(rawData);\n      } else {\n        sessionData = parseSessionData(rawData);\n      }\n      \n      // Add file source info to prompts\n      sessionData.prompts.forEach(prompt => {\n        (prompt as any).sourceFile = file;\n      });\n      \n      allPrompts.push(...sessionData.prompts);\n      allChanges.push(...sessionData.changes);\n    } catch {\n      // Skip files that can't be parsed\n    }\n  }",
+        "new_string": "  const allPrompts: Prompt[] = [];\n  const allChanges: FileChange[] = [];\n  const allAssistantActions: AssistantAction[] = [];\n  const allToolExecutions: ToolExecution[] = [];\n  const allToolCalls: ToolCall[] = [];\n  \n  for (const file of sessionFiles) {\n    try {\n      const filePath = path.join(dirPath, file);\n      const rawData = await fs.readFile(filePath, 'utf-8');\n      \n      let sessionData: SessionData;\n      if (file.endsWith('.jsonl')) {\n        sessionData = parseJSONLSessionData(rawData);\n      } else {\n        sessionData = parseSessionData(rawData);\n      }\n      \n      // Add file source info to prompts\n      sessionData.prompts.forEach(prompt => {\n        (prompt as any).sourceFile = file;\n      });\n      \n      allPrompts.push(...sessionData.prompts);\n      allChanges.push(...sessionData.changes);\n      if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n      if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n      if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n    } catch {\n      // Skip files that can't be parsed\n    }\n  }"
+      },
+      "promptId": "d89ad50c-bed9-430d-9683-d5c4a03ab26f"
+    },
+    {
+      "tool": "Edit",
+      "timestamp": "2025-07-23T07:19:44.529Z",
+      "parameters": {
+        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "old_string": "  // Sort prompts by timestamp\n  allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());\n  \n  return {\n    timestamp: new Date().toISOString(),\n    prompts: allPrompts,\n    changes: allChanges,\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd()\n    }\n  };",
+        "new_string": "  // Sort prompts by timestamp\n  allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());\n  \n  return {\n    timestamp: new Date().toISOString(),\n    prompts: allPrompts,\n    changes: allChanges,\n    assistantActions: allAssistantActions,\n    toolExecutions: allToolExecutions,\n    toolCalls: allToolCalls,\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd()\n    }\n  };"
+      },
+      "promptId": "dc2f0df1-f6b6-4288-9cbd-57b6ca38fea8"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:19:48.722Z",
+      "parameters": {
+        "command": "npm run build",
+        "description": "Build the project"
+      },
+      "promptId": "cbc9f9d2-92be-4d72-8c45-74112c692ea0"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:19:54.470Z",
+      "parameters": {
+        "command": "node dist/cli.js --recent 1 --json 2>debug3.log | jq '.assistantActions | length, .toolExecutions | length' 2>/dev/null",
+        "description": "Check array lengths in JSON output"
+      },
+      "promptId": "a55990b9-06a1-48f1-9ff1-86c91b22115c"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:19:59.115Z",
+      "parameters": {
+        "command": "tail -10 debug3.log",
+        "description": "Check error log"
+      },
+      "promptId": "f82482ed-c1fc-46f3-81f8-f251d50252d8"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:20:05.627Z",
+      "parameters": {
+        "command": "node dist/cli.js --recent 1 --json 2>/dev/null | jq '{actionsCount: (.assistantActions | length), executionsCount: (.toolExecutions | length), firstAction: .assistantActions[0], firstExecution: .toolExecutions[0]}'",
+        "description": "Check the JSON output structure"
+      },
+      "promptId": "1cb06cee-b345-495a-9e9e-8e1bacfd6f16"
+    },
+    {
+      "tool": "TodoWrite",
+      "timestamp": "2025-07-23T07:20:12.047Z",
+      "parameters": {
+        "todos": [
+          {
+            "id": "15",
+            "content": "Debug why toolExecutions and assistantActions are empty",
+            "status": "completed",
+            "priority": "high"
+          }
+        ]
+      },
+      "promptId": "7c78f08f-4ef8-4a25-92d2-75c079d7218f"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:20:17.886Z",
+      "parameters": {
+        "command": "node dist/cli.js --recent 3 --json 2>/dev/null | jq '{promptCount: (.prompts | length), actionsCount: (.assistantActions | length), executionsCount: (.toolExecutions | length), fileDiffsCount: (.fileDiffs | length)}'",
+        "description": "Check all counts with 3 recent prompts"
+      },
+      "promptId": "cdb31dbf-19a5-4049-b987-3b5c2d381db4"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:20:23.827Z",
+      "parameters": {
+        "command": "node dist/cli.js --recent 3 --json 2>/dev/null > test-output.json",
+        "description": "Save JSON output to file"
+      },
+      "promptId": "af2a8f61-e917-4b76-9c76-54455b5fa750"
+    },
+    {
+      "tool": "Bash",
+      "timestamp": "2025-07-23T07:20:28.919Z",
+      "parameters": {
+        "command": "jq '{promptCount: (.prompts | length), actionsCount: (.assistantActions | length), executionsCount: (.toolExecutions | length), fileDiffsCount: (.fileDiffs | length)}' test-output.json",
+        "description": "Check counts from saved JSON"
+      },
+      "promptId": "5bb88445-2eca-485f-b915-5426777cbc70"
+    }
+  ],
+  "metadata": {
+    "generatedBy": "ccshare",
+    "version": "0.2.0",
+    "platform": "darwin"
+  },
+  "toolStats": {
+    "totalCalls": 1169,
+    "byTool": {
+      "Read": 192,
+      "Edit": 192,
+      "TodoWrite": 181,
+      "Bash": 369,
+      "LS": 8,
+      "Write": 36,
+      "Grep": 67,
+      "MultiEdit": 108,
+      "Glob": 8,
+      "Task": 4,
+      "ExitPlanMode": 3,
+      "mcp__context7__search_context7_docs": 1
+    },
+    "mcpCalls": 1,
+    "regularCalls": 1168
+  }
+}

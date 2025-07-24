@@ -1,13 +1,79 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { SessionData, Prompt, FileChange, ThoughtBlock, ToolCall, MCPServer, AssistantAction } from './types.js';
-import { appendFileSync } from 'fs';
+import { SessionData, Prompt, FileChange, ThoughtBlock, ToolCall, MCPServer, AssistantAction, ToolExecution } from './types.js';
+import { appendFileSync, existsSync } from 'fs';
+import { execSync } from 'child_process';
 
 // Debug logging to file
 function debugLog(message: string) {
   if (process.env.DEBUG_PARENT_CHAIN) {
     appendFileSync('parent-chain-debug.log', `${new Date().toISOString()} - ${message}\n`);
   }
+}
+
+// Get additional metadata
+async function getAdditionalMetadata(): Promise<any> {
+  const metadata: any = {};
+  
+  // Get Git information
+  try {
+    metadata.gitBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+    metadata.gitCommitCount = parseInt(execSync('git rev-list --count HEAD', { encoding: 'utf8' }).trim());
+  } catch {
+    // Not a git repository or git not available
+  }
+  
+  // Get Node.js version
+  metadata.nodeVersion = process.version;
+  
+  // Get Claude settings
+  try {
+    const settingsPath = path.join(process.env.HOME || '', '.claude', 'settings.json');
+    if (existsSync(settingsPath)) {
+      const settings = JSON.parse(await fs.readFile(settingsPath, 'utf-8'));
+      metadata.claudeSettings = {
+        permissions: settings.permissions?.allow || [],
+        model: settings.model
+      };
+    }
+  } catch {
+    // Settings file not available
+  }
+  
+  return metadata;
+}
+
+// Calculate session statistics
+function calculateSessionStats(sessionData: SessionData): any {
+  const stats: any = {};
+  
+  // Calculate total tokens used
+  let totalTokens = 0;
+  let totalResponseTime = 0;
+  let responseCount = 0;
+  
+  sessionData.prompts.forEach(prompt => {
+    if (prompt.usage?.total_tokens) {
+      totalTokens += prompt.usage.total_tokens;
+    }
+    if (prompt.responseTimeMs) {
+      totalResponseTime += prompt.responseTimeMs;
+      responseCount++;
+    }
+  });
+  
+  stats.totalTokensUsed = totalTokens > 0 ? totalTokens : undefined;
+  stats.averageResponseTime = responseCount > 0 ? Math.round(totalResponseTime / responseCount) : undefined;
+  stats.totalToolCalls = sessionData.toolCalls?.length || 0;
+  
+  // Count errors from tool executions
+  let errorCount = 0;
+  sessionData.toolExecutions?.forEach(exec => {
+    if (exec.status === 'error') errorCount++;
+  });
+  stats.errorCount = errorCount > 0 ? errorCount : undefined;
+  
+  return stats;
 }
 
 // Generate a formatted diff for display
@@ -139,68 +205,25 @@ function extractToolCalls(content: string | any[]): string[] {
 // Detect if a prompt is auto-generated
 function extractAssistantActions(content: string, timestamp: string): AssistantAction[] {
   const actions: AssistantAction[] = [];
-  const lines = content.split('\n');
   
-  // Patterns to detect different types of actions
-  const patterns = {
-    explanation: [
-      /^(I'll|I will|Let me|Let's|Now I'll|Now let me|I'm going to)/i,
-      /^(First,|Next,|Then,|Finally,)/i,
-      /^(This|These|The) \w+ (will|should|can|must)/i,
-      /^(To|In order to) \w+/i
-    ],
-    analysis: [
-      /^(Looking at|Checking|Analyzing|Reviewing|Examining)/i,
-      /^(I (see|notice|found|discovered) that)/i,
-      /^(The (problem|issue|error) is)/i,
-      /^Based on/i
-    ],
-    code_change: [
-      /^(Added|Modified|Updated|Changed|Fixed|Removed|Created|Implemented)/i,
-      /^(I've|I have) (added|modified|updated|changed|fixed|removed|created)/i
-    ]
-  };
-  
-  lines.forEach(line => {
-    const trimmedLine = line.trim();
-    if (!trimmedLine) return;
+  // Simply capture the entire assistant response as one action
+  // This includes any completion summaries, explanations, etc.
+  if (content && content.trim()) {
+    // Remove tool_use patterns that are already tracked separately
+    const cleanContent = content
+      .split('\n')
+      .filter(line => !line.trim().startsWith('⏺ ') || line.includes('완료'))
+      .join('\n')
+      .trim();
     
-    // Check for explanation patterns
-    for (const pattern of patterns.explanation) {
-      if (pattern.test(trimmedLine)) {
-        actions.push({
-          type: 'explanation',
-          description: trimmedLine,
-          timestamp
-        });
-        return;
-      }
+    if (cleanContent) {
+      actions.push({
+        type: 'explanation',
+        description: cleanContent,
+        timestamp
+      });
     }
-    
-    // Check for analysis patterns
-    for (const pattern of patterns.analysis) {
-      if (pattern.test(trimmedLine)) {
-        actions.push({
-          type: 'analysis',
-          description: trimmedLine,
-          timestamp
-        });
-        return;
-      }
-    }
-    
-    // Check for code change descriptions
-    for (const pattern of patterns.code_change) {
-      if (pattern.test(trimmedLine)) {
-        actions.push({
-          type: 'code_change',
-          description: trimmedLine,
-          timestamp
-        });
-        return;
-      }
-    }
-  });
+  }
   
   return actions;
 }
@@ -218,6 +241,11 @@ function isAutoGeneratedPrompt(content: string): boolean {
   
   // Check for hook messages
   if (content.includes('<user-prompt-submit-hook>')) {
+    return true;
+  }
+  
+  // Check for local command stdout
+  if (content.includes('<local-command-stdout>')) {
     return true;
   }
   
@@ -325,6 +353,8 @@ export function parseSessionData(rawData: string): SessionData {
       prompts: [],
       changes: [],
       thoughts: [],
+      assistantActions: [], // Initialize assistant actions array
+      toolExecutions: [], // Initialize tool executions array
       metadata: {
         claudeVersion: data.claudeVersion || 'unknown',
         platform: process.platform,
@@ -355,6 +385,12 @@ export function parseSessionData(rawData: string): SessionData {
                 sessionData.prompts[prevPromptIndex].associatedFiles = associatedFiles;
               }
             }
+          }
+          
+          // Extract assistant actions
+          const actions = extractAssistantActions(msg.content, msg.timestamp || new Date().toISOString());
+          if (actions.length > 0 && sessionData.assistantActions) {
+            sessionData.assistantActions.push(...actions);
           }
         }
         
@@ -509,22 +545,32 @@ function parseRawConversation(rawData: string): SessionData {
 async function captureAllSessions(): Promise<SessionData> {
   const allPrompts: Prompt[] = [];
   const allChanges: FileChange[] = [];
+  const allAssistantActions: AssistantAction[] = [];
+  const allToolExecutions: ToolExecution[] = [];
+  const allToolCalls: ToolCall[] = [];
   
   // First, add current session
   const currentSession = await getCurrentSessionData();
   allPrompts.push(...currentSession.prompts);
   allChanges.push(...currentSession.changes);
+  if (currentSession.assistantActions) allAssistantActions.push(...currentSession.assistantActions);
+  if (currentSession.toolExecutions) allToolExecutions.push(...currentSession.toolExecutions);
+  if (currentSession.toolCalls) allToolCalls.push(...currentSession.toolCalls);
   
   // Add project-specific Claude history
   const currentPath = process.cwd();
-  // Replace all special characters (/, ., etc.) with dashes, matching Claude's behavior
-  const projectDirName = currentPath.replace(/[\/\.]/g, '-');
+  // Replace all non-alphanumeric characters with dashes, matching Claude's behavior
+  // This includes /, ., _, Korean characters, etc.
+  const projectDirName = currentPath.replace(/[^a-zA-Z0-9]/g, '-');
   const claudeProjectPath = path.join(process.env.HOME || '', '.claude', 'projects', projectDirName);
   
   try {
     const sessionData = await captureSessionsFromDirectory(claudeProjectPath);
     allPrompts.push(...sessionData.prompts);
     allChanges.push(...sessionData.changes);
+    if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);
+    if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);
+    if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);
   } catch (err) {
     // Project directory doesn't exist
   }
@@ -539,6 +585,9 @@ async function captureAllSessions(): Promise<SessionData> {
       const sessionData = await captureSessionsFromDirectory(dir);
       allPrompts.push(...sessionData.prompts);
       allChanges.push(...sessionData.changes);
+      if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);
+      if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);
+      if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);
     } catch {
       // Directory doesn't exist or can't be read
     }
@@ -547,16 +596,29 @@ async function captureAllSessions(): Promise<SessionData> {
   // Sort prompts by timestamp
   allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   
-  return {
+  // Create session data
+  const sessionData: SessionData = {
     timestamp: new Date().toISOString(),
     prompts: allPrompts,
     changes: allChanges,
+    assistantActions: allAssistantActions,
+    toolExecutions: allToolExecutions,
+    toolCalls: allToolCalls,
     metadata: {
       platform: process.platform,
       workingDirectory: process.cwd(),
       claudeProjectPath: claudeProjectPath
     }
   };
+  
+  // Add additional metadata
+  const additionalMetadata = await getAdditionalMetadata();
+  sessionData.metadata = { ...sessionData.metadata, ...additionalMetadata };
+  
+  // Calculate session statistics
+  sessionData.metadata!.sessionStats = calculateSessionStats(sessionData);
+  
+  return sessionData;
 }
 
 async function captureSessionsFromDirectory(dirPath: string): Promise<SessionData> {
@@ -565,6 +627,9 @@ async function captureSessionsFromDirectory(dirPath: string): Promise<SessionDat
   
   const allPrompts: Prompt[] = [];
   const allChanges: FileChange[] = [];
+  const allAssistantActions: AssistantAction[] = [];
+  const allToolExecutions: ToolExecution[] = [];
+  const allToolCalls: ToolCall[] = [];
   
   for (const file of sessionFiles) {
     try {
@@ -585,6 +650,9 @@ async function captureSessionsFromDirectory(dirPath: string): Promise<SessionDat
       
       allPrompts.push(...sessionData.prompts);
       allChanges.push(...sessionData.changes);
+      if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);
+      if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);
+      if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);
     } catch {
       // Skip files that can't be parsed
     }
@@ -593,15 +661,28 @@ async function captureSessionsFromDirectory(dirPath: string): Promise<SessionDat
   // Sort prompts by timestamp
   allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   
-  return {
+  // Create session data
+  const sessionData: SessionData = {
     timestamp: new Date().toISOString(),
     prompts: allPrompts,
     changes: allChanges,
+    assistantActions: allAssistantActions,
+    toolExecutions: allToolExecutions,
+    toolCalls: allToolCalls,
     metadata: {
       platform: process.platform,
       workingDirectory: process.cwd()
     }
   };
+  
+  // Add additional metadata
+  const additionalMetadata = await getAdditionalMetadata();
+  sessionData.metadata = { ...sessionData.metadata, ...additionalMetadata };
+  
+  // Calculate session statistics
+  sessionData.metadata!.sessionStats = calculateSessionStats(sessionData);
+  
+  return sessionData;
 }
 
 export function parseJSONLSessionData(rawData: string): SessionData {
@@ -611,6 +692,7 @@ export function parseJSONLSessionData(rawData: string): SessionData {
     changes: [],
     toolCalls: [],
     assistantActions: [],
+    toolExecutions: [],
     metadata: {
       platform: process.platform,
       workingDirectory: process.cwd(),
@@ -618,6 +700,7 @@ export function parseJSONLSessionData(rawData: string): SessionData {
       mcpServers: []
     }
   };
+  
   
   const lines = rawData.split('\n').filter(line => line.trim());
   const entriesByUuid = new Map<string, any>();
@@ -839,10 +922,31 @@ export function parseJSONLSessionData(rawData: string): SessionData {
         if (typeof msg.content === 'string') {
           content = msg.content;
         } else if (Array.isArray(msg.content)) {
-          content = msg.content
-            .filter((item: any) => item.type === 'text')
-            .map((item: any) => item.text)
-            .join('\n');
+          // Handle both text and tool_result content
+          const contentParts: string[] = [];
+          let hasToolResult = false;
+          
+          msg.content.forEach((item: any) => {
+            if (item.type === 'text') {
+              contentParts.push(item.text);
+            } else if (item.type === 'tool_result') {
+              hasToolResult = true;
+              // Add tool result to assistant actions
+              if (sessionData.assistantActions && item.content) {
+                const toolResultAction: AssistantAction = {
+                  type: 'command_execution',
+                  description: `Tool result: ${item.content.substring(0, 200)}${item.content.length > 200 ? '...' : ''}`,
+                  timestamp: entry.timestamp || new Date().toISOString()
+                };
+                sessionData.assistantActions.push(toolResultAction);
+              }
+            }
+          });
+          
+          // Only process as user message if it's not just a tool result
+          if (!hasToolResult || contentParts.length > 0) {
+            content = contentParts.join('\n');
+          }
         }
         
         if (content && msg.role === 'user') {
@@ -850,8 +954,9 @@ export function parseJSONLSessionData(rawData: string): SessionData {
             role: 'user',
             content: content,
             timestamp: entry.timestamp || new Date().toISOString(),
-            isAutoGenerated: isAutoGeneratedPrompt(content)
-          };
+            isAutoGenerated: isAutoGeneratedPrompt(content),
+            uuid: entry.uuid
+          } as Prompt & { uuid?: string };
           
           // Check if there are associated file changes
           const associatedChanges = fileChangesByPrompt.get(entry.uuid);
@@ -869,10 +974,44 @@ export function parseJSONLSessionData(rawData: string): SessionData {
         let content = '';
         
         if (Array.isArray(msg.content)) {
-          content = msg.content
-            .filter((item: any) => item.type === 'text')
-            .map((item: any) => item.text)
-            .join('\n');
+          // Include both text and tool_use content
+          const contentParts: string[] = [];
+          
+          msg.content.forEach((item: any) => {
+            if (item.type === 'text') {
+              contentParts.push(item.text);
+            } else if (item.type === 'tool_use') {
+              // Format tool use as markdown
+              contentParts.push(`\n⏺ ${item.name}`);
+              
+              // Track tool execution
+              if (sessionData.toolExecutions) {
+                const toolExecution: ToolExecution = {
+                  tool: item.name,
+                  timestamp: entry.timestamp || new Date().toISOString(),
+                  parameters: item.input,
+                  promptId: entry.parentUuid
+                };
+                sessionData.toolExecutions.push(toolExecution);
+                debugLog(`[DEBUG] Added tool execution: ${item.name}`);
+              }
+              
+              if (item.input) {
+                // Show tool parameters
+                if (item.name === 'Bash' && item.input.command) {
+                  contentParts.push(`  ⎿ ${item.input.command}`);
+                } else if (item.name === 'Edit' && item.input.file_path) {
+                  contentParts.push(`  ⎿ ${item.input.file_path}`);
+                } else if (item.name === 'TodoWrite') {
+                  contentParts.push(`  ⎿ Update Todos`);
+                } else if (item.name === 'Read' && item.input.file_path) {
+                  contentParts.push(`  ⎿ ${item.input.file_path}`);
+                }
+              }
+            }
+          });
+          
+          content = contentParts.join('\n');
         }
         
         if (content) {
@@ -884,6 +1023,7 @@ export function parseJSONLSessionData(rawData: string): SessionData {
           
           // Extract actions from assistant response
           const actions = extractAssistantActions(content, entry.timestamp || new Date().toISOString());
+          debugLog(`[DEBUG] Extracted ${actions.length} actions from assistant response`);
           if (actions.length > 0 && sessionData.assistantActions) {
             // Link actions to the previous user prompt
             const lastUserPrompt = sessionData.prompts.filter(p => p.role === 'user').pop();
@@ -893,6 +1033,7 @@ export function parseJSONLSessionData(rawData: string): SessionData {
               });
             }
             sessionData.assistantActions.push(...actions);
+            debugLog(`[DEBUG] Total assistant actions: ${sessionData.assistantActions.length}`);
           }
           
           // Extract model info if available
@@ -980,10 +1121,26 @@ export function parseJSONLSessionData(rawData: string): SessionData {
           sessionData.prompts.push(prompt);
         }
       }
+      
+      // Handle tool result entries (separate from user messages with tool_result content)
+      if (entry.type === 'tool_result' && entry.content) {
+        // Update the latest tool execution with result
+        if (sessionData.toolExecutions && sessionData.toolExecutions.length > 0) {
+          // Find the most recent tool execution without a result
+          for (let i = sessionData.toolExecutions.length - 1; i >= 0; i--) {
+            if (!sessionData.toolExecutions[i].result) {
+              sessionData.toolExecutions[i].result = entry.content;
+              sessionData.toolExecutions[i].status = entry.error ? 'error' : 'success';
+              break;
+            }
+          }
+        }
+      }
     } catch {
       // Skip malformed JSON lines
     }
   }
+  
   
   return sessionData;
 }
@@ -991,7 +1148,7 @@ export function parseJSONLSessionData(rawData: string): SessionData {
 async function getCurrentSessionData(): Promise<SessionData> {
   // Check Claude's project folder for current session
   const currentPath = process.cwd();
-  const projectDirName = currentPath.replace(/[\/\.]/g, '-');
+  const projectDirName = currentPath.replace(/[^a-zA-Z0-9]/g, '-');
   const claudeProjectPath = path.join(process.env.HOME || '', '.claude', 'projects', projectDirName);
   
   try {

@@ -12,9 +12,23 @@ export interface SessionData {
     claudeProjectPath?: string;
     models?: string[];  // List of models used
     mcpServers?: MCPServer[];  // MCP servers if any
+    gitBranch?: string;  // Current git branch
+    gitCommitCount?: number;  // Number of commits
+    nodeVersion?: string;  // Node.js version
+    claudeSettings?: {  // Claude Code settings
+      permissions?: string[];
+      model?: string;
+    };
+    sessionStats?: {  // Session statistics
+      totalTokensUsed?: number;
+      averageResponseTime?: number;
+      totalToolCalls?: number;
+      errorCount?: number;
+    };
   };
   toolCalls?: ToolCall[];  // All tool calls made
   assistantActions?: AssistantAction[];  // Track what assistant did
+  toolExecutions?: ToolExecution[];  // Tool execution details
 }
 
 export interface Prompt {
@@ -94,4 +108,25 @@ export interface AssistantAction {
   timestamp: string;
   promptId?: string;  // Link to the user prompt that triggered this
   details?: any;  // Additional details specific to the action type
+}
+
+export interface ToolExecution {
+  tool: string;  // Tool name (Read, Update, Bash, etc.)
+  timestamp: string;
+  parameters?: any;  // Tool parameters
+  result?: string;  // Execution result
+  status?: 'success' | 'error';  // Execution status
+  promptId?: string;  // Link to the prompt
+}
+
+export interface WorkflowItem {
+  type: 'tool_execution' | 'tool_result' | 'assistant_action';
+  timestamp: string;
+  tool?: string;  // For tool_execution and tool_result
+  parameters?: any;  // For tool_execution
+  result?: string;  // For tool_result
+  status?: 'success' | 'error';  // For tool_result
+  description?: string;  // For assistant_action
+  actionType?: 'explanation' | 'code_change' | 'file_read' | 'command_execution' | 'analysis';  // For assistant_action
+  promptId?: string;
 }

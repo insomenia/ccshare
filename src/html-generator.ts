@@ -1,5 +1,6 @@
 import { escape } from 'html-escaper';
 import { TechStack } from './tech-detector.js';
+import { WorkflowItem } from './types.js';
 
 export interface HtmlData {
   prompts: Array<{
@@ -11,10 +12,18 @@ export interface HtmlData {
     path: string;
     diff: string;
   }>;
+  workflow?: WorkflowItem[];  // Combined workflow
   assistantActions?: Array<{
     type: string;
     description: string;
     timestamp: string;
+  }>;
+  toolExecutions?: Array<{
+    tool: string;
+    timestamp: string;
+    parameters?: any;
+    result?: string;
+    status?: string;
   }>;
   sessionInfo?: {
     totalPrompts: number;
@@ -27,7 +36,7 @@ export interface HtmlData {
 }
 
 export function generateHtml(data: HtmlData): string {
-  const { prompts, fileDiffs, assistantActions, sessionInfo, techStack } = data;
+  const { prompts, fileDiffs, assistantActions, toolExecutions, workflow, sessionInfo, techStack } = data;
 
   return `<!DOCTYPE html>
 <html lang="en" class="h-full">
@@ -242,54 +251,250 @@ export function generateHtml(data: HtmlData): string {
       </div>
     ` : ''}
 
-    <!-- Assistant Actions Section -->
-    ${assistantActions && assistantActions.length > 0 ? `
+    <!-- Workflow Section -->
+    ${workflow && workflow.length > 0 ? `
       <div class="bg-gray-800 rounded-lg shadow-sm p-6 mb-8 border border-gray-700">
         <h2 class="text-2xl font-semibold text-gray-200 mb-6 pb-4 border-b border-gray-700">
-          Assistant Actions (${assistantActions.length})
+          Workflow (${workflow.length})
         </h2>
         
-        <div class="space-y-3">
-          ${assistantActions.map((action, index) => {
-            let icon = '📝';
-            let colorClass = 'text-gray-400';
-            
-            switch(action.type) {
-              case 'explanation':
-                icon = '💡';
-                colorClass = 'text-blue-400';
-                break;
-              case 'analysis':
-                icon = '🔍';
-                colorClass = 'text-purple-400';
-                break;
-              case 'code_change':
-                icon = '✏️';
-                colorClass = 'text-green-400';
-                break;
-              case 'file_read':
-                icon = '📖';
-                colorClass = 'text-yellow-400';
-                break;
-              case 'command_execution':
-                icon = '⚡';
-                colorClass = 'text-orange-400';
-                break;
-            }
-            
-            return `
-              <div class="flex items-start space-x-3 p-3 rounded-lg bg-gray-700/50">
-                <span class="text-2xl flex-shrink-0">${icon}</span>
-                <div class="flex-1">
-                  <div class="${colorClass} font-medium capitalize">${action.type.replace('_', ' ')}</div>
-                  <div class="text-gray-300 text-sm mt-1">${escape(action.description)}</div>
-                  <div class="text-gray-500 text-xs mt-1">${new Date(action.timestamp).toLocaleTimeString()}</div>
+        <div class="space-y-4">
+          ${workflow.map((item, index) => {
+            if (item.type === 'assistant_action') {
+              let icon = '📝';
+              let colorClass = 'text-gray-400';
+              
+              switch(item.actionType) {
+                case 'explanation':
+                  icon = '💡';
+                  colorClass = 'text-blue-400';
+                  break;
+                case 'analysis':
+                  icon = '🔍';
+                  colorClass = 'text-purple-400';
+                  break;
+                case 'code_change':
+                  icon = '✏️';
+                  colorClass = 'text-green-400';
+                  break;
+                case 'file_read':
+                  icon = '📖';
+                  colorClass = 'text-yellow-400';
+                  break;
+                case 'command_execution':
+                  icon = '⚡';
+                  colorClass = 'text-orange-400';
+                  break;
+              }
+              
+              return `
+                <div class="flex items-start space-x-3 p-3 rounded-lg bg-gray-700/50">
+                  <span class="text-2xl flex-shrink-0">${icon}</span>
+                  <div class="flex-1">
+                    <div class="${colorClass} font-medium capitalize">${item.actionType?.replace('_', ' ') || 'Action'}</div>
+                    <div class="text-gray-300 text-sm mt-1">${escape(item.description || '')}</div>
+                    <div class="text-gray-500 text-xs mt-1">${new Date(item.timestamp).toLocaleTimeString()}</div>
+                  </div>
                 </div>
-              </div>
-            `;
+              `;
+            } else if (item.type === 'tool_execution' || item.type === 'tool_result') {
+              let icon = '⚙️';
+              let colorClass = 'text-gray-400';
+              
+              switch(item.tool) {
+                case 'Bash':
+                  icon = '⚡';
+                  colorClass = 'text-yellow-400';
+                  break;
+                case 'Edit':
+                case 'MultiEdit':
+                  icon = '✏️';
+                  colorClass = 'text-blue-400';
+                  break;
+                case 'Read':
+                  icon = '📖';
+                  colorClass = 'text-green-400';
+                  break;
+                case 'Write':
+                  icon = '📝';
+                  colorClass = 'text-purple-400';
+                  break;
+                case 'TodoWrite':
+                  icon = '✅';
+                  colorClass = 'text-orange-400';
+                  break;
+              }
+              
+              return `
+                <div class="border border-gray-600 rounded-lg overflow-hidden">
+                  <div class="bg-gray-900 px-4 py-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <span class="text-2xl">${icon}</span>
+                      <span class="${colorClass} font-mono">${item.tool}</span>
+                      <span class="text-gray-500 text-sm">${new Date(item.timestamp).toLocaleTimeString()}</span>
+                      ${item.type === 'tool_result' ? '<span class="text-xs text-gray-400 ml-2">[Result]</span>' : ''}
+                    </div>
+                    ${item.status ? `
+                      <span class="text-xs px-2 py-1 rounded ${
+                        item.status === 'success' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'
+                      }">
+                        ${item.status}
+                      </span>
+                    ` : ''}
+                  </div>
+                  ${item.type === 'tool_execution' && item.parameters ? `
+                    <div class="bg-gray-800 px-4 py-2 border-t border-gray-700">
+                      <div class="text-gray-400 text-sm font-mono">
+                        ${item.tool === 'Bash' && item.parameters.command ? 
+                          `$ ${escape(item.parameters.command)}` :
+                          item.tool === 'Edit' && item.parameters.file_path ?
+                          `File: ${escape(item.parameters.file_path)}` :
+                          item.tool === 'Read' && item.parameters.file_path ?
+                          `File: ${escape(item.parameters.file_path)}` :
+                          JSON.stringify(item.parameters, null, 2)
+                        }
+                      </div>
+                    </div>
+                  ` : ''}
+                  ${item.type === 'tool_result' && item.result ? `
+                    <div class="bg-gray-700 px-4 py-3 border-t border-gray-600 max-h-48 overflow-y-auto">
+                      <pre class="text-gray-300 text-sm whitespace-pre-wrap">${escape(item.result.substring(0, 1000))}${item.result.length > 1000 ? '\n...' : ''}</pre>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }
           }).join('')}
         </div>
       </div>
+    ` : (assistantActions && assistantActions.length > 0) || (toolExecutions && toolExecutions.length > 0) ? `
+      <!-- Assistant Actions Section -->
+      ${assistantActions && assistantActions.length > 0 ? `
+        <div class="bg-gray-800 rounded-lg shadow-sm p-6 mb-8 border border-gray-700">
+          <h2 class="text-2xl font-semibold text-gray-200 mb-6 pb-4 border-b border-gray-700">
+            Assistant Actions (${assistantActions.length})
+          </h2>
+          
+          <div class="space-y-3">
+            ${assistantActions.map((action, index) => {
+              let icon = '📝';
+              let colorClass = 'text-gray-400';
+              
+              switch(action.type) {
+                case 'explanation':
+                  icon = '💡';
+                  colorClass = 'text-blue-400';
+                  break;
+                case 'analysis':
+                  icon = '🔍';
+                  colorClass = 'text-purple-400';
+                  break;
+                case 'code_change':
+                  icon = '✏️';
+                  colorClass = 'text-green-400';
+                  break;
+                case 'file_read':
+                  icon = '📖';
+                  colorClass = 'text-yellow-400';
+                  break;
+                case 'command_execution':
+                  icon = '⚡';
+                  colorClass = 'text-orange-400';
+                  break;
+              }
+              
+              return `
+                <div class="flex items-start space-x-3 p-3 rounded-lg bg-gray-700/50">
+                  <span class="text-2xl flex-shrink-0">${icon}</span>
+                  <div class="flex-1">
+                    <div class="${colorClass} font-medium capitalize">${action.type.replace('_', ' ')}</div>
+                    <div class="text-gray-300 text-sm mt-1">${escape(action.description)}</div>
+                    <div class="text-gray-500 text-xs mt-1">${new Date(action.timestamp).toLocaleTimeString()}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Tool Executions Section -->
+      ${toolExecutions && toolExecutions.length > 0 ? `
+        <div class="bg-gray-800 rounded-lg shadow-sm p-6 mb-8 border border-gray-700">
+          <h2 class="text-2xl font-semibold text-gray-200 mb-6 pb-4 border-b border-gray-700">
+            Tool Executions (${toolExecutions.length})
+          </h2>
+          
+          <div class="space-y-4">
+            ${toolExecutions.map((exec, index) => {
+              let icon = '⚙️';
+              let colorClass = 'text-gray-400';
+              
+              switch(exec.tool) {
+                case 'Bash':
+                  icon = '⚡';
+                  colorClass = 'text-yellow-400';
+                  break;
+                case 'Edit':
+                case 'MultiEdit':
+                  icon = '✏️';
+                  colorClass = 'text-blue-400';
+                  break;
+                case 'Read':
+                  icon = '📖';
+                  colorClass = 'text-green-400';
+                  break;
+                case 'Write':
+                  icon = '📝';
+                  colorClass = 'text-purple-400';
+                  break;
+                case 'TodoWrite':
+                  icon = '✅';
+                  colorClass = 'text-orange-400';
+                  break;
+              }
+              
+              return `
+                <div class="border border-gray-600 rounded-lg overflow-hidden">
+                  <div class="bg-gray-900 px-4 py-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <span class="text-2xl">${icon}</span>
+                      <span class="${colorClass} font-mono">${exec.tool}</span>
+                      <span class="text-gray-500 text-sm">${new Date(exec.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                    ${exec.status ? `
+                      <span class="text-xs px-2 py-1 rounded ${
+                        exec.status === 'success' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'
+                      }">
+                        ${exec.status}
+                      </span>
+                    ` : ''}
+                  </div>
+                  ${exec.parameters ? `
+                    <div class="bg-gray-800 px-4 py-2 border-t border-gray-700">
+                      <div class="text-gray-400 text-sm font-mono">
+                        ${exec.tool === 'Bash' && exec.parameters.command ? 
+                          `$ ${escape(exec.parameters.command)}` :
+                          exec.tool === 'Edit' && exec.parameters.file_path ?
+                          `File: ${escape(exec.parameters.file_path)}` :
+                          exec.tool === 'Read' && exec.parameters.file_path ?
+                          `File: ${escape(exec.parameters.file_path)}` :
+                          JSON.stringify(exec.parameters, null, 2)
+                        }
+                      </div>
+                    </div>
+                  ` : ''}
+                  ${exec.result ? `
+                    <div class="bg-gray-700 px-4 py-3 border-t border-gray-600 max-h-48 overflow-y-auto">
+                      <pre class="text-gray-300 text-sm whitespace-pre-wrap">${escape(exec.result.substring(0, 1000))}${exec.result.length > 1000 ? '\n...' : ''}</pre>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
     ` : ''}
   </main>
   

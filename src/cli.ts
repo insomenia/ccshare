@@ -6,7 +6,7 @@ import ora from 'ora';
 import { captureSession } from './capture.js';
 import { uploadSession } from './upload.js';
 import { SessionData } from './types.js';
-import { generateHtml } from './html-generator.js';
+import { generateHtml, HtmlData } from './html-generator.js';
 import { detectTechStack } from './tech-detector.js';
 import { transformToShareData, shareToAPI, fetchFromSlug } from './share-service.js';
 import { createAutoPostForm } from './browser-post.js';
@@ -99,7 +99,8 @@ program
       const promptsData = userPrompts.map(prompt => ({
         prompt: prompt.content,
         timestamp: prompt.timestamp,
-        sourceFile: (prompt as any).sourceFile
+        sourceFile: (prompt as any).sourceFile,
+        uuid: (prompt as any).uuid
       }));
       
       // Collect file diffs based on prompt timestamps
@@ -159,13 +160,28 @@ program
         };
       }
       
-      // Extract assistant actions if available
-      const assistantActions = sessionData.assistantActions || [];
+      // Extract assistant actions and tool executions if available
+      // Filter by timestamp to match selected prompts
+      const assistantActions = (sessionData.assistantActions || []).filter(action => {
+        if (!action.timestamp) return false;
+        const actionTime = new Date(action.timestamp).getTime();
+        return actionTime >= earliestPromptTime && 
+               actionTime <= (latestPromptTime + timeWindowMs);
+      });
       
-      const htmlData = {
+      const toolExecutions = (sessionData.toolExecutions || []).filter(exec => {
+        if (!exec.timestamp) return false;
+        const execTime = new Date(exec.timestamp).getTime();
+        return execTime >= earliestPromptTime && 
+               execTime <= (latestPromptTime + timeWindowMs);
+      });
+      
+      
+      const htmlData: HtmlData = {
         prompts: promptsData,
         fileDiffs,
         assistantActions,
+        toolExecutions,
         sessionInfo,
         techStack
       };
@@ -179,6 +195,10 @@ program
       
       // If HTML option is used, generate HTML report
       if (options.html) {
+        // Transform data to get workflow
+        const shareData = transformToShareData(htmlData, sessionData);
+        // Add workflow to htmlData
+        htmlData.workflow = shareData.workflow;
         const html = generateHtml(htmlData);
       
       // Create reports directory if it doesn't exist
