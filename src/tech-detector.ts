@@ -61,12 +61,85 @@ export async function detectTechStack(projectPath: string): Promise<TechStack> {
     } catch {}
   } catch {}
 
-  // Remove duplicates and return
+  // Helper function to capitalize tech stack items
+  const capitalizeItems = (items: string[]): string[] => {
+    return items.map(item => {
+      // Special cases for known acronyms and proper names
+      const specialCases: { [key: string]: string } = {
+        'javascript': 'JavaScript',
+        'typescript': 'TypeScript',
+        'nodejs': 'Node.js',
+        'node': 'Node.js',
+        'nextjs': 'Next.js',
+        'vue': 'Vue',
+        'react': 'React',
+        'angular': 'Angular',
+        'express': 'Express',
+        'nestjs': 'NestJS',
+        'postgresql': 'PostgreSQL',
+        'mongodb': 'MongoDB',
+        'mysql': 'MySQL',
+        'redis': 'Redis',
+        'sqlite': 'SQLite',
+        'docker': 'Docker',
+        'docker-compose': 'Docker Compose',
+        'webpack': 'Webpack',
+        'vite': 'Vite',
+        'jest': 'Jest',
+        'mocha': 'Mocha',
+        'eslint': 'ESLint',
+        'pytest': 'pytest',
+        'numpy': 'NumPy',
+        'pandas': 'pandas',
+        'tensorflow': 'TensorFlow',
+        'pytorch': 'PyTorch',
+        'django': 'Django',
+        'flask': 'Flask',
+        'fastapi': 'FastAPI',
+        'rails': 'Rails',
+        'sinatra': 'Sinatra',
+        'spring': 'Spring',
+        'laravel': 'Laravel',
+        'symfony': 'Symfony',
+        'go': 'Go',
+        'rust': 'Rust',
+        'java': 'Java',
+        'python': 'Python',
+        'ruby': 'Ruby',
+        'php': 'PHP',
+        'csharp': 'C#',
+        'c++': 'C++',
+        'swift': 'Swift',
+        'kotlin': 'Kotlin',
+        'actix': 'Actix',
+        'rocket': 'Rocket',
+        'gin': 'Gin',
+        'fiber': 'Fiber',
+        'echo': 'Echo',
+        'tokio': 'Tokio',
+        'junit': 'JUnit',
+        'rspec': 'RSpec',
+        'gatsby': 'Gatsby',
+        'svelte': 'Svelte',
+        'nuxt': 'Nuxt'
+      };
+      
+      // Check if we have a special case
+      if (specialCases[item.toLowerCase()]) {
+        return specialCases[item.toLowerCase()];
+      }
+      
+      // Otherwise, capitalize first letter
+      return item.charAt(0).toUpperCase() + item.slice(1);
+    });
+  };
+
+  // Remove duplicates and capitalize before returning
   return {
-    languages: [...new Set(techStack.languages)],
-    frameworks: [...new Set(techStack.frameworks)],
-    tools: [...new Set(techStack.tools)],
-    databases: [...new Set(techStack.databases)],
+    languages: capitalizeItems([...new Set(techStack.languages)]),
+    frameworks: capitalizeItems([...new Set(techStack.frameworks)]),
+    tools: capitalizeItems([...new Set(techStack.tools)]),
+    databases: capitalizeItems([...new Set(techStack.databases)]),
     versions: techStack.versions,
     dependencies: techStack.dependencies
   };
