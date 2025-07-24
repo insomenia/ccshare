@@ -75,11 +75,20 @@ program
       } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {
         // Reverse the prompts to show most recent first
         const reversedPrompts = [...rawData.prompts].reverse();
-        const choices = reversedPrompts.map((p, index) => ({
-          name: `${reversedPrompts.length - index}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,
-          value: rawData.prompts.length - 1 - index, // Map back to original index
-          checked: true
-        }));
+        const choices = reversedPrompts.map((p, index) => {
+          // Replace newlines and multiple spaces with single space
+          const cleanContent = p.userPrompt.message?.content
+            ?.replace(/\n+/g, ' ')
+            ?.replace(/\s+/g, ' ')
+            ?.trim() || '';
+          const preview = cleanContent.substring(0, 100);
+          
+          return {
+            name: `${reversedPrompts.length - index}. ${preview}${cleanContent.length > 100 ? '...' : ''}`,
+            value: rawData.prompts.length - 1 - index, // Map back to original index
+            checked: true
+          };
+        });
         
         const { selected } = await inquirer.prompt([{
           type: 'checkbox',
