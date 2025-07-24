@@ -315,6 +315,22 @@ export function transformToShareData(htmlData: HtmlData, sessionData: SessionDat
   return shareData;
 }
 
+export async function shareToAPIRaw(data: any, apiUrl: string): Promise<{ url?: string; error?: string }> {
+  try {
+    const response = await axios.post(apiUrl, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      maxBodyLength: Infinity
+    });
+    
+    return { url: response.data.url || response.data.share_url };
+  } catch (error: any) {
+    console.error('Share API error:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
 export async function shareToAPI(shareData: ShareData, apiUrl: string = 'https://ccshare.cc/shares'): Promise<ShareResponse> {
   try {
     const response = await axios.post<ShareResponse>(apiUrl, shareData, {

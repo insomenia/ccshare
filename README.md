@@ -1,12 +1,12 @@
 # ccshare
 
-Share your Claude Code sessions instantly on ccshare.cc with beautiful syntax-highlighted code diffs and automatic tech stack detection.
+Instantly share your Claude Code sessions on ccshare.cc - featuring beautiful syntax highlighting, code diffs, and automatic tech stack detection.
 
 ## Features
 
 - 🚀 Instant sharing to ccshare.cc with one command
-- 📝 Export Claude Code conversations (online or as HTML)
-- 🎨 Beautiful, responsive reports with syntax highlighting
+- 📝 Export Claude Code conversations online or save as HTML
+- 🎨 Generate beautiful, responsive reports with syntax highlighting
 - 📊 Automatic tech stack detection (languages, frameworks, tools, databases)
 - 🔍 Interactive prompt selection (choose which prompts to include)
 - 📁 Reads Claude's project-specific history files automatically
@@ -22,8 +22,8 @@ Share your Claude Code sessions instantly on ccshare.cc with beautiful syntax-hi
 npm install -g ccshare
 ```
 
-### Direct Execution (without installation)
-You can also run ccshare directly using npx or bunx:
+### Run Without Installation
+You can run ccshare directly using npx or bunx - no installation needed:
 
 ```bash
 # Using npx

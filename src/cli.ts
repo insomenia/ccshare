@@ -3,12 +3,12 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import ora from 'ora';
-import { captureSession } from './capture.js';
+import { captureSession, captureRawSession } from './capture.js';
 import { uploadSession } from './upload.js';
-import { SessionData } from './types.js';
+import { SessionData, RawSessionData } from './types.js';
 import { generateHtml, HtmlData } from './html-generator.js';
 import { detectTechStack } from './tech-detector.js';
-import { transformToShareData, shareToAPI, fetchFromSlug } from './share-service.js';
+import { transformToShareData, shareToAPI, shareToAPIRaw, fetchFromSlug } from './share-service.js';
 import { createAutoPostForm } from './browser-post.js';
 import { SessionWatcher } from './watch.js';
 import fs from 'fs/promises';
@@ -17,6 +17,25 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
+
+async function openUrl(url: string) {
+  const platform = process.platform;
+  let command;
+  
+  if (platform === 'darwin') {
+    command = `open "${url}"`;
+  } else if (platform === 'win32') {
+    command = `start "${url}"`;
+  } else {
+    command = `xdg-open "${url}"`;
+  }
+  
+  try {
+    await execAsync(command);
+  } catch (error) {
+    console.error('Failed to open URL:', error);
+  }
+}
 
 const program = new Command();
 
@@ -34,9 +53,68 @@ program
   .option('--include-claude-md', 'Include CLAUDE.md file without asking')
   .option('--exclude-auto', 'Exclude auto-generated prompts')
   .option('--file-window <minutes>', 'Time window in minutes after prompts to include file changes (default: 5)', parseInt)
+  .option('-l, --limit <number>', 'Maximum number of prompts to fetch from session files', parseInt)
+  .option('--raw', 'Send raw session data instead of processed format')
   .action(async (options) => {
     // Default action - share to API, or generate HTML if --html flag is used
     try {
+      // Handle raw session data
+      if (options.raw) {
+        const limit = options.limit || 20;
+        const spinner = options.json ? null : ora('Fetching raw session data...').start();
+        
+        const rawData = await captureRawSession(options.session, limit);
+        
+        if (spinner) spinner.succeed('Session data fetched');
+        
+        // Allow user to select prompts
+        let selectedPrompts = rawData.prompts;
+        
+        if (options.select && !options.json && rawData.prompts.length > 0) {
+          const choices = rawData.prompts.map((p, index) => ({
+            name: `${index + 1}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,
+            value: index,
+            checked: true
+          }));
+          
+          const { selected } = await inquirer.prompt([{
+            type: 'checkbox',
+            name: 'selected',
+            message: 'Select prompts to share:',
+            choices,
+            pageSize: 15
+          }]);
+          
+          selectedPrompts = selected.map((idx: number) => rawData.prompts[idx]);
+        }
+        
+        if (options.json) {
+          console.log(JSON.stringify({ prompts: selectedPrompts, metadata: rawData.metadata }, null, 2));
+          process.exit(0);
+        }
+        
+        // Send to API
+        const apiUrl = options.apiUrl;
+        const payload = { prompts: selectedPrompts, metadata: rawData.metadata };
+        
+        try {
+          const result = await shareToAPIRaw(payload, apiUrl);
+          if (result.url) {
+            console.log(chalk.green(`\n✅ Shared successfully: ${result.url}`));
+            await openUrl(result.url);
+          }
+        } catch (error) {
+          console.error(chalk.red('\n❌ Error sharing session:'), error);
+          
+          // Fallback to form submission
+          const tempFilePath = await createAutoPostForm(payload, apiUrl);
+          console.log(chalk.yellow('📤 Opening browser to submit data...'));
+          await openUrl(`file://${tempFilePath}`);
+        }
+        
+        process.exit(0);
+      }
+      
       const spinner = options.json ? null : ora('Analyzing Claude Code session...').start();
       
       // Find and capture session

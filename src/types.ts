@@ -126,6 +126,24 @@ export interface ToolExecution {
   };
 }
 
+export interface RawSessionEntry {
+  parentUuid: string;
+  uuid: string;
+  type: string;
+  timestamp: string;
+  message?: any;
+  toolUseResult?: any;
+  [key: string]: any;  // Allow any other fields
+}
+
+export interface RawSessionData {
+  prompts: Array<{
+    userPrompt: RawSessionEntry;
+    sessionEntries: RawSessionEntry[];  // All entries until next user prompt
+  }>;
+  metadata?: any;
+}
+
 export interface WorkflowItem {
   type: 'tool_execution' | 'tool_result' | 'assistant_action';
   timestamp: string;
