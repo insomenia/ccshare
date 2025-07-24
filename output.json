@@ -1,841 +1,1122 @@
 {
-  "title": "Claude Code Prompts",
-  "createdAt": "2025-07-23T07:23:35.181Z",
-  "sessionInfo": {
-    "totalPrompts": 1,
-    "projectPath": "/Users/james/Development/scripts/ccshare",
-    "claudeProjectPath": "/Users/james/.claude/projects/-Users-james-Development-scripts-ccshare"
-  },
-  "techStack": {
-    "languages": [
-      "javascript",
-      "node",
-      "typescript"
-    ],
-    "frameworks": [],
-    "tools": [],
-    "databases": []
-  },
-  "prompts": [
+  "sessionEntries": [
     {
-      "id": 1,
-      "content": "This session is being continued from a previous conversation that ran out of context. The conversation is summarized below:\nAnalysis:\nLooking through the conversation chronologically:\n\n1. Initial Korean request about dark mode and API URL change\n2. User asked about build behavior and npm link\n3. User pointed out file diffs being attached to wrong prompts - major investigation\n4. Extensive analysis of Claude Code's JSONL structure and parent-child relationships\n5. User requested default behavior change from HTML to sharing\n6. User asked for README update in Korean\n7. User requested file change filtering based on timestamps\n8. User asked about real-time file tracking in watch mode\n9. User confirmed watch mode file tracking works across terminals\n10. User requested npm publish (version 0.3.0)\n11. User asked about tracking assistant explanations/actions\n12. User confirmed tracking works in both modes\n13. User showed example of desired tracking format with ⏺ symbols\n14. User requested separation of tool executions from file diffs\n15. User reported toolExecutions and assistantActions are empty - current debugging\n\nThe main technical work involved:\n- Understanding JSONL parsing and parent-child UUID relationships\n- Modifying capture.ts to properly traverse parent chains\n- Adding timestamp-based file filtering\n- Implementing assistant action tracking\n- Separating tool executions from file diffs\n- Debugging why the new fields are empty\n\nSummary:\n1. Primary Request and Intent:\n   - Initially: Change temporary page style to dark mode for --share option and update default API URL from http://localhost:3000/shares to https://ccshare.cc/shares\n   - Fix file diffs being continuously attached only to the last prompt even when unrelated\n   - Analyze how Claude Code connects prompts with file changes by examining the claude-code folder implementation\n   - Change default ccshare behavior to share instead of HTML generation, with HTML requiring --html flag\n   - Add timestamp-based filtering for file changes\n   - Add real-time file change tracking to watch mode\n   - Track assistant explanations and processing descriptions along with code changes\n   - Include tool execution results (⏺ Bash, ⏺ Update, etc.) in tracking\n   - Separate tool executions from file diffs into different attributes\n   - Debug why toolExecutions and assistantActions are empty in the output\n\n2. Key Technical Concepts:\n   - Claude Code JSONL format with UUID-based parent-child relationships\n   - toolUseResult structure (both old format with oldString/newString and new format with edits array)\n   - Parent chain traversal to find original user prompts\n   - Distinguishing between real user prompts and tool_result messages\n   - File change association with prompts through fileChangesByPrompt Map\n   - ES modules configuration requiring .js extensions\n   - npm link for global package updates\n   - Browser-based form submission for large payloads\n   - Timestamp-based matching for file changes\n   - Assistant action extraction from response content\n   - Tool execution tracking separate from file diffs\n\n3. Files and Code Sections:\n   - src/share-service.ts\n      - Updated default API URLs from 'http://localhost:3000/shares' to 'https://ccshare.cc/shares'\n      - Added ShareAssistantAction and ShareToolExecution interfaces\n      - Modified transformToShareData to handle new data structures\n      ```typescript\n      export interface ShareData {\n        // ... existing fields ...\n        fileDiffs: ShareFileDiff[];  // File diffs at share level\n        assistantActions?: ShareAssistantAction[];  // Assistant actions\n        toolExecutions?: ShareToolExecution[];  // Tool executions\n        // ... rest of fields ...\n      }\n      ```\n\n   - src/capture.ts\n      - Core file for parsing JSONL and associating file changes with prompts\n      - Added extractAssistantActions function to parse assistant responses\n      - Modified to track tool executions separately\n      - Added debug logging for troubleshooting\n      ```typescript\n      function extractAssistantActions(content: string, timestamp: string): AssistantAction[] {\n        const actions: AssistantAction[] = [];\n        const lines = content.split('\\n');\n        \n        // Patterns to detect different types of actions\n        const patterns = {\n          explanation: [\n            /^(I'll|I will|Let me|Let's|Now I'll|Now let me|I'm going to)/i,\n            // ... more patterns\n          ],\n          // ... other pattern types\n        };\n        // ... implementation\n      }\n      ```\n\n   - src/types.ts\n      - Added new interfaces for tracking assistant actions and tool executions\n      ```typescript\n      export interface AssistantAction {\n        type: 'explanation' | 'code_change' | 'file_read' | 'command_execution' | 'analysis';\n        description: string;\n        timestamp: string;\n        promptId?: string;\n        details?: any;\n      }\n      \n      export interface ToolExecution {\n        tool: string;\n        timestamp: string;\n        parameters?: any;\n        result?: string;\n        status?: 'success' | 'error';\n        promptId?: string;\n      }\n      ```\n\n   - src/html-generator.ts\n      - Modified to display prompts and file diffs separately\n      - Added sections for assistant actions and tool executions\n      - Changed from promptsWithChanges to separate prompts and fileDiffs arrays\n\n   - src/cli.ts\n      - Changed default behavior from HTML generation to sharing\n      - Added --file-window option for time-based filtering\n      - Modified to extract assistantActions and toolExecutions\n\n   - src/watch.ts\n      - Added real-time file change tracking\n      - Modified to use same data structures as main command\n      - Added recentFileChanges tracking\n\n4. Errors and fixes:\n   - ES module errors with .js files:\n     - Fixed by renaming analysis scripts to .cjs extension for CommonJS\n   - JSON parsing error \"Unterminated string in JSON at position 56928\":\n     - Fixed by removing progress messages (ora spinner) when --json flag is used\n   - Parent chain infinite loop:\n     - Fixed by adding depth limit of 20 levels and visited set\n   - File changes incorrectly associated with system messages:\n     - Attempted fix by improving parent chain traversal\n     - Issue persists when parent chain exceeds 20 levels\n   - Syntax errors in watch.ts processFile function:\n     - Fixed missing closing braces and if statement structure\n   - TypeScript compilation errors:\n     - Fixed promptId type issues with type assertions\n   - Current issue: toolExecutions and assistantActions are empty:\n     - Added debug logging to track the issue\n     - Found that JSONL structure has tool_use in assistant messages followed by tool_result in user messages\n     - Need to properly parse this structure\n\n5. Problem Solving:\n   - Analyzed JSONL structure and discovered file changes were being associated with output messages instead of user prompts\n   - Created multiple analysis scripts to understand parent-child UUID relationships\n   - Implemented improved parent chain traversal that excludes non-user messages\n   - Added timestamp-based filtering to include only relevant file changes\n   - Separated tool executions from file diffs for cleaner data structure\n   - Currently debugging why assistant actions and tool executions aren't being captured\n\n6. All user messages:\n   - \"ccshare --share을 했을 때 임시로 나오는 페이지의 스타일을 다크모드로 바꿔줘\"\n   - \"--api-url을 넣지 않으면 https://ccshare.cc/shares 로 하게 해줘 현재는 http://localhost:3000/shares 일거야\"\n   - \"빌드\"\n   - \"왜 ccshare을 하면 여전히 localhost:3000으로 하지? 빌드를 하면 다른 터미널 탭에서 바로 적용되는게 아닌가?\"\n   - \"한글로 답해줘\"\n   - \"안녕\"\n   - \"file diffs 가 계속 마지막 프롬프트에만 붙어 있고 해당 프롬프트는 해당 file diffs와 관계 없는데, 프롬프트와 해당 프롬프트로 인한 파일 수정내역을 연결하는 게 가능한가? ../claude-code 폴더에서 실제 claude code의 구현내역을 볼 수 있으니 프롬프트 별 파일 수정내역을 가져오려면 어떻게 해야 하는지 꼼꼼하게 검토해봐\"\n   - \"ccshare 를 하면 디폴트로 html을 만드는데 디폴트가 ccshare.cc로 공유하는 거고 html은 --html 을 해야 만들어지도록 그리고 타임스탬프 기반 매칭이 가능한지 파악해봐\"\n   - \"readme update\"\n   - \"코드 변경 내역 뿐만 아니라 어떤 처리를 했다는 설명 부분도 트래킹할 수 있나?\"\n   - \"ccshare watch 에서 파일 변경내역도 실시간 트래킹 할 수 있나?\"\n   - \"file change detected를 했는데 ccshare을 해보면 파일 변경 내역이 포함이 안 되어 있어. watch에서 파일 변경 내역을 기록한 다음에 ccshare을 할 때 같이 넘길 수 있나?\"\n   - \"한글로 마지막 결과부분 표시해줘\"\n   - \"ccshare watch 를 한 상태로 다른 터미널에서 ccshare을 해도 최근 파일 변경 내역이 잘 첨부가 되나?\"\n   - \"퍼블리시 해줘\"\n   - \"watch를 해야만 해당 내용을 알 수 있나?\"\n   - \"가령 내가 원하는 건 아래처럼 클로드코드가 실행하고 사용자에게 설명한 내용들을 모두 json과 html에 포함시키는 거야\" (with example showing ⏺ format)\n   - \"지금은 fileDiffs에 Update가 포함되어서 나오고 있는데 fileDiff에는 기존처럼 순수한 diff 내용만 포함시키고 Read, Update, Bash 등의 처리 내역은 별도의 attributes로 정리해줘\"\n   - \"toolExecutions와 assistantActions가 비어있어\"\n\n7. Pending Tasks:\n   - Debug why toolExecutions and assistantActions are empty in the output\n\n8. Current Work:\n   Debugging why toolExecutions and assistantActions arrays are empty when running ccshare. Found that:\n   - The JSONL structure has assistant messages with tool_use content\n   - Tool results come as separate user messages with tool_result content\n   - Current parsing logic may not be correctly handling this structure\n   - Added debug logging to track when actions and executions are added\n   - Need to verify the parsing logic matches the actual JSONL format\n\n9. Optional Next Step:\n   Continue debugging by examining how the JSONL entries are being processed. The most recent work showed that the JSONL has a specific structure where:\n   - Assistant messages contain `tool_use` in their content array\n   - User messages follow with `tool_result` content\n   - Need to ensure both parseJSONLSessionData and the assistant message handling correctly process these entries to populate toolExecutions and assistantActions arrays.\nPlease continue the conversation from where we left it off without asking the user any further questions. Continue with the last task that you were asked to work on.",
-      "timestamp": "2025-07-23T07:15:33.159Z",
-      "sourceFile": "533222c8-5a3e-4a67-80fe-472f6843753a.jsonl",
-      "usage": {
-        "input_tokens": 4,
-        "output_tokens": 1,
-        "cache_creation_input_tokens": 28485,
-        "cache_read_input_tokens": 19666,
-        "total_tokens": 48156
+      "parentUuid": "03d8adfc-0f52-4301-b980-e01af85f7e8a",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": "ccshare 어떤 플래그 뒤에 slug(예: AdsrMP) 를 입력하면 해당 프롬프트 리스트를 claude -p 로 입력해주는 처리를 해줘"
       },
-      "responseTimeMs": 8692,
-      "isAutoGenerated": false,
-      "model": "claude-opus-4-20250514"
-    }
-  ],
-  "fileDiffs": [
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 1 addition\n         1   debugLog(`[DEBUG] Total assistant actions: ${sessionData.assistantActions.length}`);\n         2 +   console.error(`[CAPTURE DEBUG] Assistant actions: ${sessionData.assistantActions.length}`);\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 1 addition\n         1                 sessionData.toolExecutions.push(toolExecution);\n         2                 debugLog(`[DEBUG] Added tool execution: ${item.name}`);\n         3 +                 console.error(`[CAPTURE DEBUG] Tool executions: ${sessionData.toolExecutions.length}`);\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 2 additions\n        13       mcpServers: []\n        14     }\n        15   };\n        16 +   \n        17 +   console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions.length}, toolExecutions: ${sessionData.toolExecutions.length}`);\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 4 additions and 2 removals\n         3     }\n         4   }\n         5   \n         6 -   return sessionData;\n         7 - }\n         6 +   console.error(`[CAPTURE DEBUG] Final counts - prompts: ${sessionData.prompts.length}, assistantActions: ${sessionData.assistantActions?.length || 0}, toolExecutions: ${sessionData.toolExecutions?.length || 0}`);\n         7 +   \n         8 +   return sessionData;\n         9 + }\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 1 addition and 1 removal\n         1 -   console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions.length}, toolExecutions: ${sessionData.toolExecutions.length}`);\n         1 +   console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions?.length || 0}, toolExecutions: ${sessionData.toolExecutions?.length || 0}`);\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 2 additions and 2 removals\n         1 -       assistantActions: [],\n         2 -       toolExecutions: [],\n         1 +       assistantActions: [], // Initialize assistant actions array\n         2 +       toolExecutions: [], // Initialize tool executions array\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/cli.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/cli.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/cli.ts with 17 additions and 2 removals\n         1       // Extract assistant actions and tool executions if available\n         2 -       const assistantActions = sessionData.assistantActions || [];\n         3 -       const toolExecutions = sessionData.toolExecutions || [];\n         2 +       // Filter by timestamp to match selected prompts\n         3 +       const assistantActions = (sessionData.assistantActions || []).filter(action => {\n         4 +         if (!action.timestamp) return false;\n         5 +         const actionTime = new Date(action.timestamp).getTime();\n         6 +         return actionTime >= earliestPromptTime && \n         7 +                actionTime <= (latestPromptTime + timeWindowMs);\n         8 +       });\n         9 +       \n        10 +       const toolExecutions = (sessionData.toolExecutions || []).filter(exec => {\n        11 +         if (!exec.timestamp) return false;\n        12 +         const execTime = new Date(exec.timestamp).getTime();\n        13 +         return execTime >= earliestPromptTime && \n        14 +                execTime <= (latestPromptTime + timeWindowMs);\n        15 +       });\n        16 +       \n        17 +       console.error(`[CLI DEBUG] Filtered actions: ${assistantActions.length} (from ${sessionData.assistantActions?.length || 0})`);\n        18 +       console.error(`[CLI DEBUG] Filtered executions: ${toolExecutions.length} (from ${sessionData.toolExecutions?.length || 0})`);\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 11 additions and 5 removals\n         1 async function captureAllSessions(): Promise<SessionData> {\n         2   const allPrompts: Prompt[] = [];\n         3   const allChanges: FileChange[] = [];\n         4 -   \n         5 -   // First, add current session\n         6 -   const currentSession = await getCurrentSessionData();\n         7 -   allPrompts.push(...currentSession.prompts);\n         8 -   allChanges.push(...currentSession.changes);\n         4 +   const allAssistantActions: AssistantAction[] = [];\n         5 +   const allToolExecutions: ToolExecution[] = [];\n         6 +   const allToolCalls: ToolCall[] = [];\n         7 +   \n         8 +   // First, add current session\n         9 +   const currentSession = await getCurrentSessionData();\n        10 +   allPrompts.push(...currentSession.prompts);\n        11 +   allChanges.push(...currentSession.changes);\n        12 +   if (currentSession.assistantActions) allAssistantActions.push(...currentSession.assistantActions);\n        13 +   if (currentSession.toolExecutions) allToolExecutions.push(...currentSession.toolExecutions);\n        14 +   if (currentSession.toolCalls) allToolCalls.push(...currentSession.toolCalls);\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 6 additions and 3 removals\n         2     const sessionData = await captureSessionsFromDirectory(claudeProjectPath);\n         3     allPrompts.push(...sessionData.prompts);\n         4     allChanges.push(...sessionData.changes);\n         5 -   } catch (err) {\n         6 -     // Project directory doesn't exist\n         7 -   }\n         5 +     if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n         6 +     if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n         7 +     if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n         8 +   } catch (err) {\n         9 +     // Project directory doesn't exist\n        10 +   }\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 7 additions and 4 removals\n         3       const sessionData = await captureSessionsFromDirectory(dir);\n         4       allPrompts.push(...sessionData.prompts);\n         5       allChanges.push(...sessionData.changes);\n         6 -     } catch {\n         7 -       // Directory doesn't exist or can't be read\n         8 -     }\n         9 -   }\n         6 +       if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n         7 +       if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n         8 +       if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n         9 +     } catch {\n        10 +       // Directory doesn't exist or can't be read\n        11 +     }\n        12 +   }\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 9 additions and 6 removals\n         5     timestamp: new Date().toISOString(),\n         6     prompts: allPrompts,\n         7     changes: allChanges,\n         8 -     metadata: {\n         9 -       platform: process.platform,\n        10 -       workingDirectory: process.cwd(),\n        11 -       claudeProjectPath: claudeProjectPath\n        12 -     }\n        13 -   };\n         8 +     assistantActions: allAssistantActions,\n         9 +     toolExecutions: allToolExecutions,\n        10 +     toolCalls: allToolCalls,\n        11 +     metadata: {\n        12 +       platform: process.platform,\n        13 +       workingDirectory: process.cwd(),\n        14 +       claudeProjectPath: claudeProjectPath\n        15 +     }\n        16 +   };\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 30 additions and 24 removals\n         1   const allPrompts: Prompt[] = [];\n         2   const allChanges: FileChange[] = [];\n         3 -   \n         4 -   for (const file of sessionFiles) {\n         5 -     try {\n         6 -       const filePath = path.join(dirPath, file);\n         7 -       const rawData = await fs.readFile(filePath, 'utf-8');\n         8 -       \n         9 -       let sessionData: SessionData;\n        10 -       if (file.endsWith('.jsonl')) {\n        11 -         sessionData = parseJSONLSessionData(rawData);\n        12 -       } else {\n        13 -         sessionData = parseSessionData(rawData);\n        14 -       }\n        15 -       \n        16 -       // Add file source info to prompts\n        17 -       sessionData.prompts.forEach(prompt => {\n        18 -         (prompt as any).sourceFile = file;\n        19 -       });\n        20 -       \n        21 -       allPrompts.push(...sessionData.prompts);\n        22 -       allChanges.push(...sessionData.changes);\n        23 -     } catch {\n        24 -       // Skip files that can't be parsed\n        25 -     }\n        26 -   }\n         3 +   const allAssistantActions: AssistantAction[] = [];\n         4 +   const allToolExecutions: ToolExecution[] = [];\n         5 +   const allToolCalls: ToolCall[] = [];\n         6 +   \n         7 +   for (const file of sessionFiles) {\n         8 +     try {\n         9 +       const filePath = path.join(dirPath, file);\n        10 +       const rawData = await fs.readFile(filePath, 'utf-8');\n        11 +       \n        12 +       let sessionData: SessionData;\n        13 +       if (file.endsWith('.jsonl')) {\n        14 +         sessionData = parseJSONLSessionData(rawData);\n        15 +       } else {\n        16 +         sessionData = parseSessionData(rawData);\n        17 +       }\n        18 +       \n        19 +       // Add file source info to prompts\n        20 +       sessionData.prompts.forEach(prompt => {\n        21 +         (prompt as any).sourceFile = file;\n        22 +       });\n        23 +       \n        24 +       allPrompts.push(...sessionData.prompts);\n        25 +       allChanges.push(...sessionData.changes);\n        26 +       if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n        27 +       if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n        28 +       if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n        29 +     } catch {\n        30 +       // Skip files that can't be parsed\n        31 +     }\n        32 +   }\n",
-      "additions": 0,
-      "deletions": 0
-    },
-    {
-      "path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-      "diff": "⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\n  ⎿  Updated /Users/james/Development/scripts/ccshare/src/capture.ts with 8 additions and 5 removals\n         5     timestamp: new Date().toISOString(),\n         6     prompts: allPrompts,\n         7     changes: allChanges,\n         8 -     metadata: {\n         9 -       platform: process.platform,\n        10 -       workingDirectory: process.cwd()\n        11 -     }\n        12 -   };\n         8 +     assistantActions: allAssistantActions,\n         9 +     toolExecutions: allToolExecutions,\n        10 +     toolCalls: allToolCalls,\n        11 +     metadata: {\n        12 +       platform: process.platform,\n        13 +       workingDirectory: process.cwd()\n        14 +     }\n        15 +   };\n",
-      "additions": 0,
-      "deletions": 0
-    }
-  ],
-  "assistantActions": [
-    {
-      "type": "analysis",
-      "description": "Looking at the code, I can see that the `assistantActions` and `toolExecutions` are being passed through from `sessionData` to `htmlData` in `cli.ts` (lines 163-164), and then transformed in `share-service.ts`. The issue is likely in how these are being populated in the `captureSession` function.",
-      "timestamp": "2025-07-23T07:15:41.851Z",
-      "promptId": "1b346f16-9da8-4bb5-9f41-eec20ac48d27"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me check the capture.ts file to see how these arrays are being populated:",
-      "timestamp": "2025-07-23T07:15:41.851Z",
-      "promptId": "1b346f16-9da8-4bb5-9f41-eec20ac48d27"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result:      1→import fs from 'fs/promises';\n     2→import path from 'path';\n     3→import { SessionData, Prompt, FileChange, ThoughtBlock, ToolCall, MCPServer, AssistantAction, ToolExecution } from './types....",
-      "timestamp": "2025-07-23T07:15:42.807Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: jq: parse error: Invalid numeric literal at line 2, column 2",
-      "timestamp": "2025-07-23T07:15:52.735Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me run this differently:",
-      "timestamp": "2025-07-23T07:15:55.633Z",
-      "promptId": "43b329c9-a455-44c7-97c5-ca6efe486532"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me add some debug logging to understand better:",
-      "timestamp": "2025-07-23T07:16:03.505Z",
-      "promptId": "83155aa4-7fc7-4449-99e1-c088e788ae5e"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   957→                action.promptId = entry...",
-      "timestamp": "2025-07-23T07:16:06.137Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   916→                  timestamp: entry.time...",
-      "timestamp": "2025-07-23T07:16:10.944Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   611→    }\n   612→  };\n   613→}\n   614→\n   6...",
-      "timestamp": "2025-07-23T07:16:20.837Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let's also add debug at the end of the function to see final counts:",
-      "timestamp": "2025-07-23T07:16:24.775Z",
-      "promptId": "925b850f-a8e3-4edc-be17-6df00a2f098a"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: Found 2 matches of the string to replace, but replace_all is false. To replace all occurrences, set replace_all to true. To replace only one occurrence, please provide more context to uniquely identif...",
-      "timestamp": "2025-07-23T07:16:26.325Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n  1064→            }\n  1065→          }\n  1066...",
-      "timestamp": "2025-07-23T07:16:32.771Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: > ccshare@0.3.0 build\n> tsc\n\nsrc/capture.ts(631,83): error TS18048: 'sessionData.assistantActions' is possibly 'undefined'.\nsrc/capture.ts(631,139): error TS18048: 'sessionData.toolExecutions' is poss...",
-      "timestamp": "2025-07-23T07:16:37.394Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me fix the TypeScript errors:",
-      "timestamp": "2025-07-23T07:16:40.909Z",
-      "promptId": "0af16958-6817-4b9d-ac16-e880e1d0822b"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   627→      mcpServers: []\n   628→    }\n   62...",
-      "timestamp": "2025-07-23T07:16:43.518Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. All occurrences of '      assistantActions: [],\n      toolExecutions: [],' were successfully replaced with '      ass...",
-      "timestamp": "2025-07-23T07:16:49.404Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: > ccshare@0.3.0 build\n> tsc",
-      "timestamp": "2025-07-23T07:16:54.456Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me check the Claude project path structure to understand where the sessions are:",
-      "timestamp": "2025-07-23T07:17:05.304Z",
-      "promptId": "9f6b8c5e-10c5-4db3-94e4-57181a8c60dc"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: /Users/james/.claude/projects/-Users-james-Development-ruby-ccshare:\ntotal 2488\ndrwxr-xr-x@  7 james  staff      224  7 22 11:57 .\ndrwxr-xr-x@ 41 james  staff     1312  7 23 15:57 ..\n-rw-r--r--@  1 ja...",
-      "timestamp": "2025-07-23T07:17:07.844Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: total 24728\ndrwxr-xr-x@  9 james  staff      288  7 23 09:37 .\ndrwxr-xr-x@ 41 james  staff     1312  7 23 15:57 ..\n-rw-r--r--@  1 james  staff  6498600  7 23 16:17 533222c8-5a3e-4a67-80fe-472f6843753a...",
-      "timestamp": "2025-07-23T07:17:14.597Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me check one of these JSONL files to understand the structure:",
-      "timestamp": "2025-07-23T07:17:18.458Z",
-      "promptId": "b58bbd8d-724d-4293-8536-651e4e73ee66"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: \"assistant\"\n\"assistant\"\n\"user\"\n\"assistant\"\n\"assistant\"",
-      "timestamp": "2025-07-23T07:17:20.189Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me run ccshare differently to see the output:",
-      "timestamp": "2025-07-23T07:17:30.503Z",
-      "promptId": "5bb716c6-1e68-4ade-80df-0ab29406d339"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: [CAPTURE DEBUG] Final counts - prompts: 354, assistantActions: 204, toolExecutions: 188\n      \"content\": \"This session is being continued from a previous conversation that ran out of context. The conv...",
-      "timestamp": "2025-07-23T07:17:33.296Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me look more carefully at the debug output:",
-      "timestamp": "2025-07-23T07:17:45.275Z",
-      "promptId": "3299da5a-383a-49f6-83cb-42474154370d"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result:       \"isAutoGenerated\": false,\n      \"model\": \"claude-opus-4-20250514\"\n    }\n  ],\n  \"fileDiffs\": [\n    {\n      \"path\": \"/Users/james/Development/scripts/ccshare/src/capture.ts\",\n      \"diff\": \"⏺ Upda...",
-      "timestamp": "2025-07-23T07:17:46.447Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: [CAPTURE DEBUG] Initialized sessionData with assistantActions: 0, toolExecutions: 0\n[CAPTURE DEBUG] Assistant actions: 1\n[CAPTURE DEBUG] Tool executions: 1\n[CAPTURE DEBUG] Tool executions: 2\n[CAPTURE ...",
-      "timestamp": "2025-07-23T07:17:53.249Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result:    155→            undefined,\n   156→          sources: sources.length > 0 ? sources : undefined,\n   157→          projectPath: sessionData.metadata?.workingDirectory,\n   158→          claudeProjectPa...",
-      "timestamp": "2025-07-23T07:18:01.725Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/cli.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   158→          claudeProjectPath: sessionData.me...",
-      "timestamp": "2025-07-23T07:18:13.952Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: > ccshare@0.3.0 build\n> tsc",
-      "timestamp": "2025-07-23T07:18:19.328Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: [CAPTURE DEBUG] Initialized sessionData with assistantActions: 0, toolExecutions: 0\n[CAPTURE DEBUG] Final counts - prompts: 952, assistantActions: 516, toolExecutions: 534\n[CAPTURE DEBUG] Initialized ...",
-      "timestamp": "2025-07-23T07:18:25.087Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me try a different approach - let's check the final output:",
-      "timestamp": "2025-07-23T07:18:28.944Z",
-      "promptId": "072749d5-63d9-4bff-a420-020abad67682"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result:       \"path\": \"/Users/james/Development/scripts/ccshare/src/capture.ts\",\n      \"diff\": \"⏺ Update(/Users/james/Development/scripts/ccshare/src/capture.ts)\\n  ⎿  Updated /Users/james/Development/scripts...",
-      "timestamp": "2025-07-23T07:18:31.666Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me check the error output to see the filtering debug:",
-      "timestamp": "2025-07-23T07:18:36.167Z",
-      "promptId": "26bc3685-d1c0-4ee6-b533-bba3f863472e"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: [CLI DEBUG] Filtered actions: 0 (from 0)\n[CLI DEBUG] Filtered executions: 0 (from 0)",
-      "timestamp": "2025-07-23T07:18:37.774Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result:    515→}\n   516→\n   517→async function captureAllSessions(): Promise<SessionData> {\n   518→  const allPrompts: Prompt[] = [];\n   519→  const allChanges: FileChange[] = [];\n   520→  \n   521→  // First,...",
-      "timestamp": "2025-07-23T07:18:44.287Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   513→  \n   514→  return sessionData;\n   515→...",
-      "timestamp": "2025-07-23T07:18:52.813Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   534→  // Replace all special characters (/,...",
-      "timestamp": "2025-07-23T07:19:00.287Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   550→  const possiblePaths = [\n   551→    pa...",
-      "timestamp": "2025-07-23T07:19:07.222Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   563→      // Directory doesn't exist or can...",
-      "timestamp": "2025-07-23T07:19:17.363Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Now let me fix the `captureSessionsFromDirectory` function as well:",
-      "timestamp": "2025-07-23T07:19:21.761Z",
-      "promptId": "accb7904-d0ea-4617-a8dc-e74cdbe65e09"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result:    585→async function captureSessionsFromDirectory(dirPath: string): Promise<SessionData> {\n   586→  const files = await fs.readdir(dirPath);\n   587→  const sessionFiles = files.filter(f => f.endsWith...",
-      "timestamp": "2025-07-23T07:19:23.404Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   585→async function captureSessionsFromDirec...",
-      "timestamp": "2025-07-23T07:19:35.181Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   618→      // Skip files that can't be parse...",
-      "timestamp": "2025-07-23T07:19:44.599Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: > ccshare@0.3.0 build\n> tsc",
-      "timestamp": "2025-07-23T07:19:49.455Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: 45",
-      "timestamp": "2025-07-23T07:19:54.799Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me check what went wrong:",
-      "timestamp": "2025-07-23T07:19:58.310Z",
-      "promptId": "725d0bba-dc9c-47cc-be69-5fcd3b9820c6"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: [CAPTURE DEBUG] Tool executions: 182\n[CAPTURE DEBUG] Tool executions: 183\n[CAPTURE DEBUG] Tool executions: 184\n[CAPTURE DEBUG] Tool executions: 185\n[CAPTURE DEBUG] Tool executions: 186\n[CAPTURE DEBUG]...",
-      "timestamp": "2025-07-23T07:19:59.187Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me check the actual JSON output:",
-      "timestamp": "2025-07-23T07:20:03.899Z",
-      "promptId": "7370e056-c993-47fb-b2fa-d04081856477"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: {\n  \"actionsCount\": 49,\n  \"executionsCount\": 39,\n  \"firstAction\": {\n    \"type\": \"analysis\",\n    \"description\": \"Looking at the code, I can see that the `assistantActions` and `toolExecutions` are bein...",
-      "timestamp": "2025-07-23T07:20:07.197Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable",
-      "timestamp": "2025-07-23T07:20:12.574Z"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: jq: parse error: Unfinished string at EOF at line 524, column 125",
-      "timestamp": "2025-07-23T07:20:18.962Z"
-    },
-    {
-      "type": "explanation",
-      "description": "Let me save the output to a file first:",
-      "timestamp": "2025-07-23T07:20:22.838Z",
-      "promptId": "8ebb793a-26b1-4e99-8b9d-b9768e0e9ce7"
-    },
-    {
-      "type": "command_execution",
-      "description": "Tool result: {\n  \"promptCount\": 3,\n  \"actionsCount\": 75,\n  \"executionsCount\": 64,\n  \"fileDiffsCount\": 30\n}",
-      "timestamp": "2025-07-23T07:20:30.102Z"
-    }
-  ],
-  "toolExecutions": [
-    {
-      "tool": "Read",
-      "timestamp": "2025-07-23T07:15:42.495Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts"
-      },
-      "promptId": "36fb3f94-959c-4475-bd4d-158582771e51"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:15:51.426Z",
-      "parameters": {
-        "command": "DEBUG_PARENT_CHAIN=1 npm run dev -- --json --recent 1 2>/dev/null | jq '{assistantActions: .assistantActions, toolExecutions: .toolExecutions}' | head -20",
-        "description": "Check if assistantActions and toolExecutions are empty in JSON output"
-      },
-      "promptId": "82a6f0ab-40fe-40ae-912f-05595d1f3229"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:15:57.618Z",
-      "parameters": {
-        "command": "npm run dev -- --json --recent 1 2>/dev/null | grep -E \"(assistantActions|toolExecutions)\" | head -10",
-        "description": "Check assistantActions and toolExecutions in output"
-      },
-      "promptId": "366326a0-6d3b-4609-8bf0-de4f279d85c6"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:16:06.081Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "  debugLog(`[DEBUG] Total assistant actions: ${sessionData.assistantActions.length}`);",
-        "new_string": "  debugLog(`[DEBUG] Total assistant actions: ${sessionData.assistantActions.length}`);\n  console.error(`[CAPTURE DEBUG] Assistant actions: ${sessionData.assistantActions.length}`);"
-      },
-      "promptId": "a98b14e6-424e-43d7-a662-8e08290667b5"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:16:10.893Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "                sessionData.toolExecutions.push(toolExecution);\n                debugLog(`[DEBUG] Added tool execution: ${item.name}`);",
-        "new_string": "                sessionData.toolExecutions.push(toolExecution);\n                debugLog(`[DEBUG] Added tool execution: ${item.name}`);\n                console.error(`[CAPTURE DEBUG] Tool executions: ${sessionData.toolExecutions.length}`);"
-      },
-      "promptId": "7ec0b4ca-203c-4e0f-9748-cffc1a2c7c3a"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:16:20.749Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "export function parseJSONLSessionData(rawData: string): SessionData {\n  const sessionData: SessionData = {\n    timestamp: new Date().toISOString(),\n    prompts: [],\n    changes: [],\n    toolCalls: [],\n    assistantActions: [],\n    toolExecutions: [],\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd(),\n      models: [],\n      mcpServers: []\n    }\n  };",
-        "new_string": "export function parseJSONLSessionData(rawData: string): SessionData {\n  const sessionData: SessionData = {\n    timestamp: new Date().toISOString(),\n    prompts: [],\n    changes: [],\n    toolCalls: [],\n    assistantActions: [],\n    toolExecutions: [],\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd(),\n      models: [],\n      mcpServers: []\n    }\n  };\n  \n  console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions.length}, toolExecutions: ${sessionData.toolExecutions.length}`);"
-      },
-      "promptId": "e2ba3a75-6dca-4ec3-b122-3fb4ea342788"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:16:26.266Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "  \n  return sessionData;\n}",
-        "new_string": "  \n  console.error(`[CAPTURE DEBUG] Final counts - prompts: ${sessionData.prompts.length}, assistantActions: ${sessionData.assistantActions?.length || 0}, toolExecutions: ${sessionData.toolExecutions?.length || 0}`);\n  \n  return sessionData;\n}"
-      },
-      "promptId": "c9dbedba-3653-44a2-8f69-8376fa81305e"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:16:32.702Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "    } catch {\n      // Skip malformed JSON lines\n    }\n  }\n  \n  return sessionData;\n}",
-        "new_string": "    } catch {\n      // Skip malformed JSON lines\n    }\n  }\n  \n  console.error(`[CAPTURE DEBUG] Final counts - prompts: ${sessionData.prompts.length}, assistantActions: ${sessionData.assistantActions?.length || 0}, toolExecutions: ${sessionData.toolExecutions?.length || 0}`);\n  \n  return sessionData;\n}"
-      },
-      "promptId": "eb6a4516-cf3f-4ae1-8b80-082ba3efa64d"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:16:36.600Z",
-      "parameters": {
-        "command": "npm run build",
-        "description": "Build the TypeScript project"
-      },
-      "promptId": "a06d9d81-0b8e-4151-b687-79abce624c80"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:16:43.450Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "  console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions.length}, toolExecutions: ${sessionData.toolExecutions.length}`);",
-        "new_string": "  console.error(`[CAPTURE DEBUG] Initialized sessionData with assistantActions: ${sessionData.assistantActions?.length || 0}, toolExecutions: ${sessionData.toolExecutions?.length || 0}`);"
-      },
-      "promptId": "ca2f8e39-c0ce-461b-8a8c-fa03591b3b23"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:16:49.340Z",
-      "parameters": {
-        "replace_all": true,
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "      assistantActions: [],\n      toolExecutions: [],",
-        "new_string": "      assistantActions: [], // Initialize assistant actions array\n      toolExecutions: [], // Initialize tool executions array"
-      },
-      "promptId": "ef070067-3551-457e-9376-29260d4345e6"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:16:53.702Z",
-      "parameters": {
-        "command": "npm run build",
-        "description": "Build the TypeScript project"
-      },
-      "promptId": "350f45d0-ebab-474e-808f-00537e0b215e"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:16:59.937Z",
-      "parameters": {
-        "command": "npm run dev -- --recent 1 2>&1 | grep \"CAPTURE DEBUG\"",
-        "description": "Run ccshare and check debug output"
-      },
-      "promptId": "0637b58c-fb6c-43c4-985b-9ad446f87ed8"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:17:06.604Z",
-      "parameters": {
-        "command": "ls -la ~/.claude/projects/*ccshare* 2>/dev/null | head -20",
-        "description": "Check Claude project directories"
-      },
-      "promptId": "ee1ab0ad-ff92-4ba6-a29f-3344774500da"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:17:13.471Z",
-      "parameters": {
-        "command": "ls -la ~/.claude/projects/*scripts-ccshare* 2>/dev/null | head -20",
-        "description": "Check for scripts/ccshare project directory"
-      },
-      "promptId": "e2939dca-d9ee-4706-8777-64095669d542"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:17:20.123Z",
-      "parameters": {
-        "command": "tail -5 ~/.claude/projects/-Users-james-Development-scripts-ccshare/533222c8-5a3e-4a67-80fe-472f6843753a.jsonl | jq '.type' 2>/dev/null || echo \"Not valid JSON\"",
-        "description": "Check the structure of JSONL entries"
-      },
-      "promptId": "1c428333-a6f9-4198-909e-615e19820bcf"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:17:26.083Z",
-      "parameters": {
-        "command": "npm run dev -- --recent 3 --json 2>&1 | grep -E \"(CAPTURE DEBUG|assistantActions|toolExecutions)\" | head -30",
-        "description": "Run ccshare with debug output"
-      },
-      "promptId": "6e514141-4cbe-42bf-8ab8-0e702fd74b9d"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:17:31.855Z",
-      "parameters": {
-        "command": "node dist/cli.js --recent 1 --json 2>&1 | tail -100 | grep -E \"(assistantActions|toolExecutions)\"",
-        "description": "Check JSON output for arrays"
-      },
-      "promptId": "7816adb3-e899-44a9-ba92-79c76a45ce30"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:17:40.937Z",
-      "parameters": {
-        "command": "node dist/cli.js --recent 1 --json 2>&1 | jq '.assistantActions, .toolExecutions' 2>/dev/null | head -20",
-        "description": "Check the arrays in JSON output"
-      },
-      "promptId": "0ca7e66c-d309-4d59-aee7-54ece6c13950"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:17:46.178Z",
-      "parameters": {
-        "command": "node dist/cli.js --recent 1 --json 2>debug.log | tail -50",
-        "description": "Check end of JSON output"
-      },
-      "promptId": "c8833563-ca62-4811-a177-56e650ae7bc9"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:17:52.319Z",
-      "parameters": {
-        "command": "cat debug.log | grep \"CAPTURE DEBUG\"",
-        "description": "Check debug log"
-      },
-      "promptId": "08fc297a-3625-469e-bccf-c77fa6170360"
-    },
-    {
-      "tool": "Read",
-      "timestamp": "2025-07-23T07:18:01.646Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/cli.ts",
-        "offset": 155,
-        "limit": 25
-      },
-      "promptId": "848db630-3175-4f6e-9ed7-db33d75de090"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:18:13.882Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/cli.ts",
-        "old_string": "      // Extract assistant actions and tool executions if available\n      const assistantActions = sessionData.assistantActions || [];\n      const toolExecutions = sessionData.toolExecutions || [];",
-        "new_string": "      // Extract assistant actions and tool executions if available\n      // Filter by timestamp to match selected prompts\n      const assistantActions = (sessionData.assistantActions || []).filter(action => {\n        if (!action.timestamp) return false;\n        const actionTime = new Date(action.timestamp).getTime();\n        return actionTime >= earliestPromptTime && \n               actionTime <= (latestPromptTime + timeWindowMs);\n      });\n      \n      const toolExecutions = (sessionData.toolExecutions || []).filter(exec => {\n        if (!exec.timestamp) return false;\n        const execTime = new Date(exec.timestamp).getTime();\n        return execTime >= earliestPromptTime && \n               execTime <= (latestPromptTime + timeWindowMs);\n      });\n      \n      console.error(`[CLI DEBUG] Filtered actions: ${assistantActions.length} (from ${sessionData.assistantActions?.length || 0})`);\n      console.error(`[CLI DEBUG] Filtered executions: ${toolExecutions.length} (from ${sessionData.toolExecutions?.length || 0})`);"
-      },
-      "promptId": "6da4a68b-101d-4e0f-9b2b-d9bb39059e52"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:18:18.600Z",
-      "parameters": {
-        "command": "npm run build",
-        "description": "Build the project"
-      },
-      "promptId": "c261fbc2-b2ee-462c-801b-ce5834f8f23d"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:18:24.788Z",
-      "parameters": {
-        "command": "node dist/cli.js --recent 1 --json 2>&1 | grep -E \"(CLI DEBUG|assistantActions|toolExecutions)\" | head -10",
-        "description": "Check filtered arrays"
-      },
-      "promptId": "c2eec768-e9a8-4435-9fec-84236c73537f"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:18:30.180Z",
-      "parameters": {
-        "command": "node dist/cli.js --recent 3 --json 2>&1 | tail -20 | grep -B5 -A5 \"assistantActions\"",
-        "description": "Check the end of JSON output for arrays"
-      },
-      "promptId": "677d0cb2-7004-4042-a322-7042e8f94085"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:18:37.401Z",
-      "parameters": {
-        "command": "node dist/cli.js --recent 3 --json 2>debug2.log >/dev/null && cat debug2.log | grep \"CLI DEBUG\"",
-        "description": "Check CLI debug output"
-      },
-      "promptId": "9e822f02-e1fa-44a0-a252-2e6437897dfb"
-    },
-    {
-      "tool": "Read",
-      "timestamp": "2025-07-23T07:18:44.229Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "offset": 515,
-        "limit": 60
-      },
-      "promptId": "308e3c60-30c2-49c6-bccb-af83c9746dbc"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:18:52.537Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "async function captureAllSessions(): Promise<SessionData> {\n  const allPrompts: Prompt[] = [];\n  const allChanges: FileChange[] = [];\n  \n  // First, add current session\n  const currentSession = await getCurrentSessionData();\n  allPrompts.push(...currentSession.prompts);\n  allChanges.push(...currentSession.changes);",
-        "new_string": "async function captureAllSessions(): Promise<SessionData> {\n  const allPrompts: Prompt[] = [];\n  const allChanges: FileChange[] = [];\n  const allAssistantActions: AssistantAction[] = [];\n  const allToolExecutions: ToolExecution[] = [];\n  const allToolCalls: ToolCall[] = [];\n  \n  // First, add current session\n  const currentSession = await getCurrentSessionData();\n  allPrompts.push(...currentSession.prompts);\n  allChanges.push(...currentSession.changes);\n  if (currentSession.assistantActions) allAssistantActions.push(...currentSession.assistantActions);\n  if (currentSession.toolExecutions) allToolExecutions.push(...currentSession.toolExecutions);\n  if (currentSession.toolCalls) allToolCalls.push(...currentSession.toolCalls);"
-      },
-      "promptId": "53baccd8-516c-4f92-b2c0-012c0a4c41dc"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:19:00.212Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "  try {\n    const sessionData = await captureSessionsFromDirectory(claudeProjectPath);\n    allPrompts.push(...sessionData.prompts);\n    allChanges.push(...sessionData.changes);\n  } catch (err) {\n    // Project directory doesn't exist\n  }",
-        "new_string": "  try {\n    const sessionData = await captureSessionsFromDirectory(claudeProjectPath);\n    allPrompts.push(...sessionData.prompts);\n    allChanges.push(...sessionData.changes);\n    if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n    if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n    if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n  } catch (err) {\n    // Project directory doesn't exist\n  }"
-      },
-      "promptId": "8b682782-5f31-4b3a-a8c7-de4558bbc0ee"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:19:07.153Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "  for (const dir of possiblePaths) {\n    try {\n      const sessionData = await captureSessionsFromDirectory(dir);\n      allPrompts.push(...sessionData.prompts);\n      allChanges.push(...sessionData.changes);\n    } catch {\n      // Directory doesn't exist or can't be read\n    }\n  }",
-        "new_string": "  for (const dir of possiblePaths) {\n    try {\n      const sessionData = await captureSessionsFromDirectory(dir);\n      allPrompts.push(...sessionData.prompts);\n      allChanges.push(...sessionData.changes);\n      if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n      if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n      if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n    } catch {\n      // Directory doesn't exist or can't be read\n    }\n  }"
-      },
-      "promptId": "365f7228-df56-4a5a-83f8-a308630ce3e8"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:19:17.295Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "  // Sort prompts by timestamp\n  allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());\n  \n  return {\n    timestamp: new Date().toISOString(),\n    prompts: allPrompts,\n    changes: allChanges,\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd(),\n      claudeProjectPath: claudeProjectPath\n    }\n  };",
-        "new_string": "  // Sort prompts by timestamp\n  allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());\n  \n  return {\n    timestamp: new Date().toISOString(),\n    prompts: allPrompts,\n    changes: allChanges,\n    assistantActions: allAssistantActions,\n    toolExecutions: allToolExecutions,\n    toolCalls: allToolCalls,\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd(),\n      claudeProjectPath: claudeProjectPath\n    }\n  };"
-      },
-      "promptId": "d6339dd3-e368-43ba-8882-4e22fcd5564f"
-    },
-    {
-      "tool": "Read",
-      "timestamp": "2025-07-23T07:19:23.334Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "offset": 585,
-        "limit": 40
-      },
-      "promptId": "9ae6d5f0-b4c1-4897-835c-e0699c0c9f7d"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:19:35.106Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "  const allPrompts: Prompt[] = [];\n  const allChanges: FileChange[] = [];\n  \n  for (const file of sessionFiles) {\n    try {\n      const filePath = path.join(dirPath, file);\n      const rawData = await fs.readFile(filePath, 'utf-8');\n      \n      let sessionData: SessionData;\n      if (file.endsWith('.jsonl')) {\n        sessionData = parseJSONLSessionData(rawData);\n      } else {\n        sessionData = parseSessionData(rawData);\n      }\n      \n      // Add file source info to prompts\n      sessionData.prompts.forEach(prompt => {\n        (prompt as any).sourceFile = file;\n      });\n      \n      allPrompts.push(...sessionData.prompts);\n      allChanges.push(...sessionData.changes);\n    } catch {\n      // Skip files that can't be parsed\n    }\n  }",
-        "new_string": "  const allPrompts: Prompt[] = [];\n  const allChanges: FileChange[] = [];\n  const allAssistantActions: AssistantAction[] = [];\n  const allToolExecutions: ToolExecution[] = [];\n  const allToolCalls: ToolCall[] = [];\n  \n  for (const file of sessionFiles) {\n    try {\n      const filePath = path.join(dirPath, file);\n      const rawData = await fs.readFile(filePath, 'utf-8');\n      \n      let sessionData: SessionData;\n      if (file.endsWith('.jsonl')) {\n        sessionData = parseJSONLSessionData(rawData);\n      } else {\n        sessionData = parseSessionData(rawData);\n      }\n      \n      // Add file source info to prompts\n      sessionData.prompts.forEach(prompt => {\n        (prompt as any).sourceFile = file;\n      });\n      \n      allPrompts.push(...sessionData.prompts);\n      allChanges.push(...sessionData.changes);\n      if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n      if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n      if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n    } catch {\n      // Skip files that can't be parsed\n    }\n  }"
-      },
-      "promptId": "d89ad50c-bed9-430d-9683-d5c4a03ab26f"
-    },
-    {
-      "tool": "Edit",
-      "timestamp": "2025-07-23T07:19:44.529Z",
-      "parameters": {
-        "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
-        "old_string": "  // Sort prompts by timestamp\n  allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());\n  \n  return {\n    timestamp: new Date().toISOString(),\n    prompts: allPrompts,\n    changes: allChanges,\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd()\n    }\n  };",
-        "new_string": "  // Sort prompts by timestamp\n  allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());\n  \n  return {\n    timestamp: new Date().toISOString(),\n    prompts: allPrompts,\n    changes: allChanges,\n    assistantActions: allAssistantActions,\n    toolExecutions: allToolExecutions,\n    toolCalls: allToolCalls,\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd()\n    }\n  };"
-      },
-      "promptId": "dc2f0df1-f6b6-4288-9cbd-57b6ca38fea8"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:19:48.722Z",
-      "parameters": {
-        "command": "npm run build",
-        "description": "Build the project"
-      },
-      "promptId": "cbc9f9d2-92be-4d72-8c45-74112c692ea0"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:19:54.470Z",
-      "parameters": {
-        "command": "node dist/cli.js --recent 1 --json 2>debug3.log | jq '.assistantActions | length, .toolExecutions | length' 2>/dev/null",
-        "description": "Check array lengths in JSON output"
-      },
-      "promptId": "a55990b9-06a1-48f1-9ff1-86c91b22115c"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:19:59.115Z",
-      "parameters": {
-        "command": "tail -10 debug3.log",
-        "description": "Check error log"
-      },
-      "promptId": "f82482ed-c1fc-46f3-81f8-f251d50252d8"
-    },
-    {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:20:05.627Z",
-      "parameters": {
-        "command": "node dist/cli.js --recent 1 --json 2>/dev/null | jq '{actionsCount: (.assistantActions | length), executionsCount: (.toolExecutions | length), firstAction: .assistantActions[0], firstExecution: .toolExecutions[0]}'",
-        "description": "Check the JSON output structure"
-      },
-      "promptId": "1cb06cee-b345-495a-9e9e-8e1bacfd6f16"
-    },
-    {
-      "tool": "TodoWrite",
-      "timestamp": "2025-07-23T07:20:12.047Z",
-      "parameters": {
-        "todos": [
+      "uuid": "c90aade3-01db-4efe-bde5-8f97b5968391",
+      "timestamp": "2025-07-22T15:26:47.548Z"
+    },
+    {
+      "parentUuid": "c90aade3-01db-4efe-bde5-8f97b5968391",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01BZvZCjtD3t1DubgDWPQwQ4",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
           {
-            "id": "15",
-            "content": "Debug why toolExecutions and assistantActions are empty",
-            "status": "completed",
-            "priority": "high"
+            "type": "text",
+            "text": "`ccshare` 명령에 slug를 받아서 해당 프롬프트들을 `claude -p` 명령으로 실행하는 기능을 추가하겠습니다."
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 127746,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHszSv1L6UCAsSdnwpp",
+      "type": "assistant",
+      "uuid": "2a080374-c0c8-42e4-a685-d60c49d2af50",
+      "timestamp": "2025-07-22T15:26:56.916Z"
+    },
+    {
+      "parentUuid": "2a080374-c0c8-42e4-a685-d60c49d2af50",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01BZvZCjtD3t1DubgDWPQwQ4",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01DUCcSnTZN1PkS7mAhKp5av",
+            "name": "TodoWrite",
+            "input": {
+              "todos": [
+                {
+                  "id": "1",
+                  "content": "Add load command to fetch prompts from slug",
+                  "status": "in_progress",
+                  "priority": "high"
+                },
+                {
+                  "id": "2",
+                  "content": "Execute claude -p with fetched prompts",
+                  "status": "pending",
+                  "priority": "high"
+                },
+                {
+                  "id": "3",
+                  "content": "Handle API response and error cases",
+                  "status": "pending",
+                  "priority": "medium"
+                }
+              ]
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 127746,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 208,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHszSv1L6UCAsSdnwpp",
+      "type": "assistant",
+      "uuid": "2e760446-6d61-4841-8f9f-cd2fd9c1d13f",
+      "timestamp": "2025-07-22T15:26:58.168Z"
+    },
+    {
+      "parentUuid": "2e760446-6d61-4841-8f9f-cd2fd9c1d13f",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01DUCcSnTZN1PkS7mAhKp5av",
+            "type": "tool_result",
+            "content": "Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable"
           }
         ]
       },
-      "promptId": "7c78f08f-4ef8-4a25-92d2-75c079d7218f"
+      "uuid": "92c8020c-ef28-4309-8329-4cd7d67b28d5",
+      "timestamp": "2025-07-22T15:26:58.243Z",
+      "toolUseResult": {
+        "oldTodos": [
+          {
+            "content": "Add watch mode to ccshare CLI",
+            "status": "completed",
+            "priority": "high",
+            "id": "1"
+          },
+          {
+            "content": "Create file watcher for JSONL files",
+            "status": "completed",
+            "priority": "high",
+            "id": "2"
+          },
+          {
+            "content": "Implement real-time prompt display",
+            "status": "completed",
+            "priority": "high",
+            "id": "3"
+          },
+          {
+            "content": "Add hotkey to trigger share from watch mode",
+            "status": "completed",
+            "priority": "medium",
+            "id": "4"
+          }
+        ],
+        "newTodos": [
+          {
+            "content": "Add load command to fetch prompts from slug",
+            "status": "in_progress",
+            "priority": "high",
+            "id": "1"
+          },
+          {
+            "content": "Execute claude -p with fetched prompts",
+            "status": "pending",
+            "priority": "high",
+            "id": "2"
+          },
+          {
+            "content": "Handle API response and error cases",
+            "status": "pending",
+            "priority": "medium",
+            "id": "3"
+          }
+        ]
+      }
     },
     {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:20:17.886Z",
-      "parameters": {
-        "command": "node dist/cli.js --recent 3 --json 2>/dev/null | jq '{promptCount: (.prompts | length), actionsCount: (.assistantActions | length), executionsCount: (.toolExecutions | length), fileDiffsCount: (.fileDiffs | length)}'",
-        "description": "Check all counts with 3 recent prompts"
+      "parentUuid": "92c8020c-ef28-4309-8329-4cd7d67b28d5",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01J7A8HcQzEwXULnEdnxmvT6",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "먼저 share-service.ts에 slug로 데이터를 가져오는 함수를 추가하겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 3,
+          "cache_creation_input_tokens": 247,
+          "cache_read_input_tokens": 127746,
+          "output_tokens": 10,
+          "service_tier": "standard"
+        }
       },
-      "promptId": "cdb31dbf-19a5-4049-b987-3b5c2d381db4"
+      "requestId": "req_011CRNHtmttbNGYJjcg9zF1w",
+      "type": "assistant",
+      "uuid": "d1fef184-23cf-493a-ab3e-1db2e6a0f1dc",
+      "timestamp": "2025-07-22T15:27:03.992Z"
     },
     {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:20:23.827Z",
-      "parameters": {
-        "command": "node dist/cli.js --recent 3 --json 2>/dev/null > test-output.json",
-        "description": "Save JSON output to file"
+      "parentUuid": "d1fef184-23cf-493a-ab3e-1db2e6a0f1dc",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01J7A8HcQzEwXULnEdnxmvT6",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01MSkzKiyQLtEmzzCuZpyA1W",
+            "name": "Edit",
+            "input": {
+              "file_path": "/Users/james/Development/scripts/ccshare/src/share-service.ts",
+              "old_string": "export async function shareToAPI(shareData: ShareData, apiUrl: string = 'http://localhost:3000/shares'): Promise<ShareResponse> {\n  try {\n    const response = await axios.post<ShareResponse>(apiUrl, shareData, {\n      headers: {\n        'Content-Type': 'application/json'\n      },\n      timeout: 10000 // 10 second timeout\n    });\n    \n    return response.data;\n  } catch (error: any) {\n    if (error.response) {\n      // Server responded with error\n      return {\n        error: error.response.data?.message || error.response.data?.error || `Server error: ${error.response.status}`\n      };\n    } else if (error.request) {\n      // No response received\n      return {\n        error: 'No response from server. Make sure the API is running on localhost:3000'\n      };\n    } else {\n      // Request setup error\n      return {\n        error: error.message || 'Failed to send request'\n      };\n    }\n  }\n}",
+              "new_string": "export async function shareToAPI(shareData: ShareData, apiUrl: string = 'http://localhost:3000/shares'): Promise<ShareResponse> {\n  try {\n    const response = await axios.post<ShareResponse>(apiUrl, shareData, {\n      headers: {\n        'Content-Type': 'application/json'\n      },\n      timeout: 10000 // 10 second timeout\n    });\n    \n    return response.data;\n  } catch (error: any) {\n    if (error.response) {\n      // Server responded with error\n      return {\n        error: error.response.data?.message || error.response.data?.error || `Server error: ${error.response.status}`\n      };\n    } else if (error.request) {\n      // No response received\n      return {\n        error: 'No response from server. Make sure the API is running on localhost:3000'\n      };\n    } else {\n      // Request setup error\n      return {\n        error: error.message || 'Failed to send request'\n      };\n    }\n  }\n}\n\nexport async function fetchFromSlug(slug: string, apiUrl: string = 'http://localhost:3000/shares'): Promise<ShareData | null> {\n  try {\n    const response = await axios.get<ShareData>(`${apiUrl}/${slug}`, {\n      headers: {\n        'Accept': 'application/json'\n      },\n      timeout: 10000 // 10 second timeout\n    });\n    \n    return response.data;\n  } catch (error: any) {\n    if (error.response?.status === 404) {\n      console.error(`Share not found: ${slug}`);\n    } else if (error.response) {\n      console.error(`Server error: ${error.response.status}`);\n    } else {\n      console.error(`Failed to fetch share: ${error.message}`);\n    }\n    return null;\n  }\n}"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 3,
+          "cache_creation_input_tokens": 247,
+          "cache_read_input_tokens": 127746,
+          "output_tokens": 873,
+          "service_tier": "standard"
+        }
       },
-      "promptId": "af2a8f61-e917-4b76-9c76-54455b5fa750"
+      "requestId": "req_011CRNHtmttbNGYJjcg9zF1w",
+      "type": "assistant",
+      "uuid": "e2553911-0ea0-475b-a48d-5cb79a07798d",
+      "timestamp": "2025-07-22T15:27:15.964Z"
     },
     {
-      "tool": "Bash",
-      "timestamp": "2025-07-23T07:20:28.919Z",
-      "parameters": {
-        "command": "jq '{promptCount: (.prompts | length), actionsCount: (.assistantActions | length), executionsCount: (.toolExecutions | length), fileDiffsCount: (.fileDiffs | length)}' test-output.json",
-        "description": "Check counts from saved JSON"
+      "parentUuid": "e2553911-0ea0-475b-a48d-5cb79a07798d",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01MSkzKiyQLtEmzzCuZpyA1W",
+            "type": "tool_result",
+            "content": "The file /Users/james/Development/scripts/ccshare/src/share-service.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   208→  \n   209→  return shareData;\n   210→}\n   211→\n   212→export async function shareToAPI(shareData: ShareData, apiUrl: string = 'http://localhost:3000/shares'): Promise<ShareResponse> {\n   213→  try {\n   214→    const response = await axios.post<ShareResponse>(apiUrl, shareData, {\n   215→      headers: {\n   216→        'Content-Type': 'application/json'\n   217→      },\n   218→      timeout: 10000 // 10 second timeout\n   219→    });\n   220→    \n   221→    return response.data;\n   222→  } catch (error: any) {\n   223→    if (error.response) {\n   224→      // Server responded with error\n   225→      return {\n   226→        error: error.response.data?.message || error.response.data?.error || `Server error: ${error.response.status}`\n   227→      };\n   228→    } else if (error.request) {\n   229→      // No response received\n   230→      return {\n   231→        error: 'No response from server. Make sure the API is running on localhost:3000'\n   232→      };\n   233→    } else {\n   234→      // Request setup error\n   235→      return {\n   236→        error: error.message || 'Failed to send request'\n   237→      };\n   238→    }\n   239→  }\n   240→}\n   241→\n   242→export async function fetchFromSlug(slug: string, apiUrl: string = 'http://localhost:3000/shares'): Promise<ShareData | null> {\n   243→  try {\n   244→    const response = await axios.get<ShareData>(`${apiUrl}/${slug}`, {\n   245→      headers: {\n   246→        'Accept': 'application/json'\n   247→      },\n   248→      timeout: 10000 // 10 second timeout\n   249→    });\n   250→    \n   251→    return response.data;\n   252→  } catch (error: any) {\n   253→    if (error.response?.status === 404) {\n   254→      console.error(`Share not found: ${slug}`);\n   255→    } else if (error.response) {\n   256→      console.error(`Server error: ${error.response.status}`);\n   257→    } else {\n   258→      console.error(`Failed to fetch share: ${error.message}`);\n   259→    }\n   260→    return null;\n   261→  }\n   262→}"
+          }
+        ]
       },
-      "promptId": "5bb88445-2eca-485f-b915-5426777cbc70"
+      "uuid": "605b8b9b-6976-44a3-acf5-3b45f684598a",
+      "timestamp": "2025-07-22T15:27:16.043Z",
+      "toolUseResult": {
+        "filePath": "/Users/james/Development/scripts/ccshare/src/share-service.ts",
+        "oldString": "export async function shareToAPI(shareData: ShareData, apiUrl: string = 'http://localhost:3000/shares'): Promise<ShareResponse> {\n  try {\n    const response = await axios.post<ShareResponse>(apiUrl, shareData, {\n      headers: {\n        'Content-Type': 'application/json'\n      },\n      timeout: 10000 // 10 second timeout\n    });\n    \n    return response.data;\n  } catch (error: any) {\n    if (error.response) {\n      // Server responded with error\n      return {\n        error: error.response.data?.message || error.response.data?.error || `Server error: ${error.response.status}`\n      };\n    } else if (error.request) {\n      // No response received\n      return {\n        error: 'No response from server. Make sure the API is running on localhost:3000'\n      };\n    } else {\n      // Request setup error\n      return {\n        error: error.message || 'Failed to send request'\n      };\n    }\n  }\n}",
+        "newString": "export async function shareToAPI(shareData: ShareData, apiUrl: string = 'http://localhost:3000/shares'): Promise<ShareResponse> {\n  try {\n    const response = await axios.post<ShareResponse>(apiUrl, shareData, {\n      headers: {\n        'Content-Type': 'application/json'\n      },\n      timeout: 10000 // 10 second timeout\n    });\n    \n    return response.data;\n  } catch (error: any) {\n    if (error.response) {\n      // Server responded with error\n      return {\n        error: error.response.data?.message || error.response.data?.error || `Server error: ${error.response.status}`\n      };\n    } else if (error.request) {\n      // No response received\n      return {\n        error: 'No response from server. Make sure the API is running on localhost:3000'\n      };\n    } else {\n      // Request setup error\n      return {\n        error: error.message || 'Failed to send request'\n      };\n    }\n  }\n}\n\nexport async function fetchFromSlug(slug: string, apiUrl: string = 'http://localhost:3000/shares'): Promise<ShareData | null> {\n  try {\n    const response = await axios.get<ShareData>(`${apiUrl}/${slug}`, {\n      headers: {\n        'Accept': 'application/json'\n      },\n      timeout: 10000 // 10 second timeout\n    });\n    \n    return response.data;\n  } catch (error: any) {\n    if (error.response?.status === 404) {\n      console.error(`Share not found: ${slug}`);\n    } else if (error.response) {\n      console.error(`Server error: ${error.response.status}`);\n    } else {\n      console.error(`Failed to fetch share: ${error.message}`);\n    }\n    return null;\n  }\n}",
+        "originalFile": "import axios from 'axios';\nimport { HtmlData } from './html-generator.js';\nimport { SessionData } from './types.js';\n\nexport interface ShareData {\n  title: string;\n  createdAt: string;\n  sessionInfo: ShareSessionInfo;\n  techStack: ShareTechStack;\n  prompts: SharePrompt[];\n  metadata: ShareMetadata;\n  claudeMd?: string;\n  models?: string[];  // List of models used\n  mcpServers?: ShareMCPServer[];  // MCP servers if any\n  toolStats?: ShareToolStats;  // Tool usage statistics\n}\n\nexport interface ShareSessionInfo {\n  totalPrompts: number;\n  timeRange?: string;\n  sources?: string[];\n  projectPath?: string;\n  claudeProjectPath?: string;\n}\n\nexport interface ShareTechStack {\n  languages: string[];\n  frameworks: string[];\n  tools: string[];\n  databases: string[];\n}\n\nexport interface SharePrompt {\n  id: number;\n  content: string;\n  timestamp: string;\n  sourceFile?: string;\n  fileDiffs: ShareFileDiff[];\n  usage?: {\n    input_tokens?: number;\n    output_tokens?: number;\n    cache_creation_input_tokens?: number;\n    cache_read_input_tokens?: number;\n    total_tokens?: number;\n  };\n  responseTimeMs?: number;\n  isAutoGenerated?: boolean;\n  model?: string;  // Model used for this response\n  toolCalls?: string[];  // Tools called in this prompt\n}\n\nexport interface ShareMCPServer {\n  name: string;\n  tools: string[];\n  callCount: number;\n}\n\nexport interface ShareToolStats {\n  totalCalls: number;\n  byTool: { [toolName: string]: number };\n  mcpCalls: number;\n  regularCalls: number;\n}\n\nexport interface ShareFileDiff {\n  path: string;\n  diff: string;\n  additions?: number;\n  deletions?: number;\n}\n\nexport interface ShareMetadata {\n  generatedBy: string;\n  version: string;\n  platform: string;\n}\n\nexport interface ShareResponse {\n  id?: string;\n  url?: string;\n  message?: string;\n  error?: string;\n}\n\nexport function transformToShareData(htmlData: HtmlData, sessionData: SessionData): ShareData {\n  const { promptsWithChanges, sessionInfo, techStack } = htmlData;\n  \n  // Count additions and deletions from diff\n  function countDiffChanges(diff: string): { additions: number; deletions: number } {\n    const lines = diff.split('\\n');\n    let additions = 0;\n    let deletions = 0;\n    \n    lines.forEach(line => {\n      if (line.startsWith('+') && !line.startsWith('+++')) {\n        additions++;\n      } else if (line.startsWith('-') && !line.startsWith('---')) {\n        deletions++;\n      }\n    });\n    \n    return { additions, deletions };\n  }\n  \n  const prompts: SharePrompt[] = promptsWithChanges.map((item, index) => {\n    const fileDiffs: ShareFileDiff[] = item.fileDiffs.map(file => {\n      const { additions, deletions } = countDiffChanges(file.diff);\n      return {\n        path: file.path,\n        diff: file.diff,\n        additions,\n        deletions\n      };\n    });\n    \n    // Find the next assistant response to get usage and response time\n    const promptIndex = sessionData.prompts.findIndex(p => \n      p.content === item.prompt && \n      p.timestamp === item.timestamp\n    );\n    \n    let usage = undefined;\n    let responseTimeMs = undefined;\n    let model = undefined;\n    let toolCalls = undefined;\n    \n    // Find the corresponding prompt in sessionData\n    const originalPrompt = sessionData.prompts[promptIndex];\n    const isAutoGenerated = originalPrompt?.isAutoGenerated;\n    \n    if (promptIndex !== -1 && promptIndex < sessionData.prompts.length - 1) {\n      const nextPrompt = sessionData.prompts[promptIndex + 1];\n      if (nextPrompt.role === 'assistant') {\n        usage = nextPrompt.usage;\n        responseTimeMs = nextPrompt.responseTimeMs;\n        model = nextPrompt.model;\n        toolCalls = nextPrompt.toolCalls;\n      }\n    }\n    \n    return {\n      id: index + 1,\n      content: item.prompt,\n      timestamp: item.timestamp || new Date().toISOString(),\n      sourceFile: item.sourceFile,\n      fileDiffs,\n      usage,\n      responseTimeMs,\n      isAutoGenerated,\n      model,\n      toolCalls\n    };\n  });\n  \n  // Calculate tool statistics\n  let toolStats: ShareToolStats | undefined = undefined;\n  if (sessionData.toolCalls && sessionData.toolCalls.length > 0) {\n    const byTool: { [toolName: string]: number } = {};\n    let mcpCalls = 0;\n    \n    sessionData.toolCalls.forEach(call => {\n      byTool[call.name] = (byTool[call.name] || 0) + 1;\n      if (call.isMCP) mcpCalls++;\n    });\n    \n    toolStats = {\n      totalCalls: sessionData.toolCalls.length,\n      byTool,\n      mcpCalls,\n      regularCalls: sessionData.toolCalls.length - mcpCalls\n    };\n  }\n  \n  // Transform MCP servers data\n  const mcpServers: ShareMCPServer[] | undefined = sessionData.metadata?.mcpServers?.map(server => ({\n    name: server.name,\n    tools: server.tools,\n    callCount: server.tools.reduce((sum, toolName) => \n      sum + (toolStats?.byTool[toolName] || 0), 0)\n  }));\n  \n  const shareData: ShareData = {\n    title: 'Claude Code Prompts',\n    createdAt: new Date().toISOString(),\n    sessionInfo: {\n      totalPrompts: sessionInfo?.totalPrompts || prompts.length,\n      timeRange: sessionInfo?.timeRange,\n      sources: sessionInfo?.sources,\n      projectPath: sessionInfo?.projectPath || sessionData.metadata?.workingDirectory,\n      claudeProjectPath: sessionInfo?.claudeProjectPath || sessionData.metadata?.claudeProjectPath\n    },\n    techStack: {\n      languages: techStack?.languages || [],\n      frameworks: techStack?.frameworks || [],\n      tools: techStack?.tools || [],\n      databases: techStack?.databases || []\n    },\n    prompts,\n    metadata: {\n      generatedBy: 'ccshare',\n      version: '0.2.0',\n      platform: sessionData.metadata?.platform || process.platform\n    },\n    models: sessionData.metadata?.models,\n    mcpServers: mcpServers && mcpServers.length > 0 ? mcpServers : undefined,\n    toolStats\n  };\n  \n  return shareData;\n}\n\nexport async function shareToAPI(shareData: ShareData, apiUrl: string = 'http://localhost:3000/shares'): Promise<ShareResponse> {\n  try {\n    const response = await axios.post<ShareResponse>(apiUrl, shareData, {\n      headers: {\n        'Content-Type': 'application/json'\n      },\n      timeout: 10000 // 10 second timeout\n    });\n    \n    return response.data;\n  } catch (error: any) {\n    if (error.response) {\n      // Server responded with error\n      return {\n        error: error.response.data?.message || error.response.data?.error || `Server error: ${error.response.status}`\n      };\n    } else if (error.request) {\n      // No response received\n      return {\n        error: 'No response from server. Make sure the API is running on localhost:3000'\n      };\n    } else {\n      // Request setup error\n      return {\n        error: error.message || 'Failed to send request'\n      };\n    }\n  }\n}",
+        "structuredPatch": [
+          {
+            "oldStart": 237,
+            "oldLines": 4,
+            "newStart": 237,
+            "newLines": 26,
+            "lines": [
+              "       };",
+              "     }",
+              "   }",
+              "+}",
+              "+",
+              "+export async function fetchFromSlug(slug: string, apiUrl: string = 'http://localhost:3000/shares'): Promise<ShareData | null> {",
+              "+  try {",
+              "+    const response = await axios.get<ShareData>(`${apiUrl}/${slug}`, {",
+              "+      headers: {",
+              "+        'Accept': 'application/json'",
+              "+      },",
+              "+      timeout: 10000 // 10 second timeout",
+              "+    });",
+              "+    ",
+              "+    return response.data;",
+              "+  } catch (error: any) {",
+              "+    if (error.response?.status === 404) {",
+              "+      console.error(`Share not found: ${slug}`);",
+              "+    } else if (error.response) {",
+              "+      console.error(`Server error: ${error.response.status}`);",
+              "+    } else {",
+              "+      console.error(`Failed to fetch share: ${error.message}`);",
+              "+    }",
+              "+    return null;",
+              "+  }",
+              " }",
+              "\\ No newline at end of file"
+            ]
+          }
+        ],
+        "userModified": false,
+        "replaceAll": false
+      }
+    },
+    {
+      "parentUuid": "605b8b9b-6976-44a3-acf5-3b45f684598a",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01Go4Fc9YHibHUqo3NxXLRwq",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "이제 CLI에 load 명령을 추가하겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 1578,
+          "cache_read_input_tokens": 127993,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHv5mwzYHeyx6xNZ6S8",
+      "type": "assistant",
+      "uuid": "f6fee62b-e30f-4626-bce3-041582edf149",
+      "timestamp": "2025-07-22T15:27:21.501Z"
+    },
+    {
+      "parentUuid": "f6fee62b-e30f-4626-bce3-041582edf149",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01Go4Fc9YHibHUqo3NxXLRwq",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01YGGL2a5JRDmffNeDqmexQu",
+            "name": "Edit",
+            "input": {
+              "file_path": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+              "old_string": "import { transformToShareData, shareToAPI } from './share-service.js';",
+              "new_string": "import { transformToShareData, shareToAPI, fetchFromSlug } from './share-service.js';"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 1578,
+          "cache_read_input_tokens": 127993,
+          "output_tokens": 171,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHv5mwzYHeyx6xNZ6S8",
+      "type": "assistant",
+      "uuid": "4347a276-b3e2-4320-a498-7d9a835d6aa5",
+      "timestamp": "2025-07-22T15:27:23.184Z"
+    },
+    {
+      "parentUuid": "4347a276-b3e2-4320-a498-7d9a835d6aa5",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01YGGL2a5JRDmffNeDqmexQu",
+            "type": "tool_result",
+            "content": "The file /Users/james/Development/scripts/ccshare/src/cli.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n     7→import { uploadSession } from './upload.js';\n     8→import { SessionData } from './types.js';\n     9→import { generateHtml } from './html-generator.js';\n    10→import { detectTechStack } from './tech-detector.js';\n    11→import { transformToShareData, shareToAPI, fetchFromSlug } from './share-service.js';\n    12→import { createAutoPostForm } from './browser-post.js';\n    13→import { SessionWatcher } from './watch.js';\n    14→import fs from 'fs/promises';\n    15→import path from 'path';"
+          }
+        ]
+      },
+      "uuid": "b7a54683-784d-4884-a271-cf0b26c0dff5",
+      "timestamp": "2025-07-22T15:27:23.253Z",
+      "toolUseResult": {
+        "filePath": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+        "oldString": "import { transformToShareData, shareToAPI } from './share-service.js';",
+        "newString": "import { transformToShareData, shareToAPI, fetchFromSlug } from './share-service.js';",
+        "originalFile": "#!/usr/bin/env node\nimport { Command } from 'commander';\nimport chalk from 'chalk';\nimport inquirer from 'inquirer';\nimport ora from 'ora';\nimport { captureSession } from './capture.js';\nimport { uploadSession } from './upload.js';\nimport { SessionData } from './types.js';\nimport { generateHtml } from './html-generator.js';\nimport { detectTechStack } from './tech-detector.js';\nimport { transformToShareData, shareToAPI } from './share-service.js';\nimport { createAutoPostForm } from './browser-post.js';\nimport { SessionWatcher } from './watch.js';\nimport fs from 'fs/promises';\nimport path from 'path';\nimport { exec } from 'child_process';\nimport { promisify } from 'util';\n\nconst execAsync = promisify(exec);\n\nconst program = new Command();\n\nprogram\n  .name('ccshare')\n  .description('Share Claude Code prompts and results')\n  .version('0.1.0')\n  .option('-s, --session <path>', 'Path to session file or directory')\n  .option('-a, --all', 'Include all session history')\n  .option('-n, --no-select', 'Skip prompt selection')\n  .option('-r, --recent <number>', 'Include only the N most recent prompts', parseInt)\n  .option('--share', 'Share to localhost:3000/shares API')\n  .option('--api-url <url>', 'Custom API URL for sharing', 'http://localhost:3000/shares')\n  .option('--json', 'Output JSON format instead of HTML')\n  .option('--include-claude-md', 'Include CLAUDE.md file without asking')\n  .option('--exclude-auto', 'Exclude auto-generated prompts')\n  .action(async (options) => {\n    // Default action - generate HTML report and open it\n    try {\n      const spinner = ora('Analyzing Claude Code session...').start();\n      \n      // Find and capture session\n      const sessionData = await captureSession(options.session, options.all);\n      \n      spinner.succeed('Analysis complete');\n      \n      // Build data for HTML with prompts grouped with their changes\n      let userPrompts = sessionData.prompts.filter(p => p.role === 'user');\n      \n      // Filter out auto-generated prompts if requested\n      if (options.excludeAuto) {\n        userPrompts = userPrompts.filter(p => !p.isAutoGenerated);\n        if (!options.json) {\n          console.log(chalk.cyan('\\n🤖 Excluding auto-generated prompts'));\n        }\n      }\n      \n      // If --recent flag is used, limit to N most recent prompts\n      if (options.recent && options.recent > 0) {\n        userPrompts = userPrompts.slice(-options.recent);\n        if (!options.json) {\n          console.log(chalk.cyan(`\\n📝 Limiting to ${options.recent} most recent prompts`));\n        }\n      }\n      \n      // Allow user to select prompts if not disabled\n      if (options.select !== false && userPrompts.length > 0 && !options.recent) {\n        const promptChoices = userPrompts.map((prompt, index) => {\n          const cleanContent = prompt.content.replace(/\\n/g, ' ').replace(/\\s+/g, ' ').trim();\n          const displayContent = cleanContent.substring(0, 80);\n          const autoLabel = prompt.isAutoGenerated ? ' [AUTO]' : '';\n          return {\n            name: `${index + 1}. ${displayContent}${cleanContent.length > 80 ? '...' : ''}${autoLabel}`,\n            value: index,\n            checked: !prompt.isAutoGenerated  // Auto-generated prompts unchecked by default\n          };\n        });\n        \n        const { selectedPrompts } = await inquirer.prompt([\n          {\n            type: 'checkbox',\n            name: 'selectedPrompts',\n            message: 'Select prompts to include (use spacebar to select/deselect):',\n            choices: promptChoices,\n            pageSize: 15\n          }\n        ]);\n        \n        // Filter prompts based on selection\n        userPrompts = userPrompts.filter((_, index) => selectedPrompts.includes(index));\n        \n        if (userPrompts.length === 0) {\n          console.log(chalk.yellow('\\nNo prompts selected.'));\n          process.exit(0);\n        }\n      }\n      \n      // Match file diffs with prompts\n      const promptsWithChanges = userPrompts.map((prompt, index) => {\n        let associatedDiffs: Array<{ path: string; diff: string }> = [];\n        \n        // First, check if we have file changes from toolUseResult\n        if (prompt.associatedFiles && prompt.associatedFiles.length > 0) {\n          // Find changes from sessionData.changes that match this prompt's files\n          const relatedChanges = sessionData.changes.filter(change => \n            prompt.associatedFiles!.includes(change.path) && change.diff\n          );\n          \n          associatedDiffs = relatedChanges.map(change => ({\n            path: change.path,\n            diff: change.diff!\n          }));\n          \n          // Debug log\n          if (process.env.DEBUG_FILE_CHANGES) {\n            console.log(`\\nPrompt ${index + 1}: \"${prompt.content.substring(0, 50)}...\"`);\n            console.log(`Associated files: ${prompt.associatedFiles.join(', ')}`);\n            console.log(`Found ${associatedDiffs.length} diffs`);\n          }\n        }\n        \n        // Only use toolUseResult, no git diffs\n        \n        return {\n          prompt: prompt.content,\n          timestamp: prompt.timestamp,\n          sourceFile: (prompt as any).sourceFile,\n          fileDiffs: associatedDiffs\n        };\n      });\n      \n      // Detect tech stack\n      const techStack = await detectTechStack(process.cwd());\n      \n      // Calculate session info\n      let sessionInfo = undefined;\n      if (options.session || options.all) {\n        const timestamps = userPrompts\n          .map(p => new Date(p.timestamp))\n          .filter(d => !isNaN(d.getTime()));\n        \n        const sources = [...new Set(userPrompts\n          .map((p: any) => p.sourceFile)\n          .filter(Boolean))];\n        \n        sessionInfo = {\n          totalPrompts: userPrompts.length,\n          timeRange: timestamps.length >= 2 ? \n            `${timestamps[0].toLocaleDateString('en-US')} ~ ${timestamps[timestamps.length - 1].toLocaleDateString('en-US')}` : \n            undefined,\n          sources: sources.length > 0 ? sources : undefined,\n          projectPath: sessionData.metadata?.workingDirectory,\n          claudeProjectPath: sessionData.metadata?.claudeProjectPath\n        };\n      }\n      \n      const htmlData = {\n        promptsWithChanges,\n        sessionInfo,\n        techStack\n      };\n      \n      // If JSON output requested, output JSON and exit\n      if (options.json) {\n        const shareData = transformToShareData(htmlData, sessionData);\n        console.log(JSON.stringify(shareData, null, 2));\n        process.exit(0);\n      }\n      \n      // If share option is used, open browser with POST request\n      if (options.share) {\n        const shareSpinner = ora('Preparing to share...').start();\n        try {\n          const shareData = transformToShareData(htmlData, sessionData);\n          \n          // Check if CLAUDE.md exists and ask if user wants to include it\n          const claudeMdPath = path.join(process.cwd(), 'CLAUDE.md');\n          try {\n            const claudeMdContent = await fs.readFile(claudeMdPath, 'utf-8');\n            \n            // If --include-claude-md flag is set, include without asking\n            if (options.includeClaudeMd) {\n              shareData.claudeMd = claudeMdContent;\n            } else {\n              shareSpinner.stop();\n              \n              const { includeClaudeMd } = await inquirer.prompt([\n                {\n                  type: 'confirm',\n                  name: 'includeClaudeMd',\n                  message: 'Found CLAUDE.md file. Include it in the share?',\n                  default: true\n                }\n              ]);\n              \n              if (includeClaudeMd) {\n                shareData.claudeMd = claudeMdContent;\n              }\n              \n              shareSpinner.start('Preparing to share...');\n            }\n          } catch {\n            // CLAUDE.md doesn't exist, continue without it\n          }\n          \n          // Show JSON if requested (for debugging)\n          if (process.env.DEBUG_SHARE) {\n            console.log('\\nJSON being sent to API:');\n            console.log(JSON.stringify(shareData, null, 2));\n          }\n          \n          // Create temporary HTML file with auto-submitting form\n          const tempHtmlPath = await createAutoPostForm(shareData, options.apiUrl);\n          \n          shareSpinner.succeed('Opening browser with share data...');\n          \n          // Open the temporary HTML file in browser\n          const openCommand = process.platform === 'darwin' ? 'open' : \n                             process.platform === 'win32' ? 'start' : 'xdg-open';\n          \n          try {\n            await execAsync(`${openCommand} \"${tempHtmlPath}\"`);\n            console.log(chalk.cyan(`📄 Sharing to ${options.apiUrl}...`));\n          } catch (err) {\n            console.log(chalk.yellow(`⚠️  Could not open browser. Please open: ${tempHtmlPath}`));\n          }\n        } catch (err: any) {\n          shareSpinner.fail(`Share failed: ${err.message}`);\n        }\n        \n        // Exit after sharing\n        process.exit(0);\n      }\n      \n      // Generate HTML (only if not sharing)\n      const html = generateHtml(htmlData);\n      \n      // Create reports directory if it doesn't exist\n      const reportsDir = path.join(process.cwd(), 'ccshare-reports');\n      await fs.mkdir(reportsDir, { recursive: true });\n      \n      // Save HTML file\n      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);\n      const filename = `claude-session-${timestamp}.html`;\n      const filepath = path.join(reportsDir, filename);\n      \n      await fs.writeFile(filepath, html, 'utf-8');\n      \n      console.log(chalk.green(`\\n✅ HTML report generated: ccshare-reports/${filename}`));\n      \n      // Open the file\n      const openCommand = process.platform === 'darwin' ? 'open' : \n                         process.platform === 'win32' ? 'start' : 'xdg-open';\n      \n      try {\n        await execAsync(`${openCommand} \"${filepath}\"`);\n        console.log(chalk.cyan('📄 Opening in your default browser...'));\n      } catch (err) {\n        console.log(chalk.yellow('⚠️  Could not auto-open file. Please open manually.'));\n      }\n      \n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('share')\n  .description('Capture and share current Claude Code session')\n  .option('-f, --file <path>', 'Path to Claude Code session file')\n  .option('-m, --message <message>', 'Optional message to include with share')\n  .action(async (options) => {\n    try {\n      console.log(chalk.blue('🚀 CCShare - Claude Code Session Sharing Tool'));\n      \n      const spinner = ora('Capturing Claude Code session...').start();\n      \n      let sessionData: SessionData;\n      \n      if (options.file) {\n        sessionData = await captureSession(options.file);\n      } else {\n        const answers = await inquirer.prompt([\n          {\n            type: 'input',\n            name: 'sessionPath',\n            message: 'Enter path to Claude Code session file (or press enter to use default):',\n            default: process.env.HOME + '/.claude/sessions/latest.json'\n          }\n        ]);\n        sessionData = await captureSession(answers.sessionPath);\n      }\n      \n      spinner.succeed('Session captured successfully');\n      \n      if (!options.message) {\n        const messageAnswer = await inquirer.prompt([\n          {\n            type: 'input',\n            name: 'message',\n            message: 'Add a description for this share (optional):'\n          }\n        ]);\n        sessionData.message = messageAnswer.message;\n      } else {\n        sessionData.message = options.message;\n      }\n      \n      spinner.start('Uploading session to ccshare...');\n      const shareUrl = await uploadSession(sessionData);\n      spinner.succeed('Session uploaded successfully');\n      \n      console.log(chalk.green('\\n✅ Your session has been shared!'));\n      console.log(chalk.white('Share URL: ') + chalk.cyan(shareUrl));\n      console.log(chalk.gray('\\nAnyone with this link can view your Claude Code session.'));\n      \n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('watch')\n  .description('Watch for new prompts and share on demand')\n  .option('--api-url <url>', 'Custom API URL for sharing', 'http://localhost:3000/shares')\n  .option('--include-claude-md', 'Include CLAUDE.md file without asking')\n  .option('--exclude-auto', 'Exclude auto-generated prompts')\n  .action(async (options) => {\n    try {\n      const watcher = new SessionWatcher({\n        apiUrl: options.apiUrl,\n        includeClaudeMd: options.includeClaudeMd,\n        excludeAuto: options.excludeAuto\n      });\n      \n      await watcher.start();\n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('list')\n  .description('List your recent shares')\n  .action(async () => {\n    console.log(chalk.yellow('This feature is coming soon!'));\n  });\n\nprogram.parse();",
+        "structuredPatch": [
+          {
+            "oldStart": 8,
+            "oldLines": 7,
+            "newStart": 8,
+            "newLines": 7,
+            "lines": [
+              " import { SessionData } from './types.js';",
+              " import { generateHtml } from './html-generator.js';",
+              " import { detectTechStack } from './tech-detector.js';",
+              "-import { transformToShareData, shareToAPI } from './share-service.js';",
+              "+import { transformToShareData, shareToAPI, fetchFromSlug } from './share-service.js';",
+              " import { createAutoPostForm } from './browser-post.js';",
+              " import { SessionWatcher } from './watch.js';",
+              " import fs from 'fs/promises';"
+            ]
+          }
+        ],
+        "userModified": false,
+        "replaceAll": false
+      }
+    },
+    {
+      "parentUuid": "b7a54683-784d-4884-a271-cf0b26c0dff5",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01T1nxBL3axXRBRafk2zah3q",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "이제 load 명령을 추가하겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 380,
+          "cache_read_input_tokens": 129571,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHvca7K7SW7BUGT11K4",
+      "type": "assistant",
+      "uuid": "4f0e3a04-d917-43c4-a133-81cf9d06fa75",
+      "timestamp": "2025-07-22T15:27:27.236Z"
+    },
+    {
+      "parentUuid": "4f0e3a04-d917-43c4-a133-81cf9d06fa75",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01T1nxBL3axXRBRafk2zah3q",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01P95Podz6AbpLRA6YHWaX1a",
+            "name": "Edit",
+            "input": {
+              "file_path": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+              "old_string": "program\n  .command('list')\n  .description('List your recent shares')\n  .action(async () => {\n    console.log(chalk.yellow('This feature is coming soon!'));\n  });\n\nprogram.parse();",
+              "new_string": "program\n  .command('load <slug>')\n  .description('Load prompts from a shared slug and execute with claude -p')\n  .option('--api-url <url>', 'Custom API URL', 'http://localhost:3000/shares')\n  .option('--dry-run', 'Show prompts without executing')\n  .option('--select', 'Select which prompts to execute')\n  .action(async (slug, options) => {\n    try {\n      const spinner = ora(`Fetching share: ${slug}...`).start();\n      \n      const shareData = await fetchFromSlug(slug, options.apiUrl);\n      \n      if (!shareData) {\n        spinner.fail('Failed to fetch share');\n        process.exit(1);\n      }\n      \n      spinner.succeed(`Fetched ${shareData.prompts.length} prompts`);\n      \n      // Extract user prompts\n      const userPrompts = shareData.prompts.filter(p => !p.isAutoGenerated);\n      \n      if (userPrompts.length === 0) {\n        console.log(chalk.yellow('No user prompts found in this share.'));\n        process.exit(0);\n      }\n      \n      // Select prompts if requested\n      let selectedPrompts = userPrompts;\n      if (options.select) {\n        const promptChoices = userPrompts.map((prompt, index) => {\n          const preview = prompt.content.substring(0, 80).replace(/\\n/g, ' ');\n          return {\n            name: `${index + 1}. ${preview}${prompt.content.length > 80 ? '...' : ''}`,\n            value: index,\n            checked: true\n          };\n        });\n        \n        const { selected } = await inquirer.prompt([\n          {\n            type: 'checkbox',\n            name: 'selected',\n            message: 'Select prompts to execute:',\n            choices: promptChoices,\n            pageSize: 15\n          }\n        ]);\n        \n        selectedPrompts = userPrompts.filter((_, index) => selected.includes(index));\n      }\n      \n      if (selectedPrompts.length === 0) {\n        console.log(chalk.yellow('No prompts selected.'));\n        process.exit(0);\n      }\n      \n      // Show what will be executed\n      console.log(chalk.cyan(`\\nWill execute ${selectedPrompts.length} prompts:`));\n      selectedPrompts.forEach((prompt, index) => {\n        const preview = prompt.content.substring(0, 100).replace(/\\n/g, ' ');\n        console.log(chalk.white(`${index + 1}. ${preview}${prompt.content.length > 100 ? '...' : ''}`));\n      });\n      \n      if (options.dryRun) {\n        console.log(chalk.gray('\\n[Dry run mode - not executing]'));\n        process.exit(0);\n      }\n      \n      // Execute each prompt with claude -p\n      console.log(chalk.cyan('\\nExecuting prompts...\\n'));\n      \n      for (let i = 0; i < selectedPrompts.length; i++) {\n        const prompt = selectedPrompts[i];\n        console.log(chalk.blue(`[${i + 1}/${selectedPrompts.length}] Executing prompt...`));\n        \n        try {\n          // Escape quotes in the prompt content\n          const escapedPrompt = prompt.content.replace(/'/g, \"'\\\\''\");\n          \n          // Execute claude -p command\n          const { stdout, stderr } = await execAsync(`claude -p '${escapedPrompt}'`, {\n            maxBuffer: 1024 * 1024 * 10 // 10MB buffer\n          });\n          \n          if (stdout) {\n            console.log(stdout);\n          }\n          \n          if (stderr) {\n            console.error(chalk.red('Error output:'), stderr);\n          }\n          \n          // Add a small delay between prompts to avoid overwhelming\n          if (i < selectedPrompts.length - 1) {\n            await new Promise(resolve => setTimeout(resolve, 1000));\n          }\n          \n        } catch (error: any) {\n          console.error(chalk.red(`Failed to execute prompt ${i + 1}:`), error.message);\n          \n          const { continueExecution } = await inquirer.prompt([\n            {\n              type: 'confirm',\n              name: 'continueExecution',\n              message: 'Continue with remaining prompts?',\n              default: true\n            }\n          ]);\n          \n          if (!continueExecution) {\n            process.exit(1);\n          }\n        }\n      }\n      \n      console.log(chalk.green('\\n✅ All prompts executed successfully!'));\n      \n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('list')\n  .description('List your recent shares')\n  .action(async () => {\n    console.log(chalk.yellow('This feature is coming soon!'));\n  });\n\nprogram.parse();"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 380,
+          "cache_read_input_tokens": 129571,
+          "output_tokens": 1439,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHvca7K7SW7BUGT11K4",
+      "type": "assistant",
+      "uuid": "7cf5d614-5115-45da-bdf6-023bb9f9c595",
+      "timestamp": "2025-07-22T15:27:50.691Z"
+    },
+    {
+      "parentUuid": "7cf5d614-5115-45da-bdf6-023bb9f9c595",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01P95Podz6AbpLRA6YHWaX1a",
+            "type": "tool_result",
+            "content": "The file /Users/james/Development/scripts/ccshare/src/cli.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   340→      process.exit(1);\n   341→    }\n   342→  });\n   343→\n   344→program\n   345→  .command('load <slug>')\n   346→  .description('Load prompts from a shared slug and execute with claude -p')\n   347→  .option('--api-url <url>', 'Custom API URL', 'http://localhost:3000/shares')\n   348→  .option('--dry-run', 'Show prompts without executing')\n   349→  .option('--select', 'Select which prompts to execute')\n   350→  .action(async (slug, options) => {\n   351→    try {\n   352→      const spinner = ora(`Fetching share: ${slug}...`).start();\n   353→      \n   354→      const shareData = await fetchFromSlug(slug, options.apiUrl);\n   355→      \n   356→      if (!shareData) {\n   357→        spinner.fail('Failed to fetch share');\n   358→        process.exit(1);\n   359→      }\n   360→      \n   361→      spinner.succeed(`Fetched ${shareData.prompts.length} prompts`);\n   362→      \n   363→      // Extract user prompts\n   364→      const userPrompts = shareData.prompts.filter(p => !p.isAutoGenerated);\n   365→      \n   366→      if (userPrompts.length === 0) {\n   367→        console.log(chalk.yellow('No user prompts found in this share.'));\n   368→        process.exit(0);\n   369→      }\n   370→      \n   371→      // Select prompts if requested\n   372→      let selectedPrompts = userPrompts;\n   373→      if (options.select) {\n   374→        const promptChoices = userPrompts.map((prompt, index) => {\n   375→          const preview = prompt.content.substring(0, 80).replace(/\\n/g, ' ');\n   376→          return {\n   377→            name: `${index + 1}. ${preview}${prompt.content.length > 80 ? '...' : ''}`,\n   378→            value: index,\n   379→            checked: true\n   380→          };\n   381→        });\n   382→        \n   383→        const { selected } = await inquirer.prompt([\n   384→          {\n   385→            type: 'checkbox',\n   386→            name: 'selected',\n   387→            message: 'Select prompts to execute:',\n   388→            choices: promptChoices,\n   389→            pageSize: 15\n   390→          }\n   391→        ]);\n   392→        \n   393→        selectedPrompts = userPrompts.filter((_, index) => selected.includes(index));\n   394→      }\n   395→      \n   396→      if (selectedPrompts.length === 0) {\n   397→        console.log(chalk.yellow('No prompts selected.'));\n   398→        process.exit(0);\n   399→      }\n   400→      \n   401→      // Show what will be executed\n   402→      console.log(chalk.cyan(`\\nWill execute ${selectedPrompts.length} prompts:`));\n   403→      selectedPrompts.forEach((prompt, index) => {\n   404→        const preview = prompt.content.substring(0, 100).replace(/\\n/g, ' ');\n   405→        console.log(chalk.white(`${index + 1}. ${preview}${prompt.content.length > 100 ? '...' : ''}`));\n   406→      });\n   407→      \n   408→      if (options.dryRun) {\n   409→        console.log(chalk.gray('\\n[Dry run mode - not executing]'));\n   410→        process.exit(0);\n   411→      }\n   412→      \n   413→      // Execute each prompt with claude -p\n   414→      console.log(chalk.cyan('\\nExecuting prompts...\\n'));\n   415→      \n   416→      for (let i = 0; i < selectedPrompts.length; i++) {\n   417→        const prompt = selectedPrompts[i];\n   418→        console.log(chalk.blue(`[${i + 1}/${selectedPrompts.length}] Executing prompt...`));\n   419→        \n   420→        try {\n   421→          // Escape quotes in the prompt content\n   422→          const escapedPrompt = prompt.content.replace(/'/g, \"'\\\\''\");\n   423→          \n   424→          // Execute claude -p command\n   425→          const { stdout, stderr } = await execAsync(`claude -p '${escapedPrompt}'`, {\n   426→            maxBuffer: 1024 * 1024 * 10 // 10MB buffer\n   427→          });\n   428→          \n   429→          if (stdout) {\n   430→            console.log(stdout);\n   431→          }\n   432→          \n   433→          if (stderr) {\n   434→            console.error(chalk.red('Error output:'), stderr);\n   435→          }\n   436→          \n   437→          // Add a small delay between prompts to avoid overwhelming\n   438→          if (i < selectedPrompts.length - 1) {\n   439→            await new Promise(resolve => setTimeout(resolve, 1000));\n   440→          }\n   441→          \n   442→        } catch (error: any) {\n   443→          console.error(chalk.red(`Failed to execute prompt ${i + 1}:`), error.message);\n   444→          \n   445→          const { continueExecution } = await inquirer.prompt([\n   446→            {\n   447→              type: 'confirm',\n   448→              name: 'continueExecution',\n   449→              message: 'Continue with remaining prompts?',\n   450→              default: true\n   451→            }\n   452→          ]);\n   453→          \n   454→          if (!continueExecution) {\n   455→            process.exit(1);\n   456→          }\n   457→        }\n   458→      }\n   459→      \n   460→      console.log(chalk.green('\\n✅ All prompts executed successfully!'));\n   461→      \n   462→    } catch (error: any) {\n   463→      console.error(chalk.red('Error:'), error.message);\n   464→      process.exit(1);\n   465→    }\n   466→  });\n   467→\n   468→program\n   469→  .command('list')\n   470→  .description('List your recent shares')\n   471→  .action(async () => {\n   472→    console.log(chalk.yellow('This feature is coming soon!'));\n   473→  });\n   474→\n   475→program.parse();"
+          }
+        ]
+      },
+      "uuid": "81e3eb9c-3198-4986-b3b4-febae536afa2",
+      "timestamp": "2025-07-22T15:27:50.774Z",
+      "toolUseResult": {
+        "filePath": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+        "oldString": "program\n  .command('list')\n  .description('List your recent shares')\n  .action(async () => {\n    console.log(chalk.yellow('This feature is coming soon!'));\n  });\n\nprogram.parse();",
+        "newString": "program\n  .command('load <slug>')\n  .description('Load prompts from a shared slug and execute with claude -p')\n  .option('--api-url <url>', 'Custom API URL', 'http://localhost:3000/shares')\n  .option('--dry-run', 'Show prompts without executing')\n  .option('--select', 'Select which prompts to execute')\n  .action(async (slug, options) => {\n    try {\n      const spinner = ora(`Fetching share: ${slug}...`).start();\n      \n      const shareData = await fetchFromSlug(slug, options.apiUrl);\n      \n      if (!shareData) {\n        spinner.fail('Failed to fetch share');\n        process.exit(1);\n      }\n      \n      spinner.succeed(`Fetched ${shareData.prompts.length} prompts`);\n      \n      // Extract user prompts\n      const userPrompts = shareData.prompts.filter(p => !p.isAutoGenerated);\n      \n      if (userPrompts.length === 0) {\n        console.log(chalk.yellow('No user prompts found in this share.'));\n        process.exit(0);\n      }\n      \n      // Select prompts if requested\n      let selectedPrompts = userPrompts;\n      if (options.select) {\n        const promptChoices = userPrompts.map((prompt, index) => {\n          const preview = prompt.content.substring(0, 80).replace(/\\n/g, ' ');\n          return {\n            name: `${index + 1}. ${preview}${prompt.content.length > 80 ? '...' : ''}`,\n            value: index,\n            checked: true\n          };\n        });\n        \n        const { selected } = await inquirer.prompt([\n          {\n            type: 'checkbox',\n            name: 'selected',\n            message: 'Select prompts to execute:',\n            choices: promptChoices,\n            pageSize: 15\n          }\n        ]);\n        \n        selectedPrompts = userPrompts.filter((_, index) => selected.includes(index));\n      }\n      \n      if (selectedPrompts.length === 0) {\n        console.log(chalk.yellow('No prompts selected.'));\n        process.exit(0);\n      }\n      \n      // Show what will be executed\n      console.log(chalk.cyan(`\\nWill execute ${selectedPrompts.length} prompts:`));\n      selectedPrompts.forEach((prompt, index) => {\n        const preview = prompt.content.substring(0, 100).replace(/\\n/g, ' ');\n        console.log(chalk.white(`${index + 1}. ${preview}${prompt.content.length > 100 ? '...' : ''}`));\n      });\n      \n      if (options.dryRun) {\n        console.log(chalk.gray('\\n[Dry run mode - not executing]'));\n        process.exit(0);\n      }\n      \n      // Execute each prompt with claude -p\n      console.log(chalk.cyan('\\nExecuting prompts...\\n'));\n      \n      for (let i = 0; i < selectedPrompts.length; i++) {\n        const prompt = selectedPrompts[i];\n        console.log(chalk.blue(`[${i + 1}/${selectedPrompts.length}] Executing prompt...`));\n        \n        try {\n          // Escape quotes in the prompt content\n          const escapedPrompt = prompt.content.replace(/'/g, \"'\\\\''\");\n          \n          // Execute claude -p command\n          const { stdout, stderr } = await execAsync(`claude -p '${escapedPrompt}'`, {\n            maxBuffer: 1024 * 1024 * 10 // 10MB buffer\n          });\n          \n          if (stdout) {\n            console.log(stdout);\n          }\n          \n          if (stderr) {\n            console.error(chalk.red('Error output:'), stderr);\n          }\n          \n          // Add a small delay between prompts to avoid overwhelming\n          if (i < selectedPrompts.length - 1) {\n            await new Promise(resolve => setTimeout(resolve, 1000));\n          }\n          \n        } catch (error: any) {\n          console.error(chalk.red(`Failed to execute prompt ${i + 1}:`), error.message);\n          \n          const { continueExecution } = await inquirer.prompt([\n            {\n              type: 'confirm',\n              name: 'continueExecution',\n              message: 'Continue with remaining prompts?',\n              default: true\n            }\n          ]);\n          \n          if (!continueExecution) {\n            process.exit(1);\n          }\n        }\n      }\n      \n      console.log(chalk.green('\\n✅ All prompts executed successfully!'));\n      \n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('list')\n  .description('List your recent shares')\n  .action(async () => {\n    console.log(chalk.yellow('This feature is coming soon!'));\n  });\n\nprogram.parse();",
+        "originalFile": "#!/usr/bin/env node\nimport { Command } from 'commander';\nimport chalk from 'chalk';\nimport inquirer from 'inquirer';\nimport ora from 'ora';\nimport { captureSession } from './capture.js';\nimport { uploadSession } from './upload.js';\nimport { SessionData } from './types.js';\nimport { generateHtml } from './html-generator.js';\nimport { detectTechStack } from './tech-detector.js';\nimport { transformToShareData, shareToAPI, fetchFromSlug } from './share-service.js';\nimport { createAutoPostForm } from './browser-post.js';\nimport { SessionWatcher } from './watch.js';\nimport fs from 'fs/promises';\nimport path from 'path';\nimport { exec } from 'child_process';\nimport { promisify } from 'util';\n\nconst execAsync = promisify(exec);\n\nconst program = new Command();\n\nprogram\n  .name('ccshare')\n  .description('Share Claude Code prompts and results')\n  .version('0.1.0')\n  .option('-s, --session <path>', 'Path to session file or directory')\n  .option('-a, --all', 'Include all session history')\n  .option('-n, --no-select', 'Skip prompt selection')\n  .option('-r, --recent <number>', 'Include only the N most recent prompts', parseInt)\n  .option('--share', 'Share to localhost:3000/shares API')\n  .option('--api-url <url>', 'Custom API URL for sharing', 'http://localhost:3000/shares')\n  .option('--json', 'Output JSON format instead of HTML')\n  .option('--include-claude-md', 'Include CLAUDE.md file without asking')\n  .option('--exclude-auto', 'Exclude auto-generated prompts')\n  .action(async (options) => {\n    // Default action - generate HTML report and open it\n    try {\n      const spinner = ora('Analyzing Claude Code session...').start();\n      \n      // Find and capture session\n      const sessionData = await captureSession(options.session, options.all);\n      \n      spinner.succeed('Analysis complete');\n      \n      // Build data for HTML with prompts grouped with their changes\n      let userPrompts = sessionData.prompts.filter(p => p.role === 'user');\n      \n      // Filter out auto-generated prompts if requested\n      if (options.excludeAuto) {\n        userPrompts = userPrompts.filter(p => !p.isAutoGenerated);\n        if (!options.json) {\n          console.log(chalk.cyan('\\n🤖 Excluding auto-generated prompts'));\n        }\n      }\n      \n      // If --recent flag is used, limit to N most recent prompts\n      if (options.recent && options.recent > 0) {\n        userPrompts = userPrompts.slice(-options.recent);\n        if (!options.json) {\n          console.log(chalk.cyan(`\\n📝 Limiting to ${options.recent} most recent prompts`));\n        }\n      }\n      \n      // Allow user to select prompts if not disabled\n      if (options.select !== false && userPrompts.length > 0 && !options.recent) {\n        const promptChoices = userPrompts.map((prompt, index) => {\n          const cleanContent = prompt.content.replace(/\\n/g, ' ').replace(/\\s+/g, ' ').trim();\n          const displayContent = cleanContent.substring(0, 80);\n          const autoLabel = prompt.isAutoGenerated ? ' [AUTO]' : '';\n          return {\n            name: `${index + 1}. ${displayContent}${cleanContent.length > 80 ? '...' : ''}${autoLabel}`,\n            value: index,\n            checked: !prompt.isAutoGenerated  // Auto-generated prompts unchecked by default\n          };\n        });\n        \n        const { selectedPrompts } = await inquirer.prompt([\n          {\n            type: 'checkbox',\n            name: 'selectedPrompts',\n            message: 'Select prompts to include (use spacebar to select/deselect):',\n            choices: promptChoices,\n            pageSize: 15\n          }\n        ]);\n        \n        // Filter prompts based on selection\n        userPrompts = userPrompts.filter((_, index) => selectedPrompts.includes(index));\n        \n        if (userPrompts.length === 0) {\n          console.log(chalk.yellow('\\nNo prompts selected.'));\n          process.exit(0);\n        }\n      }\n      \n      // Match file diffs with prompts\n      const promptsWithChanges = userPrompts.map((prompt, index) => {\n        let associatedDiffs: Array<{ path: string; diff: string }> = [];\n        \n        // First, check if we have file changes from toolUseResult\n        if (prompt.associatedFiles && prompt.associatedFiles.length > 0) {\n          // Find changes from sessionData.changes that match this prompt's files\n          const relatedChanges = sessionData.changes.filter(change => \n            prompt.associatedFiles!.includes(change.path) && change.diff\n          );\n          \n          associatedDiffs = relatedChanges.map(change => ({\n            path: change.path,\n            diff: change.diff!\n          }));\n          \n          // Debug log\n          if (process.env.DEBUG_FILE_CHANGES) {\n            console.log(`\\nPrompt ${index + 1}: \"${prompt.content.substring(0, 50)}...\"`);\n            console.log(`Associated files: ${prompt.associatedFiles.join(', ')}`);\n            console.log(`Found ${associatedDiffs.length} diffs`);\n          }\n        }\n        \n        // Only use toolUseResult, no git diffs\n        \n        return {\n          prompt: prompt.content,\n          timestamp: prompt.timestamp,\n          sourceFile: (prompt as any).sourceFile,\n          fileDiffs: associatedDiffs\n        };\n      });\n      \n      // Detect tech stack\n      const techStack = await detectTechStack(process.cwd());\n      \n      // Calculate session info\n      let sessionInfo = undefined;\n      if (options.session || options.all) {\n        const timestamps = userPrompts\n          .map(p => new Date(p.timestamp))\n          .filter(d => !isNaN(d.getTime()));\n        \n        const sources = [...new Set(userPrompts\n          .map((p: any) => p.sourceFile)\n          .filter(Boolean))];\n        \n        sessionInfo = {\n          totalPrompts: userPrompts.length,\n          timeRange: timestamps.length >= 2 ? \n            `${timestamps[0].toLocaleDateString('en-US')} ~ ${timestamps[timestamps.length - 1].toLocaleDateString('en-US')}` : \n            undefined,\n          sources: sources.length > 0 ? sources : undefined,\n          projectPath: sessionData.metadata?.workingDirectory,\n          claudeProjectPath: sessionData.metadata?.claudeProjectPath\n        };\n      }\n      \n      const htmlData = {\n        promptsWithChanges,\n        sessionInfo,\n        techStack\n      };\n      \n      // If JSON output requested, output JSON and exit\n      if (options.json) {\n        const shareData = transformToShareData(htmlData, sessionData);\n        console.log(JSON.stringify(shareData, null, 2));\n        process.exit(0);\n      }\n      \n      // If share option is used, open browser with POST request\n      if (options.share) {\n        const shareSpinner = ora('Preparing to share...').start();\n        try {\n          const shareData = transformToShareData(htmlData, sessionData);\n          \n          // Check if CLAUDE.md exists and ask if user wants to include it\n          const claudeMdPath = path.join(process.cwd(), 'CLAUDE.md');\n          try {\n            const claudeMdContent = await fs.readFile(claudeMdPath, 'utf-8');\n            \n            // If --include-claude-md flag is set, include without asking\n            if (options.includeClaudeMd) {\n              shareData.claudeMd = claudeMdContent;\n            } else {\n              shareSpinner.stop();\n              \n              const { includeClaudeMd } = await inquirer.prompt([\n                {\n                  type: 'confirm',\n                  name: 'includeClaudeMd',\n                  message: 'Found CLAUDE.md file. Include it in the share?',\n                  default: true\n                }\n              ]);\n              \n              if (includeClaudeMd) {\n                shareData.claudeMd = claudeMdContent;\n              }\n              \n              shareSpinner.start('Preparing to share...');\n            }\n          } catch {\n            // CLAUDE.md doesn't exist, continue without it\n          }\n          \n          // Show JSON if requested (for debugging)\n          if (process.env.DEBUG_SHARE) {\n            console.log('\\nJSON being sent to API:');\n            console.log(JSON.stringify(shareData, null, 2));\n          }\n          \n          // Create temporary HTML file with auto-submitting form\n          const tempHtmlPath = await createAutoPostForm(shareData, options.apiUrl);\n          \n          shareSpinner.succeed('Opening browser with share data...');\n          \n          // Open the temporary HTML file in browser\n          const openCommand = process.platform === 'darwin' ? 'open' : \n                             process.platform === 'win32' ? 'start' : 'xdg-open';\n          \n          try {\n            await execAsync(`${openCommand} \"${tempHtmlPath}\"`);\n            console.log(chalk.cyan(`📄 Sharing to ${options.apiUrl}...`));\n          } catch (err) {\n            console.log(chalk.yellow(`⚠️  Could not open browser. Please open: ${tempHtmlPath}`));\n          }\n        } catch (err: any) {\n          shareSpinner.fail(`Share failed: ${err.message}`);\n        }\n        \n        // Exit after sharing\n        process.exit(0);\n      }\n      \n      // Generate HTML (only if not sharing)\n      const html = generateHtml(htmlData);\n      \n      // Create reports directory if it doesn't exist\n      const reportsDir = path.join(process.cwd(), 'ccshare-reports');\n      await fs.mkdir(reportsDir, { recursive: true });\n      \n      // Save HTML file\n      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);\n      const filename = `claude-session-${timestamp}.html`;\n      const filepath = path.join(reportsDir, filename);\n      \n      await fs.writeFile(filepath, html, 'utf-8');\n      \n      console.log(chalk.green(`\\n✅ HTML report generated: ccshare-reports/${filename}`));\n      \n      // Open the file\n      const openCommand = process.platform === 'darwin' ? 'open' : \n                         process.platform === 'win32' ? 'start' : 'xdg-open';\n      \n      try {\n        await execAsync(`${openCommand} \"${filepath}\"`);\n        console.log(chalk.cyan('📄 Opening in your default browser...'));\n      } catch (err) {\n        console.log(chalk.yellow('⚠️  Could not auto-open file. Please open manually.'));\n      }\n      \n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('share')\n  .description('Capture and share current Claude Code session')\n  .option('-f, --file <path>', 'Path to Claude Code session file')\n  .option('-m, --message <message>', 'Optional message to include with share')\n  .action(async (options) => {\n    try {\n      console.log(chalk.blue('🚀 CCShare - Claude Code Session Sharing Tool'));\n      \n      const spinner = ora('Capturing Claude Code session...').start();\n      \n      let sessionData: SessionData;\n      \n      if (options.file) {\n        sessionData = await captureSession(options.file);\n      } else {\n        const answers = await inquirer.prompt([\n          {\n            type: 'input',\n            name: 'sessionPath',\n            message: 'Enter path to Claude Code session file (or press enter to use default):',\n            default: process.env.HOME + '/.claude/sessions/latest.json'\n          }\n        ]);\n        sessionData = await captureSession(answers.sessionPath);\n      }\n      \n      spinner.succeed('Session captured successfully');\n      \n      if (!options.message) {\n        const messageAnswer = await inquirer.prompt([\n          {\n            type: 'input',\n            name: 'message',\n            message: 'Add a description for this share (optional):'\n          }\n        ]);\n        sessionData.message = messageAnswer.message;\n      } else {\n        sessionData.message = options.message;\n      }\n      \n      spinner.start('Uploading session to ccshare...');\n      const shareUrl = await uploadSession(sessionData);\n      spinner.succeed('Session uploaded successfully');\n      \n      console.log(chalk.green('\\n✅ Your session has been shared!'));\n      console.log(chalk.white('Share URL: ') + chalk.cyan(shareUrl));\n      console.log(chalk.gray('\\nAnyone with this link can view your Claude Code session.'));\n      \n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('watch')\n  .description('Watch for new prompts and share on demand')\n  .option('--api-url <url>', 'Custom API URL for sharing', 'http://localhost:3000/shares')\n  .option('--include-claude-md', 'Include CLAUDE.md file without asking')\n  .option('--exclude-auto', 'Exclude auto-generated prompts')\n  .action(async (options) => {\n    try {\n      const watcher = new SessionWatcher({\n        apiUrl: options.apiUrl,\n        includeClaudeMd: options.includeClaudeMd,\n        excludeAuto: options.excludeAuto\n      });\n      \n      await watcher.start();\n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('list')\n  .description('List your recent shares')\n  .action(async () => {\n    console.log(chalk.yellow('This feature is coming soon!'));\n  });\n\nprogram.parse();",
+        "structuredPatch": [
+          {
+            "oldStart": 342,
+            "oldLines": 6,
+            "newStart": 342,
+            "newLines": 130,
+            "lines": [
+              "   });",
+              " ",
+              " program",
+              "+  .command('load <slug>')",
+              "+  .description('Load prompts from a shared slug and execute with claude -p')",
+              "+  .option('--api-url <url>', 'Custom API URL', 'http://localhost:3000/shares')",
+              "+  .option('--dry-run', 'Show prompts without executing')",
+              "+  .option('--select', 'Select which prompts to execute')",
+              "+  .action(async (slug, options) => {",
+              "+    try {",
+              "+      const spinner = ora(`Fetching share: ${slug}...`).start();",
+              "+      ",
+              "+      const shareData = await fetchFromSlug(slug, options.apiUrl);",
+              "+      ",
+              "+      if (!shareData) {",
+              "+        spinner.fail('Failed to fetch share');",
+              "+        process.exit(1);",
+              "+      }",
+              "+      ",
+              "+      spinner.succeed(`Fetched ${shareData.prompts.length} prompts`);",
+              "+      ",
+              "+      // Extract user prompts",
+              "+      const userPrompts = shareData.prompts.filter(p => !p.isAutoGenerated);",
+              "+      ",
+              "+      if (userPrompts.length === 0) {",
+              "+        console.log(chalk.yellow('No user prompts found in this share.'));",
+              "+        process.exit(0);",
+              "+      }",
+              "+      ",
+              "+      // Select prompts if requested",
+              "+      let selectedPrompts = userPrompts;",
+              "+      if (options.select) {",
+              "+        const promptChoices = userPrompts.map((prompt, index) => {",
+              "+          const preview = prompt.content.substring(0, 80).replace(/\\n/g, ' ');",
+              "+          return {",
+              "+            name: `${index + 1}. ${preview}${prompt.content.length > 80 ? '...' : ''}`,",
+              "+            value: index,",
+              "+            checked: true",
+              "+          };",
+              "+        });",
+              "+        ",
+              "+        const { selected } = await inquirer.prompt([",
+              "+          {",
+              "+            type: 'checkbox',",
+              "+            name: 'selected',",
+              "+            message: 'Select prompts to execute:',",
+              "+            choices: promptChoices,",
+              "+            pageSize: 15",
+              "+          }",
+              "+        ]);",
+              "+        ",
+              "+        selectedPrompts = userPrompts.filter((_, index) => selected.includes(index));",
+              "+      }",
+              "+      ",
+              "+      if (selectedPrompts.length === 0) {",
+              "+        console.log(chalk.yellow('No prompts selected.'));",
+              "+        process.exit(0);",
+              "+      }",
+              "+      ",
+              "+      // Show what will be executed",
+              "+      console.log(chalk.cyan(`\\nWill execute ${selectedPrompts.length} prompts:`));",
+              "+      selectedPrompts.forEach((prompt, index) => {",
+              "+        const preview = prompt.content.substring(0, 100).replace(/\\n/g, ' ');",
+              "+        console.log(chalk.white(`${index + 1}. ${preview}${prompt.content.length > 100 ? '...' : ''}`));",
+              "+      });",
+              "+      ",
+              "+      if (options.dryRun) {",
+              "+        console.log(chalk.gray('\\n[Dry run mode - not executing]'));",
+              "+        process.exit(0);",
+              "+      }",
+              "+      ",
+              "+      // Execute each prompt with claude -p",
+              "+      console.log(chalk.cyan('\\nExecuting prompts...\\n'));",
+              "+      ",
+              "+      for (let i = 0; i < selectedPrompts.length; i++) {",
+              "+        const prompt = selectedPrompts[i];",
+              "+        console.log(chalk.blue(`[${i + 1}/${selectedPrompts.length}] Executing prompt...`));",
+              "+        ",
+              "+        try {",
+              "+          // Escape quotes in the prompt content",
+              "+          const escapedPrompt = prompt.content.replace(/'/g, \"'\\\\''\");",
+              "+          ",
+              "+          // Execute claude -p command",
+              "+          const { stdout, stderr } = await execAsync(`claude -p '${escapedPrompt}'`, {",
+              "+            maxBuffer: 1024 * 1024 * 10 // 10MB buffer",
+              "+          });",
+              "+          ",
+              "+          if (stdout) {",
+              "+            console.log(stdout);",
+              "+          }",
+              "+          ",
+              "+          if (stderr) {",
+              "+            console.error(chalk.red('Error output:'), stderr);",
+              "+          }",
+              "+          ",
+              "+          // Add a small delay between prompts to avoid overwhelming",
+              "+          if (i < selectedPrompts.length - 1) {",
+              "+            await new Promise(resolve => setTimeout(resolve, 1000));",
+              "+          }",
+              "+          ",
+              "+        } catch (error: any) {",
+              "+          console.error(chalk.red(`Failed to execute prompt ${i + 1}:`), error.message);",
+              "+          ",
+              "+          const { continueExecution } = await inquirer.prompt([",
+              "+            {",
+              "+              type: 'confirm',",
+              "+              name: 'continueExecution',",
+              "+              message: 'Continue with remaining prompts?',",
+              "+              default: true",
+              "+            }",
+              "+          ]);",
+              "+          ",
+              "+          if (!continueExecution) {",
+              "+            process.exit(1);",
+              "+          }",
+              "+        }",
+              "+      }",
+              "+      ",
+              "+      console.log(chalk.green('\\n✅ All prompts executed successfully!'));",
+              "+      ",
+              "+    } catch (error: any) {",
+              "+      console.error(chalk.red('Error:'), error.message);",
+              "+      process.exit(1);",
+              "+    }",
+              "+  });",
+              "+",
+              "+program",
+              "   .command('list')",
+              "   .description('List your recent shares')",
+              "   .action(async () => {"
+            ]
+          }
+        ],
+        "userModified": false,
+        "replaceAll": false
+      }
+    },
+    {
+      "parentUuid": "81e3eb9c-3198-4986-b3b4-febae536afa2",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01B63ZZjB1LnN8snwQczi83m",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_014HyUezoRGZogtxvCbq7UZQ",
+            "name": "TodoWrite",
+            "input": {
+              "todos": [
+                {
+                  "id": "1",
+                  "content": "Add load command to fetch prompts from slug",
+                  "status": "completed",
+                  "priority": "high"
+                },
+                {
+                  "id": "2",
+                  "content": "Execute claude -p with fetched prompts",
+                  "status": "completed",
+                  "priority": "high"
+                },
+                {
+                  "id": "3",
+                  "content": "Handle API response and error cases",
+                  "status": "completed",
+                  "priority": "medium"
+                }
+              ]
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 3182,
+          "cache_read_input_tokens": 129951,
+          "output_tokens": 148,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHxeK68ezjm4TXDXwkm",
+      "type": "assistant",
+      "uuid": "5c1d4566-8b99-4049-aab7-d0f6a8c5cb76",
+      "timestamp": "2025-07-22T15:27:58.395Z"
+    },
+    {
+      "parentUuid": "5c1d4566-8b99-4049-aab7-d0f6a8c5cb76",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_014HyUezoRGZogtxvCbq7UZQ",
+            "type": "tool_result",
+            "content": "Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable"
+          }
+        ]
+      },
+      "uuid": "1d5b3bbf-5749-4011-837d-13db0f1df913",
+      "timestamp": "2025-07-22T15:27:58.470Z",
+      "toolUseResult": {
+        "oldTodos": [
+          {
+            "content": "Add load command to fetch prompts from slug",
+            "status": "in_progress",
+            "priority": "high",
+            "id": "1"
+          },
+          {
+            "content": "Execute claude -p with fetched prompts",
+            "status": "pending",
+            "priority": "high",
+            "id": "2"
+          },
+          {
+            "content": "Handle API response and error cases",
+            "status": "pending",
+            "priority": "medium",
+            "id": "3"
+          }
+        ],
+        "newTodos": [
+          {
+            "content": "Add load command to fetch prompts from slug",
+            "status": "completed",
+            "priority": "high",
+            "id": "1"
+          },
+          {
+            "content": "Execute claude -p with fetched prompts",
+            "status": "completed",
+            "priority": "high",
+            "id": "2"
+          },
+          {
+            "content": "Handle API response and error cases",
+            "status": "completed",
+            "priority": "medium",
+            "id": "3"
+          }
+        ]
+      }
+    },
+    {
+      "parentUuid": "1d5b3bbf-5749-4011-837d-13db0f1df913",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01G7G5oGXqPuvciLbckQbsFk",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "이제 빌드하고 README를 업데이트하겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 190,
+          "cache_read_input_tokens": 133133,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHyD74E68v1ryVJPawr",
+      "type": "assistant",
+      "uuid": "ed0a0190-67fc-443a-b13b-80b5c2c2a415",
+      "timestamp": "2025-07-22T15:28:02.822Z"
+    },
+    {
+      "parentUuid": "ed0a0190-67fc-443a-b13b-80b5c2c2a415",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01G7G5oGXqPuvciLbckQbsFk",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01BxezJG4JSUWf8qHuLuhZ3U",
+            "name": "Bash",
+            "input": {
+              "command": "npm run build",
+              "description": "Build TypeScript to JavaScript"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 190,
+          "cache_read_input_tokens": 133133,
+          "output_tokens": 99,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHyD74E68v1ryVJPawr",
+      "type": "assistant",
+      "uuid": "7e31c8e4-8fed-40fe-bb2c-4f5d07aad1b7",
+      "timestamp": "2025-07-22T15:28:03.984Z"
+    },
+    {
+      "parentUuid": "7e31c8e4-8fed-40fe-bb2c-4f5d07aad1b7",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01BxezJG4JSUWf8qHuLuhZ3U",
+            "type": "tool_result",
+            "content": "> ccshare@0.2.0 build\n> tsc",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "257ecfae-6bda-481a-aca3-7974fbc3f114",
+      "timestamp": "2025-07-22T15:28:04.694Z",
+      "toolUseResult": {
+        "stdout": "> ccshare@0.2.0 build\n> tsc",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "257ecfae-6bda-481a-aca3-7974fbc3f114",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_011RA88XswMdR3JejZ7ry7Qi",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01QwsGJNWBMax9UqcjFq8QMZ",
+            "name": "Edit",
+            "input": {
+              "file_path": "/Users/james/Development/scripts/ccshare/README.md",
+              "old_string": "In watch mode:\n- Press **[S]** to share the current session\n- Press **[C]** to clear the screen\n- Press **[Q]** to quit\n- New prompts are displayed as they are detected\n- File changes are tracked in real-time\n\n### Command Options",
+              "new_string": "In watch mode:\n- Press **[S]** to share the current session\n- Press **[C]** to clear the screen\n- Press **[Q]** to quit\n- New prompts are displayed as they are detected\n- File changes are tracked in real-time\n\n### Load and Execute Shared Prompts\n\nYou can load prompts from a shared session and execute them with Claude:\n\n```bash\n# Load and execute all prompts from a share\nccshare load AdsrMP\n\n# Preview prompts without executing (dry run)\nccshare load AdsrMP --dry-run\n\n# Select which prompts to execute\nccshare load AdsrMP --select\n\n# Use a custom API URL\nccshare load AdsrMP --api-url https://myapi.com/shares\n```\n\nThis will:\n1. Fetch the shared session from the API\n2. Extract user prompts (excluding auto-generated ones)\n3. Execute each prompt sequentially using `claude -p`\n4. Show progress and handle errors gracefully\n\n### Command Options"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 126,
+          "cache_read_input_tokens": 133323,
+          "output_tokens": 407,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHyfng7FrTHC2THGpi6",
+      "type": "assistant",
+      "uuid": "a4b54959-5683-44e5-87e7-6677df95c0f0",
+      "timestamp": "2025-07-22T15:28:17.381Z"
+    },
+    {
+      "parentUuid": "a4b54959-5683-44e5-87e7-6677df95c0f0",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01QwsGJNWBMax9UqcjFq8QMZ",
+            "type": "tool_result",
+            "content": "The file /Users/james/Development/scripts/ccshare/README.md has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n    81→# Watch with custom options\n    82→ccshare watch --exclude-auto --api-url https://myapi.com/shares\n    83→```\n    84→\n    85→In watch mode:\n    86→- Press **[S]** to share the current session\n    87→- Press **[C]** to clear the screen\n    88→- Press **[Q]** to quit\n    89→- New prompts are displayed as they are detected\n    90→- File changes are tracked in real-time\n    91→\n    92→### Load and Execute Shared Prompts\n    93→\n    94→You can load prompts from a shared session and execute them with Claude:\n    95→\n    96→```bash\n    97→# Load and execute all prompts from a share\n    98→ccshare load AdsrMP\n    99→\n   100→# Preview prompts without executing (dry run)\n   101→ccshare load AdsrMP --dry-run\n   102→\n   103→# Select which prompts to execute\n   104→ccshare load AdsrMP --select\n   105→\n   106→# Use a custom API URL\n   107→ccshare load AdsrMP --api-url https://myapi.com/shares\n   108→```\n   109→\n   110→This will:\n   111→1. Fetch the shared session from the API\n   112→2. Extract user prompts (excluding auto-generated ones)\n   113→3. Execute each prompt sequentially using `claude -p`\n   114→4. Show progress and handle errors gracefully\n   115→\n   116→### Command Options\n   117→\n   118→```bash\n   119→# Skip prompt selection (include all prompts)\n   120→ccshare --no-select"
+          }
+        ]
+      },
+      "uuid": "ee5cb64a-c695-4abe-9085-3541c0f41314",
+      "timestamp": "2025-07-22T15:28:17.470Z",
+      "toolUseResult": {
+        "filePath": "/Users/james/Development/scripts/ccshare/README.md",
+        "oldString": "In watch mode:\n- Press **[S]** to share the current session\n- Press **[C]** to clear the screen\n- Press **[Q]** to quit\n- New prompts are displayed as they are detected\n- File changes are tracked in real-time\n\n### Command Options",
+        "newString": "In watch mode:\n- Press **[S]** to share the current session\n- Press **[C]** to clear the screen\n- Press **[Q]** to quit\n- New prompts are displayed as they are detected\n- File changes are tracked in real-time\n\n### Load and Execute Shared Prompts\n\nYou can load prompts from a shared session and execute them with Claude:\n\n```bash\n# Load and execute all prompts from a share\nccshare load AdsrMP\n\n# Preview prompts without executing (dry run)\nccshare load AdsrMP --dry-run\n\n# Select which prompts to execute\nccshare load AdsrMP --select\n\n# Use a custom API URL\nccshare load AdsrMP --api-url https://myapi.com/shares\n```\n\nThis will:\n1. Fetch the shared session from the API\n2. Extract user prompts (excluding auto-generated ones)\n3. Execute each prompt sequentially using `claude -p`\n4. Show progress and handle errors gracefully\n\n### Command Options",
+        "originalFile": "# ccshare\n\nShare your Claude Code sessions as beautiful HTML reports with syntax-highlighted code diffs and project tech stack information.\n\n## Features\n\n- 📝 Export Claude Code conversations to HTML\n- 🎨 Beautiful, responsive HTML reports with syntax highlighting\n- 📊 Automatic tech stack detection (languages, frameworks, tools, databases)\n- 🔍 Interactive prompt selection (choose which prompts to include)\n- 📁 Reads Claude's project-specific history files\n- 🎯 Associates file changes with specific prompts\n- 📂 Organized output in `ccshare-reports/` folder\n\n## Installation\n\n### Global Installation\n```bash\nnpm install -g ccshare\n```\n\n### Direct Execution (without installation)\nYou can also run ccshare directly using npx or bunx:\n\n```bash\n# Using npx\nnpx ccshare --share\n\n# Using bunx (if you have Bun installed)\nbunx ccshare --share\n\n# Run a specific version\nnpx ccshare@0.2.0 --share\n```\n\n## Usage\n\n### Basic Usage\n\nGenerate an HTML report from your current Claude Code session:\n\n```bash\nccshare\n```\n\nThis will:\n1. Show an interactive prompt selector (use spacebar to select/deselect)\n2. Generate an HTML report with selected prompts\n3. Open the report in your default browser\n\n### Advanced Usage\n\n```bash\n# Share to localhost:3000/shares API\nccshare --share\n\n# Share with custom API URL\nccshare --share --api-url https://myapi.com/shares\n\n# Output JSON format instead of HTML\nccshare --json\n\n# Include only the N most recent prompts\nccshare --recent 5\n\n# Exclude auto-generated prompts (commands, system messages)\nccshare --exclude-auto\n\n# Include CLAUDE.md without asking\nccshare --share --include-claude-md\n```\n\n### Watch Mode (Real-time tracking)\n\nWatch mode allows you to track prompts in real-time and share whenever you want:\n\n```bash\n# Start watch mode\nccshare watch\n\n# Watch with custom options\nccshare watch --exclude-auto --api-url https://myapi.com/shares\n```\n\nIn watch mode:\n- Press **[S]** to share the current session\n- Press **[C]** to clear the screen\n- Press **[Q]** to quit\n- New prompts are displayed as they are detected\n- File changes are tracked in real-time\n\n### Command Options\n\n```bash\n# Skip prompt selection (include all prompts)\nccshare --no-select\n\n# Include all historical sessions from Claude's project folder\nccshare --all\n\n# Specify a custom session file\nccshare -s /path/to/session.json\nccshare --session /path/to/session.json\n\n# Specify a directory containing session files\nccshare -s /path/to/sessions/\n\n# Combine options\nccshare --all --no-select\n```\n\n## How It Works\n\nccshare reads Claude Code session data from:\n1. Current conversation (when no history is available)\n2. Claude's project-specific folders: `~/.claude/projects/{project-path}/`\n3. Custom session files or directories you specify\n\nThe tool automatically:\n- Detects your project's tech stack by analyzing config files\n- Associates file changes with the prompts that caused them\n- Generates clean, readable HTML with syntax highlighting\n- Saves reports in `ccshare-reports/` folder (git-ignored)\n\n## Output\n\nHTML reports include:\n- **Tech Stack Tags**: Visual tags showing detected technologies\n- **Prompts**: User prompts with timestamps and source files\n- **File Changes**: Syntax-highlighted diffs associated with each prompt\n- **Session Info**: Summary of total prompts, time range, and sources\n\n## Local Session Storage\n\nYou can also store sessions locally in `.claude-sessions/` folder for:\n- Team collaboration (sharing session files)\n- Archiving important problem-solving sessions\n- Demo/tutorial sessions\n- Importing sessions from other AI tools\n\nExample:\n```bash\n# Copy a session to local folder\ncp ~/Downloads/shared-session.json .claude-sessions/\n\n# Include it in the report\nccshare --all\n```\n\n## Examples\n\n### Share current session with prompt selection\n```bash\nccshare\n```\n\n### Share all sessions without selection dialog\n```bash\nccshare --all --no-select\n```\n\n### Share specific session file\n```bash\nccshare -s ~/my-session.json\n```\n\n## Requirements\n\n- Node.js >= 16.0.0\n- npm or yarn\n\n## Development\n\n```bash\n# Clone the repository\ngit clone https://github.com/insomenia/ccshare.git\ncd ccshare\n\n# Install dependencies\nnpm install\n\n# Build TypeScript\nnpm run build\n\n# Run in development mode\nnpm run dev\n```\n\n## License\n\nMIT\n\n## Contributing\n\nContributions are welcome! Please feel free to submit a Pull Request.\n\n## Issues\n\nIf you find any bugs or have feature requests, please create an issue on [GitHub](https://github.com/insomenia/ccshare/issues).",
+        "structuredPatch": [
+          {
+            "oldStart": 89,
+            "oldLines": 6,
+            "newStart": 89,
+            "newLines": 30,
+            "lines": [
+              " - New prompts are displayed as they are detected",
+              " - File changes are tracked in real-time",
+              " ",
+              "+### Load and Execute Shared Prompts",
+              "+",
+              "+You can load prompts from a shared session and execute them with Claude:",
+              "+",
+              "+```bash",
+              "+# Load and execute all prompts from a share",
+              "+ccshare load AdsrMP",
+              "+",
+              "+# Preview prompts without executing (dry run)",
+              "+ccshare load AdsrMP --dry-run",
+              "+",
+              "+# Select which prompts to execute",
+              "+ccshare load AdsrMP --select",
+              "+",
+              "+# Use a custom API URL",
+              "+ccshare load AdsrMP --api-url https://myapi.com/shares",
+              "+```",
+              "+",
+              "+This will:",
+              "+1. Fetch the shared session from the API",
+              "+2. Extract user prompts (excluding auto-generated ones)",
+              "+3. Execute each prompt sequentially using `claude -p`",
+              "+4. Show progress and handle errors gracefully",
+              "+",
+              " ### Command Options",
+              " ",
+              " ```bash"
+            ]
+          }
+        ],
+        "userModified": false,
+        "replaceAll": false
+      }
+    },
+    {
+      "parentUuid": "ee5cb64a-c695-4abe-9085-3541c0f41314",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01Mpqtb36AgrKB1n9SNQ5dct",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "완료했습니다! 이제 `ccshare load` 명령으로 공유된 프롬프트를 가져와서 실행할 수 있습니다:\n\n## 사용 방법:\n\n```bash\n# 기본 사용 - 모든 프롬프트 실행\nccshare load AdsrMP\n\n# 실행하지 않고 미리보기 (dry run)\nccshare load AdsrMP --dry-run\n\n# 실행할 프롬프트 선택\nccshare load AdsrMP --select\n\n# 커스텀 API URL 사용\nccshare load AdsrMP --api-url https://myapi.com/shares\n```\n\n## 주요 기능:\n\n1. **slug로 공유 데이터 가져오기**: API에서 slug(예: AdsrMP)로 공유된 세션 데이터를 가져옴\n2. **자동 생성 프롬프트 제외**: 사용자가 직접 입력한 프롬프트만 실행\n3. **프롬프트 선택**: `--select` 옵션으로 실행할 프롬프트를 선택\n4. **순차 실행**: 각 프롬프트를 `claude -p` 명령으로 순차적으로 실행\n5. **에러 처리**: 실행 중 에러가 발생하면 계속할지 물어봄\n6. **Dry run 모드**: `--dry-run`으로 실제 실행 없이 미리보기\n\n이제 공유된 Claude Code 세션의 프롬프트들을 쉽게 재실행할 수 있습니다!"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 881,
+          "cache_read_input_tokens": 133449,
+          "output_tokens": 474,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRNHzcPJp9iW14PnL9ZCq",
+      "type": "assistant",
+      "uuid": "4328298f-6597-44c3-aeb4-2a549347f006",
+      "timestamp": "2025-07-22T15:28:29.341Z"
+    },
+    {
+      "parentUuid": "4328298f-6597-44c3-aeb4-2a549347f006",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": "Caveat: The messages below were generated by the user while running local commands. DO NOT respond to these messages or otherwise consider them in your response unless the user explicitly asks you to."
+      },
+      "isMeta": true,
+      "uuid": "dc97cee9-c304-4b92-b5a8-4402f0468e58",
+      "timestamp": "2025-07-22T06:04:35.016Z"
+    },
+    {
+      "parentUuid": "dc97cee9-c304-4b92-b5a8-4402f0468e58",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": "<command-name>/exit</command-name>\n            <command-message>exit</command-message>\n            <command-args></command-args>"
+      },
+      "uuid": "eb08e059-ac0a-4be1-aa5a-c7c662276a0a",
+      "timestamp": "2025-07-23T00:17:19.100Z"
+    },
+    {
+      "parentUuid": "eb08e059-ac0a-4be1-aa5a-c7c662276a0a",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "fbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+      "version": "1.0.57",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": "<local-command-stdout>(no content)</local-command-stdout>"
+      },
+      "uuid": "cec4596f-b624-4d69-b9d0-c72ed07364f6",
+      "timestamp": "2025-07-23T00:17:19.100Z"
     }
   ],
   "metadata": {
-    "generatedBy": "ccshare",
-    "version": "0.2.0",
-    "platform": "darwin"
-  },
-  "toolStats": {
-    "totalCalls": 1169,
-    "byTool": {
-      "Read": 192,
-      "Edit": 192,
-      "TodoWrite": 181,
-      "Bash": 369,
-      "LS": 8,
-      "Write": 36,
-      "Grep": 67,
-      "MultiEdit": 108,
-      "Glob": 8,
-      "Task": 4,
-      "ExitPlanMode": 3,
-      "mcp__context7__search_context7_docs": 1
+    "gitBranch": "main",
+    "gitCommitCount": 11,
+    "nodeVersion": "v23.11.0",
+    "claudeSettings": {
+      "permissions": [
+        "Bash",
+        "WebFetch",
+        "Search",
+        "mcp__playwright__*"
+      ],
+      "model": "opus"
     },
-    "mcpCalls": 1,
-    "regularCalls": 1168
+    "ccshareVersion": "0.3.0",
+    "generatedAt": "2025-07-24T05:13:32.649Z",
+    "selectedPromptsCount": 1,
+    "totalEntriesCount": 24
   }
 }
