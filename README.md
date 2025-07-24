@@ -56,9 +56,6 @@ This will:
 ### Advanced Usage
 
 ```bash
-# Generate HTML report locally (instead of sharing)
-ccshare --html
-
 # Share with custom API URL
 ccshare --api-url https://myapi.com/shares
 
@@ -200,11 +197,6 @@ ccshare
 ### Share all sessions without selection dialog
 ```bash
 ccshare --all --no-select
-```
-
-### Generate HTML report locally
-```bash
-ccshare --html
 ```
 
 ### Share specific session file
