@@ -6,6 +6,12 @@ export interface TechStack {
   frameworks: string[];
   tools: string[];
   databases: string[];
+  versions?: {
+    [key: string]: string;
+  };
+  dependencies?: {
+    [key: string]: string;
+  };
 }
 
 export async function detectTechStack(projectPath: string): Promise<TechStack> {
@@ -13,7 +19,9 @@ export async function detectTechStack(projectPath: string): Promise<TechStack> {
     languages: [],
     frameworks: [],
     tools: [],
-    databases: []
+    databases: [],
+    versions: {},
+    dependencies: {}
   };
 
   // Check for various config files and detect tech stack
@@ -58,7 +66,9 @@ export async function detectTechStack(projectPath: string): Promise<TechStack> {
     languages: [...new Set(techStack.languages)],
     frameworks: [...new Set(techStack.frameworks)],
     tools: [...new Set(techStack.tools)],
-    databases: [...new Set(techStack.databases)]
+    databases: [...new Set(techStack.databases)],
+    versions: techStack.versions,
+    dependencies: techStack.dependencies
   };
 }
 
@@ -69,19 +79,59 @@ function detectFromFile(filename: string, content: string, techStack: TechStack)
       const pkg = JSON.parse(content);
       const deps = { ...pkg.dependencies, ...pkg.devDependencies };
       
-      // Frameworks
-      if (deps.react) techStack.frameworks.push('react');
-      if (deps.vue) techStack.frameworks.push('vue');
-      if (deps.angular) techStack.frameworks.push('angular');
-      if (deps.express) techStack.frameworks.push('express');
-      if (deps.next) techStack.frameworks.push('nextjs');
-      if (deps.gatsby) techStack.frameworks.push('gatsby');
-      if (deps.svelte) techStack.frameworks.push('svelte');
-      if (deps.nuxt) techStack.frameworks.push('nuxt');
-      if (deps.nestjs || deps['@nestjs/core']) techStack.frameworks.push('nestjs');
+      // Store project version
+      if (pkg.version) {
+        techStack.versions!['project'] = pkg.version;
+      }
+      
+      // Store Node engine version
+      if (pkg.engines?.node) {
+        techStack.versions!['node'] = pkg.engines.node;
+      }
+      
+      // Frameworks with versions
+      if (deps.react) {
+        techStack.frameworks.push('react');
+        techStack.versions!['react'] = deps.react;
+      }
+      if (deps.vue) {
+        techStack.frameworks.push('vue');
+        techStack.versions!['vue'] = deps.vue;
+      }
+      if (deps.angular) {
+        techStack.frameworks.push('angular');
+        techStack.versions!['angular'] = deps.angular;
+      }
+      if (deps.express) {
+        techStack.frameworks.push('express');
+        techStack.versions!['express'] = deps.express;
+      }
+      if (deps.next) {
+        techStack.frameworks.push('nextjs');
+        techStack.versions!['nextjs'] = deps.next;
+      }
+      if (deps.gatsby) {
+        techStack.frameworks.push('gatsby');
+        techStack.versions!['gatsby'] = deps.gatsby;
+      }
+      if (deps.svelte) {
+        techStack.frameworks.push('svelte');
+        techStack.versions!['svelte'] = deps.svelte;
+      }
+      if (deps.nuxt) {
+        techStack.frameworks.push('nuxt');
+        techStack.versions!['nuxt'] = deps.nuxt;
+      }
+      if (deps.nestjs || deps['@nestjs/core']) {
+        techStack.frameworks.push('nestjs');
+        techStack.versions!['nestjs'] = deps['@nestjs/core'] || deps.nestjs;
+      }
       
       // Tools
-      if (deps.typescript) techStack.languages.push('typescript');
+      if (deps.typescript) {
+        techStack.languages.push('typescript');
+        techStack.versions!['typescript'] = deps.typescript;
+      }
       if (deps.webpack) techStack.tools.push('webpack');
       if (deps.vite) techStack.tools.push('vite');
       if (deps.jest) techStack.tools.push('jest');
@@ -94,6 +144,15 @@ function detectFromFile(filename: string, content: string, techStack: TechStack)
       if (deps.pg || deps.postgres) techStack.databases.push('postgresql');
       if (deps.redis) techStack.databases.push('redis');
       if (deps.sqlite3) techStack.databases.push('sqlite');
+      
+      // Store key dependencies (limit to 20 most important)
+      const importantDeps = Object.entries(deps)
+        .filter(([name]) => !name.startsWith('@types/'))
+        .slice(0, 20);
+      
+      for (const [name, version] of importantDeps) {
+        techStack.dependencies![name] = version as string;
+      }
       break;
 
     case 'Gemfile':

@@ -3,6 +3,7 @@ import path from 'path';
 import { SessionData, Prompt, FileChange, ThoughtBlock, ToolCall, MCPServer, AssistantAction, ToolExecution, RawSessionData, RawSessionEntry } from './types.js';
 import { appendFileSync, existsSync } from 'fs';
 import { execSync } from 'child_process';
+import { detectTechStack } from './tech-detector.js';
 
 // Debug logging to file
 function debugLog(message: string) {
@@ -19,12 +20,28 @@ async function getAdditionalMetadata(): Promise<any> {
   try {
     metadata.gitBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
     metadata.gitCommitCount = parseInt(execSync('git rev-list --count HEAD', { encoding: 'utf8' }).trim());
+    metadata.gitRemoteUrl = execSync('git config --get remote.origin.url', { encoding: 'utf8' }).trim();
   } catch {
     // Not a git repository or git not available
   }
   
   // Get Node.js version
   metadata.nodeVersion = process.version;
+  
+  // Get npm version
+  try {
+    metadata.npmVersion = execSync('npm --version', { encoding: 'utf8' }).trim();
+  } catch {
+    // npm not available
+  }
+  
+  // Get OS information
+  metadata.osInfo = {
+    platform: process.platform,
+    arch: process.arch,
+    release: process.release.name,
+    version: process.version
+  };
   
   // Get Claude settings
   try {
@@ -398,6 +415,14 @@ export async function captureRawSession(sessionPath?: string, limit: number = 20
     
     // Add metadata
     rawData.metadata = await getAdditionalMetadata();
+    
+    // Add tech stack information
+    try {
+      const techStack = await detectTechStack(process.cwd());
+      rawData.metadata.techStack = techStack;
+    } catch (error) {
+      console.error('Error detecting tech stack:', error);
+    }
     
     return rawData;
   } catch (error) {
