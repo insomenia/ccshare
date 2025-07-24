@@ -234,7 +234,8 @@ export function transformToShareData(htmlData: HtmlData, sessionData: SessionDat
           tool: exec.tool,
           result: exec.result,
           status: exec.status as 'success' | 'error' | undefined,
-          promptId: promptIndex ? promptIndex.toString() : undefined
+          promptId: promptIndex ? promptIndex.toString() : undefined,
+          fileChange: exec.fileChange
         });
       }
     });

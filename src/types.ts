@@ -117,6 +117,13 @@ export interface ToolExecution {
   result?: string;  // Execution result
   status?: 'success' | 'error';  // Execution status
   promptId?: string;  // Link to the prompt
+  fileChange?: {  // File change details for Edit/MultiEdit tools
+    filePath: string;
+    changeType: 'edit' | 'create' | 'delete';
+    diff?: string;
+    oldContent?: string;
+    newContent?: string;
+  };
 }
 
 export interface WorkflowItem {
@@ -129,4 +136,12 @@ export interface WorkflowItem {
   description?: string;  // For assistant_action
   actionType?: 'explanation' | 'code_change' | 'file_read' | 'command_execution' | 'analysis';  // For assistant_action
   promptId?: string;
+  // File change details (for Edit/MultiEdit tool results)
+  fileChange?: {
+    filePath: string;
+    changeType: 'edit' | 'create' | 'delete';
+    diff?: string;
+    oldContent?: string;
+    newContent?: string;
+  };
 }

@@ -1131,6 +1131,29 @@ export function parseJSONLSessionData(rawData: string): SessionData {
             if (!sessionData.toolExecutions[i].result) {
               sessionData.toolExecutions[i].result = entry.content;
               sessionData.toolExecutions[i].status = entry.error ? 'error' : 'success';
+              
+              // If this is an Edit/MultiEdit tool result, check for file changes
+              const tool = sessionData.toolExecutions[i].tool;
+              if ((tool === 'Edit' || tool === 'MultiEdit') && entry.toolUseResult) {
+                const result = entry.toolUseResult;
+                if (result.filePath) {
+                  // Find the corresponding file change
+                  const fileChange = sessionData.changes.find(c => 
+                    c.path === result.filePath && 
+                    Math.abs(new Date(c.timestamp).getTime() - new Date(entry.timestamp || '').getTime()) < 1000
+                  );
+                  
+                  if (fileChange) {
+                    sessionData.toolExecutions[i].fileChange = {
+                      filePath: result.filePath,
+                      changeType: fileChange.type,
+                      diff: fileChange.diff,
+                      oldContent: fileChange.oldContent,
+                      newContent: fileChange.content
+                    };
+                  }
+                }
+              }
               break;
             }
           }

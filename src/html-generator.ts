@@ -1,6 +1,6 @@
 import { escape } from 'html-escaper';
 import { TechStack } from './tech-detector.js';
-import { WorkflowItem } from './types.js';
+import { WorkflowItem, AssistantAction, ToolExecution } from './types.js';
 
 export interface HtmlData {
   prompts: Array<{
@@ -13,18 +13,8 @@ export interface HtmlData {
     diff: string;
   }>;
   workflow?: WorkflowItem[];  // Combined workflow
-  assistantActions?: Array<{
-    type: string;
-    description: string;
-    timestamp: string;
-  }>;
-  toolExecutions?: Array<{
-    tool: string;
-    timestamp: string;
-    parameters?: any;
-    result?: string;
-    status?: string;
-  }>;
+  assistantActions?: AssistantAction[];
+  toolExecutions?: ToolExecution[];
   sessionInfo?: {
     totalPrompts: number;
     timeRange?: string;
