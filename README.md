@@ -11,7 +11,6 @@ Instantly share your Claude Code sessions on ccshare.cc - featuring beautiful sy
 - 🔍 Interactive prompt selection (choose which prompts to include)
 - 📁 Reads Claude's project-specific history files automatically
 - 🎯 Preserves complete session context with raw JSONL data
-- 👀 Real-time watch mode for live session tracking
 - 🔄 Load and execute shared prompts from other sessions
 - 💡 Tracks all session data including assistant responses and tool executions
 - ⚡ Direct browser submission for reliable sharing
@@ -71,29 +70,6 @@ ccshare --limit 50  # Default is 20
 # Exclude auto-generated prompts (commands, system messages)
 ccshare --exclude-auto
 ```
-
-### Watch Mode (Real-time tracking)
-
-Watch mode allows you to track prompts in real-time and share whenever you want:
-
-```bash
-# Start watch mode
-ccshare watch
-
-# Watch with custom options
-ccshare watch --exclude-auto --api-url https://myapi.com/shares
-```
-
-In watch mode:
-- Press **[S]** to share the current session
-- Press **[C]** to clear the screen
-- Press **[Q]** to quit
-- New prompts are displayed as they are detected
-- File changes are tracked and displayed in real-time
-- Shows the latest 10 modified files with timestamps
-- Displays total count of prompts and file changes
-
-**Note**: File change diffs may not be fully captured in watch mode. For complete file change tracking, use the regular `ccshare` command after your Claude Code session.
 
 ### Load and Execute Shared Prompts
 
@@ -202,11 +178,6 @@ ccshare -s ~/my-session.json
 ### Share only recent prompts
 ```bash
 ccshare --recent 10
-```
-
-### Start watch mode
-```bash
-ccshare watch
 ```
 
 ## Requirements

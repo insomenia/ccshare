@@ -8,7 +8,6 @@ import { uploadSession } from './upload.js';
 import { SessionData, RawSessionData } from './types.js';
 import { fetchFromSlug } from './share-service.js';
 import { createAutoPostForm } from './browser-post.js';
-import { SessionWatcher } from './watch.js';
 import fs from 'fs/promises';
 import path from 'path';
 import { exec } from 'child_process';
@@ -210,25 +209,6 @@ program
       console.log(chalk.white('Share URL: ') + chalk.cyan(shareUrl));
       console.log(chalk.gray('\nAnyone with this link can view your Claude Code session.'));
       
-    } catch (error: any) {
-      console.error(chalk.red('Error:'), error.message);
-      process.exit(1);
-    }
-  });
-
-program
-  .command('watch')
-  .description('Watch for new prompts and share on demand')
-  .option('--api-url <url>', 'Custom API URL for sharing', 'https://ccshare.cc/shares')
-  .option('--exclude-auto', 'Exclude auto-generated prompts')
-  .action(async (options) => {
-    try {
-      const watcher = new SessionWatcher({
-        apiUrl: options.apiUrl,
-        excludeAuto: options.excludeAuto
-      });
-      
-      await watcher.start();
     } catch (error: any) {
       console.error(chalk.red('Error:'), error.message);
       process.exit(1);
