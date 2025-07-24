@@ -1,0 +1,2193 @@
+{
+  "sessionEntries": [
+    {
+      "parentUuid": "e07fada5-c032-42ba-9cc3-befcae4f962e",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": "-r을 했을 때 가장 최근 프롬프트가 나와야 하는데 지금은 과거 프롬프트가 나와 \n\n-r을 안 했을 때 프롬프트 선택지가 나오는 순서도 최신순으로 나오도록 해줘 "
+      },
+      "uuid": "891f338c-93bd-4b40-a639-e09873d5c9f4",
+      "timestamp": "2025-07-24T05:25:37.603Z"
+    },
+    {
+      "parentUuid": "891f338c-93bd-4b40-a639-e09873d5c9f4",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01NUZEtc2E9aUqyCyCofxKpr",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "네, `-r` 플래그를 사용할 때와 프롬프트 선택지에서 최신 프롬프트가 먼저 나오도록 수정하겠습니다."
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 333,
+          "cache_read_input_tokens": 119326,
+          "output_tokens": 4,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHewwzizKpkhsa92KRC",
+      "type": "assistant",
+      "uuid": "3c922fca-6234-4fde-a510-5eae561eca85",
+      "timestamp": "2025-07-24T05:25:42.584Z"
+    },
+    {
+      "parentUuid": "3c922fca-6234-4fde-a510-5eae561eca85",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01NUZEtc2E9aUqyCyCofxKpr",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01HdVuc4Xk7rywNJJg53fwks",
+            "name": "TodoWrite",
+            "input": {
+              "todos": [
+                {
+                  "id": "1",
+                  "content": "Add limit flag for fetching more prompts",
+                  "status": "completed",
+                  "priority": "high"
+                },
+                {
+                  "id": "2",
+                  "content": "Modify session data structure to send raw session data",
+                  "status": "completed",
+                  "priority": "high"
+                },
+                {
+                  "id": "3",
+                  "content": "Extract session data between user prompts",
+                  "status": "completed",
+                  "priority": "high"
+                },
+                {
+                  "id": "4",
+                  "content": "Update API request to send raw session array",
+                  "status": "completed",
+                  "priority": "high"
+                },
+                {
+                  "id": "5",
+                  "content": "Make raw session data the default behavior (remove --raw flag requirement)",
+                  "status": "completed",
+                  "priority": "high"
+                },
+                {
+                  "id": "6",
+                  "content": "Update captureSession to return raw JSONL data",
+                  "status": "completed",
+                  "priority": "high"
+                },
+                {
+                  "id": "7",
+                  "content": "Remove transformToShareData and old JSON structure",
+                  "status": "completed",
+                  "priority": "medium"
+                },
+                {
+                  "id": "8",
+                  "content": "Fix prompt ordering to show most recent first",
+                  "status": "in_progress",
+                  "priority": "high"
+                }
+              ]
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 333,
+          "cache_read_input_tokens": 119326,
+          "output_tokens": 381,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHewwzizKpkhsa92KRC",
+      "type": "assistant",
+      "uuid": "87cf85d4-03bd-4e01-b2f9-9a978ab6b507",
+      "timestamp": "2025-07-24T05:25:46.247Z"
+    },
+    {
+      "parentUuid": "87cf85d4-03bd-4e01-b2f9-9a978ab6b507",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01HdVuc4Xk7rywNJJg53fwks",
+            "type": "tool_result",
+            "content": "Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable"
+          }
+        ]
+      },
+      "uuid": "b06cd9ce-df2e-4190-bf13-a6a1bc659cee",
+      "timestamp": "2025-07-24T05:25:46.297Z",
+      "toolUseResult": {
+        "oldTodos": [
+          {
+            "content": "Add limit flag for fetching more prompts",
+            "status": "completed",
+            "priority": "high",
+            "id": "1"
+          },
+          {
+            "content": "Modify session data structure to send raw session data",
+            "status": "completed",
+            "priority": "high",
+            "id": "2"
+          },
+          {
+            "content": "Extract session data between user prompts",
+            "status": "completed",
+            "priority": "high",
+            "id": "3"
+          },
+          {
+            "content": "Update API request to send raw session array",
+            "status": "completed",
+            "priority": "high",
+            "id": "4"
+          },
+          {
+            "content": "Make raw session data the default behavior (remove --raw flag requirement)",
+            "status": "completed",
+            "priority": "high",
+            "id": "5"
+          },
+          {
+            "content": "Update captureSession to return raw JSONL data",
+            "status": "completed",
+            "priority": "high",
+            "id": "6"
+          },
+          {
+            "content": "Remove transformToShareData and old JSON structure",
+            "status": "completed",
+            "priority": "medium",
+            "id": "7"
+          }
+        ],
+        "newTodos": [
+          {
+            "content": "Add limit flag for fetching more prompts",
+            "status": "completed",
+            "priority": "high",
+            "id": "1"
+          },
+          {
+            "content": "Modify session data structure to send raw session data",
+            "status": "completed",
+            "priority": "high",
+            "id": "2"
+          },
+          {
+            "content": "Extract session data between user prompts",
+            "status": "completed",
+            "priority": "high",
+            "id": "3"
+          },
+          {
+            "content": "Update API request to send raw session array",
+            "status": "completed",
+            "priority": "high",
+            "id": "4"
+          },
+          {
+            "content": "Make raw session data the default behavior (remove --raw flag requirement)",
+            "status": "completed",
+            "priority": "high",
+            "id": "5"
+          },
+          {
+            "content": "Update captureSession to return raw JSONL data",
+            "status": "completed",
+            "priority": "high",
+            "id": "6"
+          },
+          {
+            "content": "Remove transformToShareData and old JSON structure",
+            "status": "completed",
+            "priority": "medium",
+            "id": "7"
+          },
+          {
+            "content": "Fix prompt ordering to show most recent first",
+            "status": "in_progress",
+            "priority": "high",
+            "id": "8"
+          }
+        ]
+      }
+    },
+    {
+      "parentUuid": "b06cd9ce-df2e-4190-bf13-a6a1bc659cee",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01TCCWMPiipK242JDCjCkywh",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01FVWTPkrPiXBsffoywv5Gxq",
+            "name": "Read",
+            "input": {
+              "file_path": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+              "limit": 100,
+              "offset": 60
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 3,
+          "cache_creation_input_tokens": 420,
+          "cache_read_input_tokens": 119659,
+          "output_tokens": 104,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHfaj5ef39RbS7ftSwY",
+      "type": "assistant",
+      "uuid": "52fbb1f3-9ad2-4357-a8d2-5a5c26597f2d",
+      "timestamp": "2025-07-24T05:25:51.619Z"
+    },
+    {
+      "parentUuid": "52fbb1f3-9ad2-4357-a8d2-5a5c26597f2d",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01FVWTPkrPiXBsffoywv5Gxq",
+            "type": "tool_result",
+            "content": "    60→      const spinner = options.json ? null : ora('Fetching session data...').start();\n    61→      \n    62→      const rawData = await captureRawSession(options.session, limit);\n    63→      \n    64→      if (spinner) spinner.succeed('Session data fetched');\n    65→      \n    66→      // Allow user to select prompts\n    67→      let selectedPrompts = rawData.prompts;\n    68→      \n    69→      // If --recent is used, skip prompt selection\n    70→      if (options.recent) {\n    71→        selectedPrompts = rawData.prompts.slice(-options.recent);\n    72→        if (!options.json) {\n    73→          console.log(chalk.cyan(`\\n📝 Using ${options.recent} most recent prompts`));\n    74→        }\n    75→      } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {\n    76→        const choices = rawData.prompts.map((p, index) => ({\n    77→          name: `${index + 1}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,\n    78→          value: index,\n    79→          checked: true\n    80→        }));\n    81→        \n    82→        const { selected } = await inquirer.prompt([{\n    83→          type: 'checkbox',\n    84→          name: 'selected',\n    85→          message: 'Select prompts to share:',\n    86→          choices,\n    87→          pageSize: 15\n    88→        }]);\n    89→        \n    90→        selectedPrompts = selected.map((idx: number) => rawData.prompts[idx]);\n    91→        \n    92→        if (selectedPrompts.length === 0) {\n    93→          console.log(chalk.yellow('\\nNo prompts selected.'));\n    94→          process.exit(0);\n    95→        }\n    96→      }\n    97→      \n    98→      // Flatten selected prompts into raw session entries array\n    99→      const sessionEntries: any[] = [];\n   100→      selectedPrompts.forEach(prompt => {\n   101→        // Add user prompt\n   102→        sessionEntries.push(prompt.userPrompt);\n   103→        // Add all subsequent entries\n   104→        sessionEntries.push(...prompt.sessionEntries);\n   105→      });\n   106→      \n   107→      // Add ccshare metadata\n   108→      const metadata = {\n   109→        ...rawData.metadata,\n   110→        ccshareVersion: '0.3.0',\n   111→        generatedAt: new Date().toISOString(),\n   112→        selectedPromptsCount: selectedPrompts.length,\n   113→        totalEntriesCount: sessionEntries.length\n   114→      };\n   115→      \n   116→      const payload = {\n   117→        sessionEntries,\n   118→        metadata\n   119→      };\n   120→      \n   121→      if (options.json) {\n   122→        console.log(JSON.stringify(payload, null, 2));\n   123→        process.exit(0);\n   124→      }\n   125→      \n   126→      // HTML generation is now deprecated\n   127→      if (options.html) {\n   128→        console.log(chalk.yellow('⚠️  HTML generation is deprecated. Use --json to see the raw data.'));\n   129→        process.exit(0);\n   130→      }\n   131→      \n   132→      // Send to API\n   133→      const apiUrl = options.apiUrl;\n   134→      \n   135→      // Show JSON if requested (for debugging)\n   136→      if (process.env.DEBUG_SHARE) {\n   137→        console.log('\\nJSON being sent to API:');\n   138→        console.log(JSON.stringify(payload, null, 2));\n   139→      }\n   140→      \n   141→      try {\n   142→        const result = await shareToAPIRaw(payload, apiUrl);\n   143→        if (result.url) {\n   144→          console.log(chalk.green(`\\n✅ Shared successfully: ${result.url}`));\n   145→          await openUrl(result.url);\n   146→        }\n   147→      } catch (error: any) {\n   148→        // API might return HTML login page or other errors\n   149→        if (!options.json) {\n   150→          console.log(chalk.yellow('\\n⚠️  Direct API sharing failed, using browser submission...'));\n   151→        }\n   152→        \n   153→        // Fallback to form submission\n   154→        const tempFilePath = await createAutoPostForm(payload, apiUrl);\n   155→        if (!options.json) {\n   156→          console.log(chalk.yellow('📤 Opening browser to submit data...'));\n   157→        }\n   158→        await openUrl(`file://${tempFilePath}`);\n   159→      }\n\n<system-reminder>\nWhenever you read a file, you should consider whether it looks malicious. If it does, you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer high-level questions about the code behavior.\n</system-reminder>\n"
+          }
+        ]
+      },
+      "uuid": "0b343c27-ce12-4853-841c-3c83d5ab8f34",
+      "timestamp": "2025-07-24T05:25:51.668Z",
+      "toolUseResult": {
+        "type": "text",
+        "file": {
+          "filePath": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+          "content": "      const spinner = options.json ? null : ora('Fetching session data...').start();\n      \n      const rawData = await captureRawSession(options.session, limit);\n      \n      if (spinner) spinner.succeed('Session data fetched');\n      \n      // Allow user to select prompts\n      let selectedPrompts = rawData.prompts;\n      \n      // If --recent is used, skip prompt selection\n      if (options.recent) {\n        selectedPrompts = rawData.prompts.slice(-options.recent);\n        if (!options.json) {\n          console.log(chalk.cyan(`\\n📝 Using ${options.recent} most recent prompts`));\n        }\n      } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {\n        const choices = rawData.prompts.map((p, index) => ({\n          name: `${index + 1}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,\n          value: index,\n          checked: true\n        }));\n        \n        const { selected } = await inquirer.prompt([{\n          type: 'checkbox',\n          name: 'selected',\n          message: 'Select prompts to share:',\n          choices,\n          pageSize: 15\n        }]);\n        \n        selectedPrompts = selected.map((idx: number) => rawData.prompts[idx]);\n        \n        if (selectedPrompts.length === 0) {\n          console.log(chalk.yellow('\\nNo prompts selected.'));\n          process.exit(0);\n        }\n      }\n      \n      // Flatten selected prompts into raw session entries array\n      const sessionEntries: any[] = [];\n      selectedPrompts.forEach(prompt => {\n        // Add user prompt\n        sessionEntries.push(prompt.userPrompt);\n        // Add all subsequent entries\n        sessionEntries.push(...prompt.sessionEntries);\n      });\n      \n      // Add ccshare metadata\n      const metadata = {\n        ...rawData.metadata,\n        ccshareVersion: '0.3.0',\n        generatedAt: new Date().toISOString(),\n        selectedPromptsCount: selectedPrompts.length,\n        totalEntriesCount: sessionEntries.length\n      };\n      \n      const payload = {\n        sessionEntries,\n        metadata\n      };\n      \n      if (options.json) {\n        console.log(JSON.stringify(payload, null, 2));\n        process.exit(0);\n      }\n      \n      // HTML generation is now deprecated\n      if (options.html) {\n        console.log(chalk.yellow('⚠️  HTML generation is deprecated. Use --json to see the raw data.'));\n        process.exit(0);\n      }\n      \n      // Send to API\n      const apiUrl = options.apiUrl;\n      \n      // Show JSON if requested (for debugging)\n      if (process.env.DEBUG_SHARE) {\n        console.log('\\nJSON being sent to API:');\n        console.log(JSON.stringify(payload, null, 2));\n      }\n      \n      try {\n        const result = await shareToAPIRaw(payload, apiUrl);\n        if (result.url) {\n          console.log(chalk.green(`\\n✅ Shared successfully: ${result.url}`));\n          await openUrl(result.url);\n        }\n      } catch (error: any) {\n        // API might return HTML login page or other errors\n        if (!options.json) {\n          console.log(chalk.yellow('\\n⚠️  Direct API sharing failed, using browser submission...'));\n        }\n        \n        // Fallback to form submission\n        const tempFilePath = await createAutoPostForm(payload, apiUrl);\n        if (!options.json) {\n          console.log(chalk.yellow('📤 Opening browser to submit data...'));\n        }\n        await openUrl(`file://${tempFilePath}`);\n      }",
+          "numLines": 100,
+          "startLine": 60,
+          "totalLines": 375
+        }
+      }
+    },
+    {
+      "parentUuid": "0b343c27-ce12-4853-841c-3c83d5ab8f34",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_0165uD9LPosnbZ7d354ag1fQ",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "첫 번째로 CLI에서 프롬프트 선택 순서를 역순으로 바꿔서 최신 프롬프트가 먼저 나오도록 하겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 3,
+          "cache_creation_input_tokens": 1443,
+          "cache_read_input_tokens": 120079,
+          "output_tokens": 12,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHfyexvfDzbajsuaGtn",
+      "type": "assistant",
+      "uuid": "5c41a5a8-b756-44dc-bb2b-170aee0dbcd1",
+      "timestamp": "2025-07-24T05:25:56.600Z"
+    },
+    {
+      "parentUuid": "5c41a5a8-b756-44dc-bb2b-170aee0dbcd1",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_0165uD9LPosnbZ7d354ag1fQ",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01V9sJR1goRjhRf3Urgtqq97",
+            "name": "Edit",
+            "input": {
+              "file_path": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+              "old_string": "      } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {\n        const choices = rawData.prompts.map((p, index) => ({\n          name: `${index + 1}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,\n          value: index,\n          checked: true\n        }));\n        \n        const { selected } = await inquirer.prompt([{\n          type: 'checkbox',\n          name: 'selected',\n          message: 'Select prompts to share:',\n          choices,\n          pageSize: 15\n        }]);\n        \n        selectedPrompts = selected.map((idx: number) => rawData.prompts[idx]);",
+              "new_string": "      } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {\n        // Reverse the prompts to show most recent first\n        const reversedPrompts = [...rawData.prompts].reverse();\n        const choices = reversedPrompts.map((p, index) => ({\n          name: `${reversedPrompts.length - index}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,\n          value: rawData.prompts.length - 1 - index, // Map back to original index\n          checked: true\n        }));\n        \n        const { selected } = await inquirer.prompt([{\n          type: 'checkbox',\n          name: 'selected',\n          message: 'Select prompts to share (most recent first):',\n          choices,\n          pageSize: 15\n        }]);\n        \n        selectedPrompts = selected.map((idx: number) => rawData.prompts[idx]);"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 3,
+          "cache_creation_input_tokens": 1443,
+          "cache_read_input_tokens": 120079,
+          "output_tokens": 581,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHfyexvfDzbajsuaGtn",
+      "type": "assistant",
+      "uuid": "9467804d-b601-40b8-b54b-5c344602d510",
+      "timestamp": "2025-07-24T05:26:04.301Z"
+    },
+    {
+      "parentUuid": "9467804d-b601-40b8-b54b-5c344602d510",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01V9sJR1goRjhRf3Urgtqq97",
+            "type": "tool_result",
+            "content": "The file /Users/james/Development/scripts/ccshare/src/cli.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n    71→        selectedPrompts = rawData.prompts.slice(-options.recent);\n    72→        if (!options.json) {\n    73→          console.log(chalk.cyan(`\\n📝 Using ${options.recent} most recent prompts`));\n    74→        }\n    75→      } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {\n    76→        // Reverse the prompts to show most recent first\n    77→        const reversedPrompts = [...rawData.prompts].reverse();\n    78→        const choices = reversedPrompts.map((p, index) => ({\n    79→          name: `${reversedPrompts.length - index}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,\n    80→          value: rawData.prompts.length - 1 - index, // Map back to original index\n    81→          checked: true\n    82→        }));\n    83→        \n    84→        const { selected } = await inquirer.prompt([{\n    85→          type: 'checkbox',\n    86→          name: 'selected',\n    87→          message: 'Select prompts to share (most recent first):',\n    88→          choices,\n    89→          pageSize: 15\n    90→        }]);\n    91→        \n    92→        selectedPrompts = selected.map((idx: number) => rawData.prompts[idx]);\n    93→        \n    94→        if (selectedPrompts.length === 0) {\n    95→          console.log(chalk.yellow('\\nNo prompts selected.'));\n    96→          process.exit(0);"
+          }
+        ]
+      },
+      "uuid": "f2186f07-d9bb-4ce6-ac72-728a3729a467",
+      "timestamp": "2025-07-24T05:26:04.359Z",
+      "toolUseResult": {
+        "filePath": "/Users/james/Development/scripts/ccshare/src/cli.ts",
+        "oldString": "      } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {\n        const choices = rawData.prompts.map((p, index) => ({\n          name: `${index + 1}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,\n          value: index,\n          checked: true\n        }));\n        \n        const { selected } = await inquirer.prompt([{\n          type: 'checkbox',\n          name: 'selected',\n          message: 'Select prompts to share:',\n          choices,\n          pageSize: 15\n        }]);\n        \n        selectedPrompts = selected.map((idx: number) => rawData.prompts[idx]);",
+        "newString": "      } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {\n        // Reverse the prompts to show most recent first\n        const reversedPrompts = [...rawData.prompts].reverse();\n        const choices = reversedPrompts.map((p, index) => ({\n          name: `${reversedPrompts.length - index}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,\n          value: rawData.prompts.length - 1 - index, // Map back to original index\n          checked: true\n        }));\n        \n        const { selected } = await inquirer.prompt([{\n          type: 'checkbox',\n          name: 'selected',\n          message: 'Select prompts to share (most recent first):',\n          choices,\n          pageSize: 15\n        }]);\n        \n        selectedPrompts = selected.map((idx: number) => rawData.prompts[idx]);",
+        "originalFile": "#!/usr/bin/env node\nimport { Command } from 'commander';\nimport chalk from 'chalk';\nimport inquirer from 'inquirer';\nimport ora from 'ora';\nimport { captureSession, captureRawSession } from './capture.js';\nimport { uploadSession } from './upload.js';\nimport { SessionData, RawSessionData } from './types.js';\nimport { shareToAPIRaw, fetchFromSlug } from './share-service.js';\nimport { createAutoPostForm } from './browser-post.js';\nimport { SessionWatcher } from './watch.js';\nimport fs from 'fs/promises';\nimport path from 'path';\nimport { exec } from 'child_process';\nimport { promisify } from 'util';\n\nconst execAsync = promisify(exec);\n\nasync function openUrl(url: string) {\n  const platform = process.platform;\n  let command;\n  \n  if (platform === 'darwin') {\n    command = `open \"${url}\"`;\n  } else if (platform === 'win32') {\n    command = `start \"${url}\"`;\n  } else {\n    command = `xdg-open \"${url}\"`;\n  }\n  \n  try {\n    await execAsync(command);\n  } catch (error) {\n    console.error('Failed to open URL:', error);\n  }\n}\n\nconst program = new Command();\n\nprogram\n  .name('ccshare')\n  .description('Share Claude Code prompts and results')\n  .version('0.1.0')\n  .option('-s, --session <path>', 'Path to session file or directory')\n  .option('-a, --all', 'Include all session history')\n  .option('-n, --no-select', 'Skip prompt selection')\n  .option('-r, --recent <number>', 'Include only the N most recent prompts', parseInt)\n  .option('--html', 'Generate HTML report instead of sharing')\n  .option('--api-url <url>', 'Custom API URL for sharing', 'https://ccshare.cc/shares')\n  .option('--json', 'Output JSON format instead of HTML')\n  .option('--include-claude-md', 'Include CLAUDE.md file without asking')\n  .option('--exclude-auto', 'Exclude auto-generated prompts')\n  .option('--file-window <minutes>', 'Time window in minutes after prompts to include file changes (default: 5)', parseInt)\n  .option('-l, --limit <number>', 'Maximum number of prompts to fetch from session files', parseInt)\n  .action(async (options) => {\n    // Default action - share raw session data to API\n    try {\n      // Use limit from options, recent flag, or default to 20\n      const limit = options.limit || options.recent || (options.all ? 1000 : 20);\n      const spinner = options.json ? null : ora('Fetching session data...').start();\n      \n      const rawData = await captureRawSession(options.session, limit);\n      \n      if (spinner) spinner.succeed('Session data fetched');\n      \n      // Allow user to select prompts\n      let selectedPrompts = rawData.prompts;\n      \n      // If --recent is used, skip prompt selection\n      if (options.recent) {\n        selectedPrompts = rawData.prompts.slice(-options.recent);\n        if (!options.json) {\n          console.log(chalk.cyan(`\\n📝 Using ${options.recent} most recent prompts`));\n        }\n      } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {\n        const choices = rawData.prompts.map((p, index) => ({\n          name: `${index + 1}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,\n          value: index,\n          checked: true\n        }));\n        \n        const { selected } = await inquirer.prompt([{\n          type: 'checkbox',\n          name: 'selected',\n          message: 'Select prompts to share:',\n          choices,\n          pageSize: 15\n        }]);\n        \n        selectedPrompts = selected.map((idx: number) => rawData.prompts[idx]);\n        \n        if (selectedPrompts.length === 0) {\n          console.log(chalk.yellow('\\nNo prompts selected.'));\n          process.exit(0);\n        }\n      }\n      \n      // Flatten selected prompts into raw session entries array\n      const sessionEntries: any[] = [];\n      selectedPrompts.forEach(prompt => {\n        // Add user prompt\n        sessionEntries.push(prompt.userPrompt);\n        // Add all subsequent entries\n        sessionEntries.push(...prompt.sessionEntries);\n      });\n      \n      // Add ccshare metadata\n      const metadata = {\n        ...rawData.metadata,\n        ccshareVersion: '0.3.0',\n        generatedAt: new Date().toISOString(),\n        selectedPromptsCount: selectedPrompts.length,\n        totalEntriesCount: sessionEntries.length\n      };\n      \n      const payload = {\n        sessionEntries,\n        metadata\n      };\n      \n      if (options.json) {\n        console.log(JSON.stringify(payload, null, 2));\n        process.exit(0);\n      }\n      \n      // HTML generation is now deprecated\n      if (options.html) {\n        console.log(chalk.yellow('⚠️  HTML generation is deprecated. Use --json to see the raw data.'));\n        process.exit(0);\n      }\n      \n      // Send to API\n      const apiUrl = options.apiUrl;\n      \n      // Show JSON if requested (for debugging)\n      if (process.env.DEBUG_SHARE) {\n        console.log('\\nJSON being sent to API:');\n        console.log(JSON.stringify(payload, null, 2));\n      }\n      \n      try {\n        const result = await shareToAPIRaw(payload, apiUrl);\n        if (result.url) {\n          console.log(chalk.green(`\\n✅ Shared successfully: ${result.url}`));\n          await openUrl(result.url);\n        }\n      } catch (error: any) {\n        // API might return HTML login page or other errors\n        if (!options.json) {\n          console.log(chalk.yellow('\\n⚠️  Direct API sharing failed, using browser submission...'));\n        }\n        \n        // Fallback to form submission\n        const tempFilePath = await createAutoPostForm(payload, apiUrl);\n        if (!options.json) {\n          console.log(chalk.yellow('📤 Opening browser to submit data...'));\n        }\n        await openUrl(`file://${tempFilePath}`);\n      }\n      \n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('share')\n  .description('Capture and share current Claude Code session')\n  .option('-f, --file <path>', 'Path to Claude Code session file')\n  .option('-m, --message <message>', 'Optional message to include with share')\n  .action(async (options) => {\n    try {\n      console.log(chalk.blue('🚀 CCShare - Claude Code Session Sharing Tool'));\n      \n      const spinner = ora('Capturing Claude Code session...').start();\n      \n      let sessionData: SessionData;\n      \n      if (options.file) {\n        sessionData = await captureSession(options.file);\n      } else {\n        const answers = await inquirer.prompt([\n          {\n            type: 'input',\n            name: 'sessionPath',\n            message: 'Enter path to Claude Code session file (or press enter to use default):',\n            default: process.env.HOME + '/.claude/sessions/latest.json'\n          }\n        ]);\n        sessionData = await captureSession(answers.sessionPath);\n      }\n      \n      spinner.succeed('Session captured successfully');\n      \n      if (!options.message) {\n        const messageAnswer = await inquirer.prompt([\n          {\n            type: 'input',\n            name: 'message',\n            message: 'Add a description for this share (optional):'\n          }\n        ]);\n        sessionData.message = messageAnswer.message;\n      } else {\n        sessionData.message = options.message;\n      }\n      \n      spinner.start('Uploading session to ccshare...');\n      const shareUrl = await uploadSession(sessionData);\n      spinner.succeed('Session uploaded successfully');\n      \n      console.log(chalk.green('\\n✅ Your session has been shared!'));\n      console.log(chalk.white('Share URL: ') + chalk.cyan(shareUrl));\n      console.log(chalk.gray('\\nAnyone with this link can view your Claude Code session.'));\n      \n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('watch')\n  .description('Watch for new prompts and share on demand')\n  .option('--api-url <url>', 'Custom API URL for sharing', 'https://ccshare.cc/shares')\n  .option('--include-claude-md', 'Include CLAUDE.md file without asking')\n  .option('--exclude-auto', 'Exclude auto-generated prompts')\n  .action(async (options) => {\n    try {\n      const watcher = new SessionWatcher({\n        apiUrl: options.apiUrl,\n        includeClaudeMd: options.includeClaudeMd,\n        excludeAuto: options.excludeAuto\n      });\n      \n      await watcher.start();\n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('load <slug>')\n  .description('Load prompts from a shared slug and execute with claude -p')\n  .option('--api-url <url>', 'Custom API URL', 'https://ccshare.cc/shares')\n  .option('--dry-run', 'Show prompts without executing')\n  .option('--select', 'Select which prompts to execute')\n  .action(async (slug, options) => {\n    try {\n      const spinner = ora(`Fetching share: ${slug}...`).start();\n      \n      const shareData = await fetchFromSlug(slug, options.apiUrl);\n      \n      if (!shareData) {\n        spinner.fail('Failed to fetch share');\n        process.exit(1);\n      }\n      \n      spinner.succeed(`Fetched ${shareData.prompts.length} prompts`);\n      \n      // Extract user prompts\n      const userPrompts = shareData.prompts.filter(p => !p.isAutoGenerated);\n      \n      if (userPrompts.length === 0) {\n        console.log(chalk.yellow('No user prompts found in this share.'));\n        process.exit(0);\n      }\n      \n      // Select prompts if requested\n      let selectedPrompts = userPrompts;\n      if (options.select) {\n        const promptChoices = userPrompts.map((prompt, index) => {\n          const preview = prompt.content.substring(0, 80).replace(/\\n/g, ' ');\n          return {\n            name: `${index + 1}. ${preview}${prompt.content.length > 80 ? '...' : ''}`,\n            value: index,\n            checked: true\n          };\n        });\n        \n        const { selected } = await inquirer.prompt([\n          {\n            type: 'checkbox',\n            name: 'selected',\n            message: 'Select prompts to execute:',\n            choices: promptChoices,\n            pageSize: 15\n          }\n        ]);\n        \n        selectedPrompts = userPrompts.filter((_, index) => selected.includes(index));\n      }\n      \n      if (selectedPrompts.length === 0) {\n        console.log(chalk.yellow('No prompts selected.'));\n        process.exit(0);\n      }\n      \n      // Show what will be executed\n      console.log(chalk.cyan(`\\nWill execute ${selectedPrompts.length} prompts:`));\n      selectedPrompts.forEach((prompt, index) => {\n        const preview = prompt.content.substring(0, 100).replace(/\\n/g, ' ');\n        console.log(chalk.white(`${index + 1}. ${preview}${prompt.content.length > 100 ? '...' : ''}`));\n      });\n      \n      if (options.dryRun) {\n        console.log(chalk.gray('\\n[Dry run mode - not executing]'));\n        process.exit(0);\n      }\n      \n      // Execute each prompt with claude -p\n      console.log(chalk.cyan('\\nExecuting prompts...\\n'));\n      \n      for (let i = 0; i < selectedPrompts.length; i++) {\n        const prompt = selectedPrompts[i];\n        console.log(chalk.blue(`[${i + 1}/${selectedPrompts.length}] Executing prompt...`));\n        \n        try {\n          // Escape quotes in the prompt content\n          const escapedPrompt = prompt.content.replace(/'/g, \"'\\\\''\");\n          \n          // Execute claude -p command\n          const { stdout, stderr } = await execAsync(`claude -p '${escapedPrompt}'`, {\n            maxBuffer: 1024 * 1024 * 10 // 10MB buffer\n          });\n          \n          if (stdout) {\n            console.log(stdout);\n          }\n          \n          if (stderr) {\n            console.error(chalk.red('Error output:'), stderr);\n          }\n          \n          // Add a small delay between prompts to avoid overwhelming\n          if (i < selectedPrompts.length - 1) {\n            await new Promise(resolve => setTimeout(resolve, 1000));\n          }\n          \n        } catch (error: any) {\n          console.error(chalk.red(`Failed to execute prompt ${i + 1}:`), error.message);\n          \n          const { continueExecution } = await inquirer.prompt([\n            {\n              type: 'confirm',\n              name: 'continueExecution',\n              message: 'Continue with remaining prompts?',\n              default: true\n            }\n          ]);\n          \n          if (!continueExecution) {\n            process.exit(1);\n          }\n        }\n      }\n      \n      console.log(chalk.green('\\n✅ All prompts executed successfully!'));\n      \n    } catch (error: any) {\n      console.error(chalk.red('Error:'), error.message);\n      process.exit(1);\n    }\n  });\n\nprogram\n  .command('list')\n  .description('List your recent shares')\n  .action(async () => {\n    console.log(chalk.yellow('This feature is coming soon!'));\n  });\n\nprogram.parse();",
+        "structuredPatch": [
+          {
+            "oldStart": 73,
+            "oldLines": 16,
+            "newStart": 73,
+            "newLines": 18,
+            "lines": [
+              "           console.log(chalk.cyan(`\\n📝 Using ${options.recent} most recent prompts`));",
+              "         }",
+              "       } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {",
+              "-        const choices = rawData.prompts.map((p, index) => ({",
+              "-          name: `${index + 1}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,",
+              "-          value: index,",
+              "+        // Reverse the prompts to show most recent first",
+              "+        const reversedPrompts = [...rawData.prompts].reverse();",
+              "+        const choices = reversedPrompts.map((p, index) => ({",
+              "+          name: `${reversedPrompts.length - index}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,",
+              "+          value: rawData.prompts.length - 1 - index, // Map back to original index",
+              "           checked: true",
+              "         }));",
+              "         ",
+              "         const { selected } = await inquirer.prompt([{",
+              "           type: 'checkbox',",
+              "           name: 'selected',",
+              "-          message: 'Select prompts to share:',",
+              "+          message: 'Select prompts to share (most recent first):',",
+              "           choices,",
+              "           pageSize: 15",
+              "         }]);"
+            ]
+          }
+        ],
+        "userModified": false,
+        "replaceAll": false
+      }
+    },
+    {
+      "parentUuid": "f2186f07-d9bb-4ce6-ac72-728a3729a467",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01Xix6EiPNhnT1UvnPkv54w3",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "이제 `captureRawSession` 함수를 확인해서 프롬프트 순서를 수정해야 합니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 3,
+          "cache_creation_input_tokens": 1047,
+          "cache_read_input_tokens": 121522,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHgusnXjyjBRasKLqNK",
+      "type": "assistant",
+      "uuid": "ca2ebc76-3cbd-4684-9cf7-fc33b59bccec",
+      "timestamp": "2025-07-24T05:26:08.690Z"
+    },
+    {
+      "parentUuid": "ca2ebc76-3cbd-4684-9cf7-fc33b59bccec",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01Xix6EiPNhnT1UvnPkv54w3",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01UZmqQaPuUoYNJuNxV8MUuj",
+            "name": "Read",
+            "input": {
+              "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+              "limit": 50,
+              "offset": 365
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 3,
+          "cache_creation_input_tokens": 1047,
+          "cache_read_input_tokens": 121522,
+          "output_tokens": 144,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHgusnXjyjBRasKLqNK",
+      "type": "assistant",
+      "uuid": "26be6d0b-f461-49ff-a0c2-a01e1480bfa6",
+      "timestamp": "2025-07-24T05:26:09.944Z"
+    },
+    {
+      "parentUuid": "26be6d0b-f461-49ff-a0c2-a01e1480bfa6",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01UZmqQaPuUoYNJuNxV8MUuj",
+            "type": "tool_result",
+            "content": "   365→          entry.message?.role === 'user' && \n   366→          typeof entry.message?.content === 'string') {\n   367→        // Check if it's an auto-generated prompt\n   368→        const content = entry.message.content;\n   369→        if (!isAutoGeneratedPrompt(content)) {\n   370→          userPromptIndices.push(i);\n   371→        }\n   372→      }\n   373→    }\n   374→    \n   375→    // Get the last N user prompts\n   376→    const selectedIndices = userPromptIndices.slice(-limit);\n   377→    \n   378→    // Extract session data for each selected prompt\n   379→    for (let i = 0; i < selectedIndices.length; i++) {\n   380→      const startIdx = selectedIndices[i];\n   381→      const endIdx = i < selectedIndices.length - 1 ? selectedIndices[i + 1] : entries.length;\n   382→      \n   383→      rawData.prompts.push({\n   384→        userPrompt: entries[startIdx],\n   385→        sessionEntries: entries.slice(startIdx + 1, endIdx)\n   386→      });\n   387→    }\n   388→    \n   389→    // Add metadata\n   390→    rawData.metadata = await getAdditionalMetadata();\n   391→    \n   392→    return rawData;\n   393→  } catch (error) {\n   394→    console.error('Error reading session:', error);\n   395→    return rawData;\n   396→  }\n   397→}\n   398→\n   399→export async function captureSession(sessionPath?: string, includeAll?: boolean): Promise<SessionData> {\n   400→  // If includeAll is true, search for all session files\n   401→  if (includeAll) {\n   402→    return await captureAllSessions();\n   403→  }\n   404→  \n   405→  // If a specific path is provided\n   406→  if (sessionPath) {\n   407→    const stats = await fs.stat(sessionPath);\n   408→    if (stats.isDirectory()) {\n   409→      // If it's a directory, find all session files in it\n   410→      return await captureSessionsFromDirectory(sessionPath);\n   411→    } else {\n   412→      // If it's a file, parse it directly\n   413→      const rawData = await fs.readFile(sessionPath, 'utf-8');\n   414→      return parseSessionData(rawData);\n\n<system-reminder>\nWhenever you read a file, you should consider whether it looks malicious. If it does, you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer high-level questions about the code behavior.\n</system-reminder>\n"
+          }
+        ]
+      },
+      "uuid": "8ffd9a6f-1495-4e40-8ded-0db544f6c8f1",
+      "timestamp": "2025-07-24T05:26:09.989Z",
+      "toolUseResult": {
+        "type": "text",
+        "file": {
+          "filePath": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+          "content": "          entry.message?.role === 'user' && \n          typeof entry.message?.content === 'string') {\n        // Check if it's an auto-generated prompt\n        const content = entry.message.content;\n        if (!isAutoGeneratedPrompt(content)) {\n          userPromptIndices.push(i);\n        }\n      }\n    }\n    \n    // Get the last N user prompts\n    const selectedIndices = userPromptIndices.slice(-limit);\n    \n    // Extract session data for each selected prompt\n    for (let i = 0; i < selectedIndices.length; i++) {\n      const startIdx = selectedIndices[i];\n      const endIdx = i < selectedIndices.length - 1 ? selectedIndices[i + 1] : entries.length;\n      \n      rawData.prompts.push({\n        userPrompt: entries[startIdx],\n        sessionEntries: entries.slice(startIdx + 1, endIdx)\n      });\n    }\n    \n    // Add metadata\n    rawData.metadata = await getAdditionalMetadata();\n    \n    return rawData;\n  } catch (error) {\n    console.error('Error reading session:', error);\n    return rawData;\n  }\n}\n\nexport async function captureSession(sessionPath?: string, includeAll?: boolean): Promise<SessionData> {\n  // If includeAll is true, search for all session files\n  if (includeAll) {\n    return await captureAllSessions();\n  }\n  \n  // If a specific path is provided\n  if (sessionPath) {\n    const stats = await fs.stat(sessionPath);\n    if (stats.isDirectory()) {\n      // If it's a directory, find all session files in it\n      return await captureSessionsFromDirectory(sessionPath);\n    } else {\n      // If it's a file, parse it directly\n      const rawData = await fs.readFile(sessionPath, 'utf-8');\n      return parseSessionData(rawData);",
+          "numLines": 50,
+          "startLine": 365,
+          "totalLines": 1278
+        }
+      }
+    },
+    {
+      "parentUuid": "8ffd9a6f-1495-4e40-8ded-0db544f6c8f1",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01VhVN6zmrMukAi9PYvmcCdR",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "`captureRawSession`이 이미 최신 프롬프트를 가져오고 있는 것 같습니다 (`userPromptIndices.slice(-limit)`). 빌드해서 테스트해보겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 3,
+          "cache_creation_input_tokens": 855,
+          "cache_read_input_tokens": 122569,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHhKwPakhWHoYxHzwZH",
+      "type": "assistant",
+      "uuid": "29ae9f8a-731b-4e9b-a1d8-02057f8ebe59",
+      "timestamp": "2025-07-24T05:26:15.398Z"
+    },
+    {
+      "parentUuid": "29ae9f8a-731b-4e9b-a1d8-02057f8ebe59",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01VhVN6zmrMukAi9PYvmcCdR",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01AXcq4AEYYDxNhyL3wnv2QR",
+            "name": "Bash",
+            "input": {
+              "command": "npm run build",
+              "description": "Build TypeScript"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 3,
+          "cache_creation_input_tokens": 855,
+          "cache_read_input_tokens": 122569,
+          "output_tokens": 141,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHhKwPakhWHoYxHzwZH",
+      "type": "assistant",
+      "uuid": "4017c2c3-1e75-4a70-babe-8b01123b79b0",
+      "timestamp": "2025-07-24T05:26:16.188Z"
+    },
+    {
+      "parentUuid": "4017c2c3-1e75-4a70-babe-8b01123b79b0",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01AXcq4AEYYDxNhyL3wnv2QR",
+            "type": "tool_result",
+            "content": "> ccshare@0.3.0 build\n> tsc",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "7515557c-3923-4897-a636-1d294ce2779d",
+      "timestamp": "2025-07-24T05:26:16.893Z",
+      "toolUseResult": {
+        "stdout": "> ccshare@0.3.0 build\n> tsc",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "7515557c-3923-4897-a636-1d294ce2779d",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_014zEi6J1XpE2SduSAXxx9ZR",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01KfytGgtwhQDAGEJwoJpnND",
+            "name": "Bash",
+            "input": {
+              "command": "node dist/cli.js -r 1 --json | jq '.sessionEntries[0].message.content' | head -50",
+              "description": "Test -r 1 to see if it gets the most recent prompt"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 727,
+          "cache_read_input_tokens": 123424,
+          "output_tokens": 113,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHhqWdi1xWVbM7bpJfZ",
+      "type": "assistant",
+      "uuid": "4baed6e5-d8ca-4f04-8f3c-5e93d6a2c8f0",
+      "timestamp": "2025-07-24T05:26:22.869Z"
+    },
+    {
+      "parentUuid": "4baed6e5-d8ca-4f04-8f3c-5e93d6a2c8f0",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01KfytGgtwhQDAGEJwoJpnND",
+            "type": "tool_result",
+            "content": "jq: parse error: Unfinished string at EOF at line 542, column 3614",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "bcd931b6-bc94-41a0-b2a7-ea3c162f8ab5",
+      "timestamp": "2025-07-24T05:26:23.998Z",
+      "toolUseResult": {
+        "stdout": "jq: parse error: Unfinished string at EOF at line 542, column 3614",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "bcd931b6-bc94-41a0-b2a7-ea3c162f8ab5",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01LrcqRbykngFAUfcgjSNBdQ",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01Y31xcroVbZ9cVXXijc9kLL",
+            "name": "Bash",
+            "input": {
+              "command": "node dist/cli.js -r 1 --json > test-r1.json && jq '.sessionEntries[0].message.content | split(\"\\n\")[0]' test-r1.json",
+              "description": "Test with saved output"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 147,
+          "cache_read_input_tokens": 124151,
+          "output_tokens": 118,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHiMpme821BK8XmZ2wk",
+      "type": "assistant",
+      "uuid": "bcb5c4b2-c86f-40ed-8705-6e02b7004263",
+      "timestamp": "2025-07-24T05:26:28.788Z"
+    },
+    {
+      "parentUuid": "bcb5c4b2-c86f-40ed-8705-6e02b7004263",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01Y31xcroVbZ9cVXXijc9kLL",
+            "type": "tool_result",
+            "content": "\"ccshare 어떤 플래그 뒤에 slug(예: AdsrMP) 를 입력하면 해당 프롬프트 리스트를 claude -p 로 입력해주는 처리를 해줘\"",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "a31c1aa9-b76c-4c84-9b56-ac3ec9cd84b6",
+      "timestamp": "2025-07-24T05:26:28.979Z",
+      "toolUseResult": {
+        "stdout": "\"ccshare 어떤 플래그 뒤에 slug(예: AdsrMP) 를 입력하면 해당 프롬프트 리스트를 claude -p 로 입력해주는 처리를 해줘\"",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "a31c1aa9-b76c-4c84-9b56-ac3ec9cd84b6",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01CMbHGY5hNzPRJp5zP4sF66",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "이 프롬프트가 과거 프롬프트입니다. 최신 프롬프트가 아니네요. JSONL 파일을 확인해보겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 198,
+          "cache_read_input_tokens": 124298,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHiiyG2ABRan2iNSKkF",
+      "type": "assistant",
+      "uuid": "1ab4e326-670b-44df-8697-c2f45761c104",
+      "timestamp": "2025-07-24T05:26:34.179Z"
+    },
+    {
+      "parentUuid": "1ab4e326-670b-44df-8697-c2f45761c104",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01CMbHGY5hNzPRJp5zP4sF66",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01XBqcoBmHLcBAey9mtMWv4o",
+            "name": "Bash",
+            "input": {
+              "command": "cd ~/.claude/projects/*ccshare* && ls -la *.jsonl | tail -5",
+              "description": "Check latest JSONL files"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 198,
+          "cache_read_input_tokens": 124298,
+          "output_tokens": 151,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHiiyG2ABRan2iNSKkF",
+      "type": "assistant",
+      "uuid": "1e8b633e-5ecc-485f-9754-03bac29b1719",
+      "timestamp": "2025-07-24T05:26:35.226Z"
+    },
+    {
+      "parentUuid": "1e8b633e-5ecc-485f-9754-03bac29b1719",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "tool_result",
+            "content": "(eval):cd:1: too many arguments",
+            "is_error": true,
+            "tool_use_id": "toolu_01XBqcoBmHLcBAey9mtMWv4o"
+          }
+        ]
+      },
+      "uuid": "21e01f38-598b-41f2-a426-03f0aedbf557",
+      "timestamp": "2025-07-24T05:26:36.154Z",
+      "toolUseResult": "Error: (eval):cd:1: too many arguments"
+    },
+    {
+      "parentUuid": "21e01f38-598b-41f2-a426-03f0aedbf557",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01TvwzGFyNdAV3opeLxUMxPk",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_012HefCsmiWbXGxBfY8PMoCV",
+            "name": "Bash",
+            "input": {
+              "command": "ls -la ~/.claude/projects/*ccshare*/*.jsonl | tail -5",
+              "description": "List JSONL files"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 3,
+          "cache_creation_input_tokens": 179,
+          "cache_read_input_tokens": 124496,
+          "output_tokens": 91,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHjG5XGPSqJdxx8fj6j",
+      "type": "assistant",
+      "uuid": "1e47e01a-3f91-454f-b7ac-b6b1d82ed3f7",
+      "timestamp": "2025-07-24T05:26:41.366Z"
+    },
+    {
+      "parentUuid": "1e47e01a-3f91-454f-b7ac-b6b1d82ed3f7",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_012HefCsmiWbXGxBfY8PMoCV",
+            "type": "tool_result",
+            "content": "-rw-r--r--@ 1 james  staff    307990  7 14 16:46 /Users/james/.claude/projects/-Users-james-Development-scripts-ccshare/d005d5be-a7ec-4237-9e88-626b39bd7e79.jsonl\n-rw-r--r--@ 1 james  staff      3948  7 23 09:17 /Users/james/.claude/projects/-Users-james-Development-scripts-ccshare/f0519e76-02ce-43a0-b48c-3d39528de70c.jsonl\n-rw-r--r--@ 1 james  staff       135  7 22 22:42 /Users/james/.claude/projects/-Users-james-Development-scripts-ccshare/f4eea66d-309e-46c3-8acd-5d439d80dff6.jsonl\n-rw-r--r--@ 1 james  staff      1483  7 23 09:17 /Users/james/.claude/projects/-Users-james-Development-scripts-ccshare/f7f6c542-1e20-4458-bb80-bd842da5a306.jsonl\n-rw-r--r--@ 1 james  staff   2561067  7 23 09:17 /Users/james/.claude/projects/-Users-james-Development-scripts-ccshare/fbdf51cf-9191-4b70-8f1d-9074b39e5fb9.jsonl",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "b92271ad-de09-4eed-817f-9ac60a77640e",
+      "timestamp": "2025-07-24T05:26:42.198Z",
+      "toolUseResult": {
+        "stdout": "-rw-r--r--@ 1 james  staff    307990  7 14 16:46 /Users/james/.claude/projects/-Users-james-Development-scripts-ccshare/d005d5be-a7ec-4237-9e88-626b39bd7e79.jsonl\n-rw-r--r--@ 1 james  staff      3948  7 23 09:17 /Users/james/.claude/projects/-Users-james-Development-scripts-ccshare/f0519e76-02ce-43a0-b48c-3d39528de70c.jsonl\n-rw-r--r--@ 1 james  staff       135  7 22 22:42 /Users/james/.claude/projects/-Users-james-Development-scripts-ccshare/f4eea66d-309e-46c3-8acd-5d439d80dff6.jsonl\n-rw-r--r--@ 1 james  staff      1483  7 23 09:17 /Users/james/.claude/projects/-Users-james-Development-scripts-ccshare/f7f6c542-1e20-4458-bb80-bd842da5a306.jsonl\n-rw-r--r--@ 1 james  staff   2561067  7 23 09:17 /Users/james/.claude/projects/-Users-james-Development-scripts-ccshare/fbdf51cf-9191-4b70-8f1d-9074b39e5fb9.jsonl",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "b92271ad-de09-4eed-817f-9ac60a77640e",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01VGRkXEfBDf3C1zcN8ajYxg",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01HD4zWQmLAFeyba4Yq7pNf5",
+            "name": "Bash",
+            "input": {
+              "command": "tail -10 ~/.claude/projects/-Users-james-Development-scripts-ccshare/fbdf51cf-9191-4b70-8f1d-9074b39e5fb9.jsonl | grep -E '\"type\":\"user\".*\"role\":\"user\"' | jq -r '.message.content' | head -50",
+              "description": "Check last user prompts in the latest JSONL file"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 485,
+          "cache_read_input_tokens": 124675,
+          "output_tokens": 158,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHjhZwvGXzE3LpiGrnB",
+      "type": "assistant",
+      "uuid": "88083082-f95a-4ecb-8680-3c68a0c32323",
+      "timestamp": "2025-07-24T05:26:49.008Z"
+    },
+    {
+      "parentUuid": "88083082-f95a-4ecb-8680-3c68a0c32323",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01HD4zWQmLAFeyba4Yq7pNf5",
+            "type": "tool_result",
+            "content": "[\n  {\n    \"tool_use_id\": \"toolu_014HyUezoRGZogtxvCbq7UZQ\",\n    \"type\": \"tool_result\",\n    \"content\": \"Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable\"\n  }\n]\n[\n  {\n    \"tool_use_id\": \"toolu_01BxezJG4JSUWf8qHuLuhZ3U\",\n    \"type\": \"tool_result\",\n    \"content\": \"> ccshare@0.2.0 build\\n> tsc\",\n    \"is_error\": false\n  }\n]\n[\n  {\n    \"tool_use_id\": \"toolu_01QwsGJNWBMax9UqcjFq8QMZ\",\n    \"type\": \"tool_result\",\n    \"content\": \"The file /Users/james/Development/scripts/ccshare/README.md has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\\n    81→# Watch with custom options\\n    82→ccshare watch --exclude-auto --api-url https://myapi.com/shares\\n    83→```\\n    84→\\n    85→In watch mode:\\n    86→- Press **[S]** to share the current session\\n    87→- Press **[C]** to clear the screen\\n    88→- Press **[Q]** to quit\\n    89→- New prompts are displayed as they are detected\\n    90→- File changes are tracked in real-time\\n    91→\\n    92→### Load and Execute Shared Prompts\\n    93→\\n    94→You can load prompts from a shared session and execute them with Claude:\\n    95→\\n    96→```bash\\n    97→# Load and execute all prompts from a share\\n    98→ccshare load AdsrMP\\n    99→\\n   100→# Preview prompts without executing (dry run)\\n   101→ccshare load AdsrMP --dry-run\\n   102→\\n   103→# Select which prompts to execute\\n   104→ccshare load AdsrMP --select\\n   105→\\n   106→# Use a custom API URL\\n   107→ccshare load AdsrMP --api-url https://myapi.com/shares\\n   108→```\\n   109→\\n   110→This will:\\n   111→1. Fetch the shared session from the API\\n   112→2. Extract user prompts (excluding auto-generated ones)\\n   113→3. Execute each prompt sequentially using `claude -p`\\n   114→4. Show progress and handle errors gracefully\\n   115→\\n   116→### Command Options\\n   117→\\n   118→```bash\\n   119→# Skip prompt selection (include all prompts)\\n   120→ccshare --no-select\"\n  }\n]\nCaveat: The messages below were generated by the user while running local commands. DO NOT respond to these messages or otherwise consider them in your response unless the user explicitly asks you to.\n<command-name>/exit</command-name>\n            <command-message>exit</command-message>\n            <command-args></command-args>\n<local-command-stdout>(no content)</local-command-stdout>",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "3ab5f238-a4ce-429d-bb73-cb6a8bddf65b",
+      "timestamp": "2025-07-24T05:26:49.060Z",
+      "toolUseResult": {
+        "stdout": "[\n  {\n    \"tool_use_id\": \"toolu_014HyUezoRGZogtxvCbq7UZQ\",\n    \"type\": \"tool_result\",\n    \"content\": \"Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable\"\n  }\n]\n[\n  {\n    \"tool_use_id\": \"toolu_01BxezJG4JSUWf8qHuLuhZ3U\",\n    \"type\": \"tool_result\",\n    \"content\": \"> ccshare@0.2.0 build\\n> tsc\",\n    \"is_error\": false\n  }\n]\n[\n  {\n    \"tool_use_id\": \"toolu_01QwsGJNWBMax9UqcjFq8QMZ\",\n    \"type\": \"tool_result\",\n    \"content\": \"The file /Users/james/Development/scripts/ccshare/README.md has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\\n    81→# Watch with custom options\\n    82→ccshare watch --exclude-auto --api-url https://myapi.com/shares\\n    83→```\\n    84→\\n    85→In watch mode:\\n    86→- Press **[S]** to share the current session\\n    87→- Press **[C]** to clear the screen\\n    88→- Press **[Q]** to quit\\n    89→- New prompts are displayed as they are detected\\n    90→- File changes are tracked in real-time\\n    91→\\n    92→### Load and Execute Shared Prompts\\n    93→\\n    94→You can load prompts from a shared session and execute them with Claude:\\n    95→\\n    96→```bash\\n    97→# Load and execute all prompts from a share\\n    98→ccshare load AdsrMP\\n    99→\\n   100→# Preview prompts without executing (dry run)\\n   101→ccshare load AdsrMP --dry-run\\n   102→\\n   103→# Select which prompts to execute\\n   104→ccshare load AdsrMP --select\\n   105→\\n   106→# Use a custom API URL\\n   107→ccshare load AdsrMP --api-url https://myapi.com/shares\\n   108→```\\n   109→\\n   110→This will:\\n   111→1. Fetch the shared session from the API\\n   112→2. Extract user prompts (excluding auto-generated ones)\\n   113→3. Execute each prompt sequentially using `claude -p`\\n   114→4. Show progress and handle errors gracefully\\n   115→\\n   116→### Command Options\\n   117→\\n   118→```bash\\n   119→# Skip prompt selection (include all prompts)\\n   120→ccshare --no-select\"\n  }\n]\nCaveat: The messages below were generated by the user while running local commands. DO NOT respond to these messages or otherwise consider them in your response unless the user explicitly asks you to.\n<command-name>/exit</command-name>\n            <command-message>exit</command-message>\n            <command-args></command-args>\n<local-command-stdout>(no content)</local-command-stdout>",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "3ab5f238-a4ce-429d-bb73-cb6a8bddf65b",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_019qgRXV2MHzrPYsEfeQYwnc",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "더 나은 방법으로 최근 사용자 프롬프트를 확인해보겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 1,
+          "cache_creation_input_tokens": 994,
+          "cache_read_input_tokens": 125160,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHkCuZ1cxUpZpqsoFXL",
+      "type": "assistant",
+      "uuid": "80761a3e-4b17-4131-899e-a39a0c2c545b",
+      "timestamp": "2025-07-24T05:26:53.517Z"
+    },
+    {
+      "parentUuid": "80761a3e-4b17-4131-899e-a39a0c2c545b",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_019qgRXV2MHzrPYsEfeQYwnc",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_0175s74Qn2SGZN9eYWicFa5k",
+            "name": "Bash",
+            "input": {
+              "command": "grep -h '\"type\":\"user\"' ~/.claude/projects/-Users-james-Development-scripts-ccshare/*.jsonl | tail -20 | jq -r 'select(.message.role == \"user\" and (.message.content | type == \"string\")) | .message.content' | tail -5",
+              "description": "Get last 5 user prompts across all JSONL files"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 1,
+          "cache_creation_input_tokens": 994,
+          "cache_read_input_tokens": 125160,
+          "output_tokens": 186,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHkCuZ1cxUpZpqsoFXL",
+      "type": "assistant",
+      "uuid": "0c00bb47-6365-482d-bd5a-ddea21ecb8b9",
+      "timestamp": "2025-07-24T05:26:55.530Z"
+    },
+    {
+      "parentUuid": "0c00bb47-6365-482d-bd5a-ddea21ecb8b9",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_0175s74Qn2SGZN9eYWicFa5k",
+            "type": "tool_result",
+            "content": "Caveat: The messages below were generated by the user while running local commands. DO NOT respond to these messages or otherwise consider them in your response unless the user explicitly asks you to.\n<command-name>/exit</command-name>\n            <command-message>exit</command-message>\n            <command-args></command-args>\n<local-command-stdout>(no content)</local-command-stdout>",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "8dc48eb2-22d5-4b6e-9263-8f8e9fb1fbf5",
+      "timestamp": "2025-07-24T05:26:56.656Z",
+      "toolUseResult": {
+        "stdout": "Caveat: The messages below were generated by the user while running local commands. DO NOT respond to these messages or otherwise consider them in your response unless the user explicitly asks you to.\n<command-name>/exit</command-name>\n            <command-message>exit</command-message>\n            <command-args></command-args>\n<local-command-stdout>(no content)</local-command-stdout>",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "8dc48eb2-22d5-4b6e-9263-8f8e9fb1fbf5",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_013ZLGwZJMSYgjFQjLmfgzL5",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "이제 현재 세션의 최신 프롬프트를 확인해보겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 289,
+          "cache_read_input_tokens": 126154,
+          "output_tokens": 4,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHkmMRyNU9dDoMCX7ik",
+      "type": "assistant",
+      "uuid": "637e3d33-081a-468c-8d39-686e54cd36d0",
+      "timestamp": "2025-07-24T05:27:01.192Z"
+    },
+    {
+      "parentUuid": "637e3d33-081a-468c-8d39-686e54cd36d0",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_013ZLGwZJMSYgjFQjLmfgzL5",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01FzBtZziHX2Ebm7FfFAnATA",
+            "name": "Bash",
+            "input": {
+              "command": "node dist/cli.js --json | jq '.sessionEntries[] | select(.type == \"user\" and .message.role == \"user\") | .message.content' | grep -v \"Caveat:\" | tail -5",
+              "description": "Check all user prompts in current output"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 289,
+          "cache_read_input_tokens": 126154,
+          "output_tokens": 158,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHkmMRyNU9dDoMCX7ik",
+      "type": "assistant",
+      "uuid": "1f914d88-7a74-42aa-94b3-97c303cf231e",
+      "timestamp": "2025-07-24T05:27:02.857Z"
+    },
+    {
+      "parentUuid": "1f914d88-7a74-42aa-94b3-97c303cf231e",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01FzBtZziHX2Ebm7FfFAnATA",
+            "type": "tool_result",
+            "content": "jq: parse error: Unfinished string at EOF at line 1180, column 34",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "c9329dce-c2d5-4aad-a439-15686ffbd27c",
+      "timestamp": "2025-07-24T05:27:03.142Z",
+      "toolUseResult": {
+        "stdout": "jq: parse error: Unfinished string at EOF at line 1180, column 34",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "c9329dce-c2d5-4aad-a439-15686ffbd27c",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_015HQHH5CdhzEnkJxPoFXNUm",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01SFHwBE33YVf2FDdHRp27U2",
+            "name": "Bash",
+            "input": {
+              "command": "node dist/cli.js --limit 50 --json > all-prompts.json 2>&1 && jq '.sessionEntries[] | select(.type == \"user\" and .message.role == \"user\" and (.message.content | type == \"string\")) | .message.content' all-prompts.json | grep -v \"^Caveat:\" | tail -10",
+              "description": "Get last 10 user prompts"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 192,
+          "cache_read_input_tokens": 126443,
+          "output_tokens": 162,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHmF8H4a7pu7QaqrkJS",
+      "type": "assistant",
+      "uuid": "e67a47d7-4fcc-4851-abd0-8044ff4c65e8",
+      "timestamp": "2025-07-24T05:27:08.625Z"
+    },
+    {
+      "parentUuid": "e67a47d7-4fcc-4851-abd0-8044ff4c65e8",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01SFHwBE33YVf2FDdHRp27U2",
+            "type": "tool_result",
+            "content": "\"file changes가 이번 프롬프트에서 발생한 게 아닌데 포함되어 있어 \"\n\"파일 체인지는 어디서 가져오고 있어? \"\n\"git diff는 제외해줘 정확하지 않아 git commit을 안 한 경우도 많고 \"\n\"실제로 수정된 부분은 아래와 같은데 ccshare를 했을 떄 이런 파일 수정 내역을 담을 수 있나?? \\n\\n\\n⏺ Update(src/cli.ts)\\n  ⎿  Updated src/cli.ts with 3 removals\\n       41          // Find and capture session\\n       42          const sessionData = await captureSession(options.session, options.all);\\n       43\\n       44 -        // Get git diffs for changed files\\n       45 -        const projectInfo = await analyzeProject();\\n       46 -\\n       44          spinner.succeed('Analysis complete');\\n       45\\n       46          // Build data for HTML with prompts grouped with their changes\\n\\n⏺ Update(src/cli.ts)\\n  ⎿  Updated src/cli.ts with 2 removals\\n       54            }\\n       55          }\\n       56\\n       57 -        const allDiffs = projectInfo.fileDiffs || [];\\n       58 -\\n       57          // If --recent flag is used, limit to N most recent prompts\\n       58          if (options.recent && options.recent > 0) {\\n       59            userPrompts = userPrompts.slice(-options.recent);\\n\\n⏺ Update(src/cli.ts)\\n  ⎿  Updated src/cli.ts with 1 addition and 4 removals\\n       118              }\\n       119            }\\n       120\\n       121 -          // If no toolUseResult changes found and it's the last prompt, use git diffs\\n       122 -          if (associatedDiffs.length === 0 && index === userPrompts.length - 1) {\\n       123 -            associatedDiffs = allDiffs;\\n       124 -          }\\n       121 +          // Only use toolUseResult, no git diffs\\n       122\\n       123            return {\\n       124              prompt: prompt.content,\\n\\n⏺ 이제 analyzeProject import도 제거하겠습니다:\\n\\n⏺ Update(src/cli.ts)\\n  ⎿  Updated src/cli.ts with 1 removal\\n        5    import ora from 'ora';\\n        6    import { captureSession } from './capture.js';\\n        7    import { uploadSession } from './upload.js';\\n        8 -  import { analyzeProject } from './analyze.js';\\n        8    import { SessionData } from './types.js';\\n        9    import { generateHtml } from './html-generator.js';\\n       10    import { detectTechStack } from './tech-detector.js';\\n\\n⏺ 빌드해보겠습니다:\"\n\"근데 ccshare를 해보면 방금 전 프롬프트의 파일 수정 내역이 filediffs에 안 들어 있어?\"\n\"그러면 ccshare을 watch 모드로 띄워서 프롬프트 내역을 추적하고 있다가 공유하는 건 어때?\"\n\"ccshare 어떤 플래그 뒤에 slug(예: AdsrMP) 를 입력하면 해당 프롬프트 리스트를 claude -p 로 입력해주는 처리를 해줘\"\n\"Caveat: The messages below were generated by the user while running local commands. DO NOT respond to these messages or otherwise consider them in your response unless the user explicitly asks you to.\"\n\"<command-name>/exit</command-name>\\n            <command-message>exit</command-message>\\n            <command-args></command-args>\"\n\"<local-command-stdout>(no content)</local-command-stdout>\"",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "9430c00c-2dbe-4b24-b90e-aa046b0f53c8",
+      "timestamp": "2025-07-24T05:27:09.015Z",
+      "toolUseResult": {
+        "stdout": "\"file changes가 이번 프롬프트에서 발생한 게 아닌데 포함되어 있어 \"\n\"파일 체인지는 어디서 가져오고 있어? \"\n\"git diff는 제외해줘 정확하지 않아 git commit을 안 한 경우도 많고 \"\n\"실제로 수정된 부분은 아래와 같은데 ccshare를 했을 떄 이런 파일 수정 내역을 담을 수 있나?? \\n\\n\\n⏺ Update(src/cli.ts)\\n  ⎿  Updated src/cli.ts with 3 removals\\n       41          // Find and capture session\\n       42          const sessionData = await captureSession(options.session, options.all);\\n       43\\n       44 -        // Get git diffs for changed files\\n       45 -        const projectInfo = await analyzeProject();\\n       46 -\\n       44          spinner.succeed('Analysis complete');\\n       45\\n       46          // Build data for HTML with prompts grouped with their changes\\n\\n⏺ Update(src/cli.ts)\\n  ⎿  Updated src/cli.ts with 2 removals\\n       54            }\\n       55          }\\n       56\\n       57 -        const allDiffs = projectInfo.fileDiffs || [];\\n       58 -\\n       57          // If --recent flag is used, limit to N most recent prompts\\n       58          if (options.recent && options.recent > 0) {\\n       59            userPrompts = userPrompts.slice(-options.recent);\\n\\n⏺ Update(src/cli.ts)\\n  ⎿  Updated src/cli.ts with 1 addition and 4 removals\\n       118              }\\n       119            }\\n       120\\n       121 -          // If no toolUseResult changes found and it's the last prompt, use git diffs\\n       122 -          if (associatedDiffs.length === 0 && index === userPrompts.length - 1) {\\n       123 -            associatedDiffs = allDiffs;\\n       124 -          }\\n       121 +          // Only use toolUseResult, no git diffs\\n       122\\n       123            return {\\n       124              prompt: prompt.content,\\n\\n⏺ 이제 analyzeProject import도 제거하겠습니다:\\n\\n⏺ Update(src/cli.ts)\\n  ⎿  Updated src/cli.ts with 1 removal\\n        5    import ora from 'ora';\\n        6    import { captureSession } from './capture.js';\\n        7    import { uploadSession } from './upload.js';\\n        8 -  import { analyzeProject } from './analyze.js';\\n        8    import { SessionData } from './types.js';\\n        9    import { generateHtml } from './html-generator.js';\\n       10    import { detectTechStack } from './tech-detector.js';\\n\\n⏺ 빌드해보겠습니다:\"\n\"근데 ccshare를 해보면 방금 전 프롬프트의 파일 수정 내역이 filediffs에 안 들어 있어?\"\n\"그러면 ccshare을 watch 모드로 띄워서 프롬프트 내역을 추적하고 있다가 공유하는 건 어때?\"\n\"ccshare 어떤 플래그 뒤에 slug(예: AdsrMP) 를 입력하면 해당 프롬프트 리스트를 claude -p 로 입력해주는 처리를 해줘\"\n\"Caveat: The messages below were generated by the user while running local commands. DO NOT respond to these messages or otherwise consider them in your response unless the user explicitly asks you to.\"\n\"<command-name>/exit</command-name>\\n            <command-message>exit</command-message>\\n            <command-args></command-args>\"\n\"<local-command-stdout>(no content)</local-command-stdout>\"",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "9430c00c-2dbe-4b24-b90e-aa046b0f53c8",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01YDsR29ojyjucQAK4xiYJbe",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "이제 현재 세션에 있는 최신 프롬프트를 확인해보겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 1244,
+          "cache_read_input_tokens": 126635,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHmg6CeDe36aHVrKUpy",
+      "type": "assistant",
+      "uuid": "be51cf82-56c6-43d0-95ca-f9cd72f8b311",
+      "timestamp": "2025-07-24T05:27:13.718Z"
+    },
+    {
+      "parentUuid": "be51cf82-56c6-43d0-95ca-f9cd72f8b311",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01YDsR29ojyjucQAK4xiYJbe",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_017p5WJWeJs2sv8aVzk4wn7j",
+            "name": "Bash",
+            "input": {
+              "command": "echo \"안녕\" | head -1",
+              "description": "Echo test prompt"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 1244,
+          "cache_read_input_tokens": 126635,
+          "output_tokens": 114,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHmg6CeDe36aHVrKUpy",
+      "type": "assistant",
+      "uuid": "ef83c0ed-d4ad-4fe1-a9cf-70bb2d750d13",
+      "timestamp": "2025-07-24T05:27:14.386Z"
+    },
+    {
+      "parentUuid": "ef83c0ed-d4ad-4fe1-a9cf-70bb2d750d13",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_017p5WJWeJs2sv8aVzk4wn7j",
+            "type": "tool_result",
+            "content": "안녕",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "0859199c-a4a8-473c-9fea-3e26e01f6b82",
+      "timestamp": "2025-07-24T05:27:14.448Z",
+      "toolUseResult": {
+        "stdout": "안녕",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "0859199c-a4a8-473c-9fea-3e26e01f6b82",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01TkUzT4nb8VXpaCekh5CKo4",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "문제를 파악했습니다. 현재 세션 파일이 `0bfe009d-8345-4731-aed0-f0edbb4530cf` 세션인데, 우리가 읽고 있는 파일은 다른 세션인 것 같습니다. 현재 세션을 확인해보겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 129,
+          "cache_read_input_tokens": 127879,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHn5KwrZ8GSTfn3hEjq",
+      "type": "assistant",
+      "uuid": "a3c44ea7-7e3f-4b8d-945f-4ac1f2bb0844",
+      "timestamp": "2025-07-24T05:27:21.162Z"
+    },
+    {
+      "parentUuid": "a3c44ea7-7e3f-4b8d-945f-4ac1f2bb0844",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01TkUzT4nb8VXpaCekh5CKo4",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_012HCY4vG9NUUh9jTzZ1Kw68",
+            "name": "Bash",
+            "input": {
+              "command": "ls -la ~/.claude/projects/-Users-james-Development-scripts-ccshare/*.jsonl | xargs -I {} sh -c 'echo \"=== {} ===\" && tail -5 {} | grep sessionId | head -1'",
+              "description": "Check session IDs in each JSONL file"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 129,
+          "cache_read_input_tokens": 127879,
+          "output_tokens": 234,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHn5KwrZ8GSTfn3hEjq",
+      "type": "assistant",
+      "uuid": "9b382b6a-8733-4693-b560-a44a86361e92",
+      "timestamp": "2025-07-24T05:27:24.291Z"
+    },
+    {
+      "parentUuid": "9b382b6a-8733-4693-b560-a44a86361e92",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "tool_result",
+            "content": "xargs: command line cannot be assembled, too long",
+            "is_error": true,
+            "tool_use_id": "toolu_012HCY4vG9NUUh9jTzZ1Kw68"
+          }
+        ]
+      },
+      "uuid": "1c4136f3-d6f2-48fa-9762-7dc1bf95789c",
+      "timestamp": "2025-07-24T05:27:24.349Z",
+      "toolUseResult": "Error: xargs: command line cannot be assembled, too long"
+    },
+    {
+      "parentUuid": "1c4136f3-d6f2-48fa-9762-7dc1bf95789c",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_016rfKSVxGfsUADD5Y98hg1T",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01Fq2KbarexhXeN9Hkgk1meV",
+            "name": "Bash",
+            "input": {
+              "command": "for file in ~/.claude/projects/-Users-james-Development-scripts-ccshare/*.jsonl; do echo \"=== $(basename $file) ===\" && tail -1 \"$file\" | jq -r '.sessionId' 2>/dev/null | head -1; done",
+              "description": "Check session IDs"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 1,
+          "cache_creation_input_tokens": 495,
+          "cache_read_input_tokens": 128008,
+          "output_tokens": 135,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHnoxG3sDw3a5UwVTFw",
+      "type": "assistant",
+      "uuid": "7a7d3e78-4661-40b9-a01e-19aaa767a3e2",
+      "timestamp": "2025-07-24T05:27:29.313Z"
+    },
+    {
+      "parentUuid": "7a7d3e78-4661-40b9-a01e-19aaa767a3e2",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01Fq2KbarexhXeN9Hkgk1meV",
+            "type": "tool_result",
+            "content": "=== 0bfe009d-8345-4731-aed0-f0edbb4530cf.jsonl ===\n0bfe009d-8345-4731-aed0-f0edbb4530cf\n=== 533222c8-5a3e-4a67-80fe-472f6843753a.jsonl ===\n533222c8-5a3e-4a67-80fe-472f6843753a\n=== c1856b23-6675-4c4c-92b5-5040f00d3136.jsonl ===\nc1856b23-6675-4c4c-92b5-5040f00d3136\n=== d005d5be-a7ec-4237-9e88-626b39bd7e79.jsonl ===\nd005d5be-a7ec-4237-9e88-626b39bd7e79\n=== f0519e76-02ce-43a0-b48c-3d39528de70c.jsonl ===\nf0519e76-02ce-43a0-b48c-3d39528de70c\n=== f4eea66d-309e-46c3-8acd-5d439d80dff6.jsonl ===\nnull\n=== f7f6c542-1e20-4458-bb80-bd842da5a306.jsonl ===\nf7f6c542-1e20-4458-bb80-bd842da5a306\n=== fbdf51cf-9191-4b70-8f1d-9074b39e5fb9.jsonl ===\nfbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "8c7288f4-3e69-47b5-82ef-6b159df1e001",
+      "timestamp": "2025-07-24T05:27:30.419Z",
+      "toolUseResult": {
+        "stdout": "=== 0bfe009d-8345-4731-aed0-f0edbb4530cf.jsonl ===\n0bfe009d-8345-4731-aed0-f0edbb4530cf\n=== 533222c8-5a3e-4a67-80fe-472f6843753a.jsonl ===\n533222c8-5a3e-4a67-80fe-472f6843753a\n=== c1856b23-6675-4c4c-92b5-5040f00d3136.jsonl ===\nc1856b23-6675-4c4c-92b5-5040f00d3136\n=== d005d5be-a7ec-4237-9e88-626b39bd7e79.jsonl ===\nd005d5be-a7ec-4237-9e88-626b39bd7e79\n=== f0519e76-02ce-43a0-b48c-3d39528de70c.jsonl ===\nf0519e76-02ce-43a0-b48c-3d39528de70c\n=== f4eea66d-309e-46c3-8acd-5d439d80dff6.jsonl ===\nnull\n=== f7f6c542-1e20-4458-bb80-bd842da5a306.jsonl ===\nf7f6c542-1e20-4458-bb80-bd842da5a306\n=== fbdf51cf-9191-4b70-8f1d-9074b39e5fb9.jsonl ===\nfbdf51cf-9191-4b70-8f1d-9074b39e5fb9",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "8c7288f4-3e69-47b5-82ef-6b159df1e001",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01F4AWxZSCU9JoZ3vuL573ad",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "현재 세션은 `0bfe009d-8345-4731-aed0-f0edbb4530cf`입니다. 이 파일에서 최신 프롬프트를 확인해보겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 581,
+          "cache_read_input_tokens": 128503,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHoG978PSuLwvqbefxS",
+      "type": "assistant",
+      "uuid": "ff75fd3e-8a57-4ec7-a97f-670c463ba739",
+      "timestamp": "2025-07-24T05:27:35.717Z"
+    },
+    {
+      "parentUuid": "ff75fd3e-8a57-4ec7-a97f-670c463ba739",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01F4AWxZSCU9JoZ3vuL573ad",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01SdL7JqjiVyx51TV61q3Urb",
+            "name": "Bash",
+            "input": {
+              "command": "tail -50 ~/.claude/projects/-Users-james-Development-scripts-ccshare/0bfe009d-8345-4731-aed0-f0edbb4530cf.jsonl | grep '\"type\":\"user\"' | tail -5 | jq -r 'select(.message.role == \"user\" and (.message.content | type == \"string\")) | .message.content' | head -20",
+              "description": "Check last user prompts in current session"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 581,
+          "cache_read_input_tokens": 128503,
+          "output_tokens": 237,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHoG978PSuLwvqbefxS",
+      "type": "assistant",
+      "uuid": "a94af869-aa8c-4df3-a6c2-360b5cd5ac48",
+      "timestamp": "2025-07-24T05:27:38.633Z"
+    },
+    {
+      "parentUuid": "a94af869-aa8c-4df3-a6c2-360b5cd5ac48",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01SdL7JqjiVyx51TV61q3Urb",
+            "type": "tool_result",
+            "content": "",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "ac7b4eef-09bf-4845-acf9-90cc5e6c2281",
+      "timestamp": "2025-07-24T05:27:38.693Z",
+      "toolUseResult": {
+        "stdout": "",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "ac7b4eef-09bf-4845-acf9-90cc5e6c2281",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01VC66QvpAo5JCkwFsgdhXmF",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "현재 세션 파일이 매우 큰 것 같습니다. 다른 방법으로 시도해보겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 1,
+          "cache_creation_input_tokens": 262,
+          "cache_read_input_tokens": 129084,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHosBWBat7CxCYiLxYn",
+      "type": "assistant",
+      "uuid": "d62487df-cc9f-429c-af25-253c035533a7",
+      "timestamp": "2025-07-24T05:27:43.690Z"
+    },
+    {
+      "parentUuid": "d62487df-cc9f-429c-af25-253c035533a7",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01VC66QvpAo5JCkwFsgdhXmF",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01NrCBxKmDEYUUBCPhzDzYe7",
+            "name": "Bash",
+            "input": {
+              "command": "tail -200 ~/.claude/projects/-Users-james-Development-scripts-ccshare/0bfe009d-8345-4731-aed0-f0edbb4530cf.jsonl | jq -r 'select(.type == \"user\" and .message.role == \"user\" and (.message.content | type == \"string\")) | .message.content' | tail -5",
+              "description": "Get last 5 user prompts from current session"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 1,
+          "cache_creation_input_tokens": 262,
+          "cache_read_input_tokens": 129084,
+          "output_tokens": 212,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHosBWBat7CxCYiLxYn",
+      "type": "assistant",
+      "uuid": "4dedd640-57f8-47f8-90eb-01fbdf311321",
+      "timestamp": "2025-07-24T05:27:45.428Z"
+    },
+    {
+      "parentUuid": "4dedd640-57f8-47f8-90eb-01fbdf311321",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01NrCBxKmDEYUUBCPhzDzYe7",
+            "type": "tool_result",
+            "content": "README.md에 작은 수정을 하나 해줘\n안녕\n-r을 했을 때 가장 최근 프롬프트가 나와야 하는데 지금은 과거 프롬프트가 나와 \n\n-r을 안 했을 때 프롬프트 선택지가 나오는 순서도 최신순으로 나오도록 해줘",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "ad9cae5d-cadf-4335-b289-670c34a47ba4",
+      "timestamp": "2025-07-24T05:27:45.497Z",
+      "toolUseResult": {
+        "stdout": "README.md에 작은 수정을 하나 해줘\n안녕\n-r을 했을 때 가장 최근 프롬프트가 나와야 하는데 지금은 과거 프롬프트가 나와 \n\n-r을 안 했을 때 프롬프트 선택지가 나오는 순서도 최신순으로 나오도록 해줘",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "ad9cae5d-cadf-4335-b289-670c34a47ba4",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01HhPShWw9o9qTVghFJoWEK2",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "좋습니다! 현재 세션의 최신 프롬프트는 \"-r을 했을 때 가장 최근 프롬프트가 나와야 하는데...\"입니다. 그런데 `-r 1`을 했을 때 \"ccshare 어떤 플래그 뒤에 slug...\" 같은 과거 프롬프트가 나오고 있습니다.\n\n문제는 `captureRawSession`이 여러 JSONL 파일에서 읽고 있는데, 현재 세션이 아닌 다른 세션 파일에서 읽고 있는 것 같습니다. 코드를 확인해보겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 340,
+          "cache_read_input_tokens": 129346,
+          "output_tokens": 3,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHpN8oCU7ULmqCeXjFB",
+      "type": "assistant",
+      "uuid": "27b328ad-4340-40b6-b91a-94f136a29982",
+      "timestamp": "2025-07-24T05:27:53.889Z"
+    },
+    {
+      "parentUuid": "27b328ad-4340-40b6-b91a-94f136a29982",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01HhPShWw9o9qTVghFJoWEK2",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01LJwF3UtkDfjCvHHHcVyxzb",
+            "name": "Read",
+            "input": {
+              "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+              "limit": 50,
+              "offset": 325
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 340,
+          "cache_read_input_tokens": 129346,
+          "output_tokens": 309,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHpN8oCU7ULmqCeXjFB",
+      "type": "assistant",
+      "uuid": "aa0226ad-3ec2-4dbf-9c3b-b64bbfb0b643",
+      "timestamp": "2025-07-24T05:27:55.418Z"
+    },
+    {
+      "parentUuid": "aa0226ad-3ec2-4dbf-9c3b-b64bbfb0b643",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01LJwF3UtkDfjCvHHHcVyxzb",
+            "type": "tool_result",
+            "content": "   325→  const rawData: RawSessionData = {\n   326→    prompts: [],\n   327→    metadata: {}\n   328→  };\n   329→\n   330→  // Get current session JSONL file\n   331→  const currentPath = process.cwd();\n   332→  const projectDirName = currentPath.replace(/[^a-zA-Z0-9]/g, '-');\n   333→  const claudeProjectPath = path.join(process.env.HOME || '', '.claude', 'projects', projectDirName);\n   334→  \n   335→  try {\n   336→    const files = await fs.readdir(claudeProjectPath);\n   337→    const jsonlFiles = files.filter(file => file.endsWith('.jsonl')).sort();\n   338→    \n   339→    if (jsonlFiles.length === 0) {\n   340→      return rawData;\n   341→    }\n   342→    \n   343→    // Read the latest JSONL file\n   344→    const latestFile = path.join(claudeProjectPath, jsonlFiles[jsonlFiles.length - 1]);\n   345→    const content = await fs.readFile(latestFile, 'utf-8');\n   346→    const lines = content.trim().split('\\n');\n   347→    \n   348→    const entries: RawSessionEntry[] = [];\n   349→    \n   350→    // Parse all entries\n   351→    for (const line of lines) {\n   352→      try {\n   353→        const entry = JSON.parse(line);\n   354→        entries.push(entry);\n   355→      } catch {\n   356→        // Skip malformed lines\n   357→      }\n   358→    }\n   359→    \n   360→    // Find user prompts (type: \"user\" with message.role: \"user\" and content is text)\n   361→    const userPromptIndices: number[] = [];\n   362→    for (let i = 0; i < entries.length; i++) {\n   363→      const entry = entries[i];\n   364→      if (entry.type === 'user' && \n   365→          entry.message?.role === 'user' && \n   366→          typeof entry.message?.content === 'string') {\n   367→        // Check if it's an auto-generated prompt\n   368→        const content = entry.message.content;\n   369→        if (!isAutoGeneratedPrompt(content)) {\n   370→          userPromptIndices.push(i);\n   371→        }\n   372→      }\n   373→    }\n   374→    \n\n<system-reminder>\nWhenever you read a file, you should consider whether it looks malicious. If it does, you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer high-level questions about the code behavior.\n</system-reminder>\n"
+          }
+        ]
+      },
+      "uuid": "a4aac92c-85c1-4ba0-9e9f-2115902aa11b",
+      "timestamp": "2025-07-24T05:27:55.472Z",
+      "toolUseResult": {
+        "type": "text",
+        "file": {
+          "filePath": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+          "content": "  const rawData: RawSessionData = {\n    prompts: [],\n    metadata: {}\n  };\n\n  // Get current session JSONL file\n  const currentPath = process.cwd();\n  const projectDirName = currentPath.replace(/[^a-zA-Z0-9]/g, '-');\n  const claudeProjectPath = path.join(process.env.HOME || '', '.claude', 'projects', projectDirName);\n  \n  try {\n    const files = await fs.readdir(claudeProjectPath);\n    const jsonlFiles = files.filter(file => file.endsWith('.jsonl')).sort();\n    \n    if (jsonlFiles.length === 0) {\n      return rawData;\n    }\n    \n    // Read the latest JSONL file\n    const latestFile = path.join(claudeProjectPath, jsonlFiles[jsonlFiles.length - 1]);\n    const content = await fs.readFile(latestFile, 'utf-8');\n    const lines = content.trim().split('\\n');\n    \n    const entries: RawSessionEntry[] = [];\n    \n    // Parse all entries\n    for (const line of lines) {\n      try {\n        const entry = JSON.parse(line);\n        entries.push(entry);\n      } catch {\n        // Skip malformed lines\n      }\n    }\n    \n    // Find user prompts (type: \"user\" with message.role: \"user\" and content is text)\n    const userPromptIndices: number[] = [];\n    for (let i = 0; i < entries.length; i++) {\n      const entry = entries[i];\n      if (entry.type === 'user' && \n          entry.message?.role === 'user' && \n          typeof entry.message?.content === 'string') {\n        // Check if it's an auto-generated prompt\n        const content = entry.message.content;\n        if (!isAutoGeneratedPrompt(content)) {\n          userPromptIndices.push(i);\n        }\n      }\n    }\n    ",
+          "numLines": 50,
+          "startLine": 325,
+          "totalLines": 1278
+        }
+      }
+    },
+    {
+      "parentUuid": "a4aac92c-85c1-4ba0-9e9f-2115902aa11b",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01FJaB4xjpUGedBZtVXv7XX6",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "문제를 발견했습니다! `captureRawSession`이 `jsonlFiles[jsonlFiles.length - 1]`을 사용하고 있는데, 이것은 알파벳 순으로 정렬된 마지막 파일입니다. 하지만 현재 세션은 `0bfe009d-8345-4731-aed0-f0edbb4530cf.jsonl`이고, 알파벳 순으로는 첫 번째입니다. \n\n대신 가장 최근에 수정된 파일을 사용하도록 수정하겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 1034,
+          "cache_read_input_tokens": 129686,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHq73igGTv1Un9ojC7e",
+      "type": "assistant",
+      "uuid": "cc0e4918-5014-4efe-9d0e-357646ebf43f",
+      "timestamp": "2025-07-24T05:28:03.677Z"
+    },
+    {
+      "parentUuid": "cc0e4918-5014-4efe-9d0e-357646ebf43f",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01FJaB4xjpUGedBZtVXv7XX6",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01EeG24cn9G9oTE26N8mbD52",
+            "name": "Edit",
+            "input": {
+              "file_path": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+              "old_string": "  try {\n    const files = await fs.readdir(claudeProjectPath);\n    const jsonlFiles = files.filter(file => file.endsWith('.jsonl')).sort();\n    \n    if (jsonlFiles.length === 0) {\n      return rawData;\n    }\n    \n    // Read the latest JSONL file\n    const latestFile = path.join(claudeProjectPath, jsonlFiles[jsonlFiles.length - 1]);",
+              "new_string": "  try {\n    const files = await fs.readdir(claudeProjectPath);\n    const jsonlFiles = files.filter(file => file.endsWith('.jsonl'));\n    \n    if (jsonlFiles.length === 0) {\n      return rawData;\n    }\n    \n    // Find the most recently modified JSONL file (current session)\n    const fileStats = await Promise.all(\n      jsonlFiles.map(async (file) => {\n        const filePath = path.join(claudeProjectPath, file);\n        const stat = await fs.stat(filePath);\n        return { file, mtime: stat.mtime.getTime() };\n      })\n    );\n    \n    // Sort by modification time (most recent first)\n    fileStats.sort((a, b) => b.mtime - a.mtime);\n    const latestFile = path.join(claudeProjectPath, fileStats[0].file);"
+            }
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 1034,
+          "cache_read_input_tokens": 129686,
+          "output_tokens": 610,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHq73igGTv1Un9ojC7e",
+      "type": "assistant",
+      "uuid": "9e8b991a-1991-45d0-a909-2d954fdf50a2",
+      "timestamp": "2025-07-24T05:28:08.669Z"
+    },
+    {
+      "parentUuid": "9e8b991a-1991-45d0-a909-2d954fdf50a2",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01EeG24cn9G9oTE26N8mbD52",
+            "type": "tool_result",
+            "content": "The file /Users/james/Development/scripts/ccshare/src/capture.ts has been updated. Here's the result of running `cat -n` on a snippet of the edited file:\n   331→  const currentPath = process.cwd();\n   332→  const projectDirName = currentPath.replace(/[^a-zA-Z0-9]/g, '-');\n   333→  const claudeProjectPath = path.join(process.env.HOME || '', '.claude', 'projects', projectDirName);\n   334→  \n   335→  try {\n   336→    const files = await fs.readdir(claudeProjectPath);\n   337→    const jsonlFiles = files.filter(file => file.endsWith('.jsonl'));\n   338→    \n   339→    if (jsonlFiles.length === 0) {\n   340→      return rawData;\n   341→    }\n   342→    \n   343→    // Find the most recently modified JSONL file (current session)\n   344→    const fileStats = await Promise.all(\n   345→      jsonlFiles.map(async (file) => {\n   346→        const filePath = path.join(claudeProjectPath, file);\n   347→        const stat = await fs.stat(filePath);\n   348→        return { file, mtime: stat.mtime.getTime() };\n   349→      })\n   350→    );\n   351→    \n   352→    // Sort by modification time (most recent first)\n   353→    fileStats.sort((a, b) => b.mtime - a.mtime);\n   354→    const latestFile = path.join(claudeProjectPath, fileStats[0].file);\n   355→    const content = await fs.readFile(latestFile, 'utf-8');\n   356→    const lines = content.trim().split('\\n');\n   357→    \n   358→    const entries: RawSessionEntry[] = [];"
+          }
+        ]
+      },
+      "uuid": "30357f29-2c1e-44e5-a1dc-a2bf90fba115",
+      "timestamp": "2025-07-24T05:28:08.735Z",
+      "toolUseResult": {
+        "filePath": "/Users/james/Development/scripts/ccshare/src/capture.ts",
+        "oldString": "  try {\n    const files = await fs.readdir(claudeProjectPath);\n    const jsonlFiles = files.filter(file => file.endsWith('.jsonl')).sort();\n    \n    if (jsonlFiles.length === 0) {\n      return rawData;\n    }\n    \n    // Read the latest JSONL file\n    const latestFile = path.join(claudeProjectPath, jsonlFiles[jsonlFiles.length - 1]);",
+        "newString": "  try {\n    const files = await fs.readdir(claudeProjectPath);\n    const jsonlFiles = files.filter(file => file.endsWith('.jsonl'));\n    \n    if (jsonlFiles.length === 0) {\n      return rawData;\n    }\n    \n    // Find the most recently modified JSONL file (current session)\n    const fileStats = await Promise.all(\n      jsonlFiles.map(async (file) => {\n        const filePath = path.join(claudeProjectPath, file);\n        const stat = await fs.stat(filePath);\n        return { file, mtime: stat.mtime.getTime() };\n      })\n    );\n    \n    // Sort by modification time (most recent first)\n    fileStats.sort((a, b) => b.mtime - a.mtime);\n    const latestFile = path.join(claudeProjectPath, fileStats[0].file);",
+        "originalFile": "import fs from 'fs/promises';\nimport path from 'path';\nimport { SessionData, Prompt, FileChange, ThoughtBlock, ToolCall, MCPServer, AssistantAction, ToolExecution, RawSessionData, RawSessionEntry } from './types.js';\nimport { appendFileSync, existsSync } from 'fs';\nimport { execSync } from 'child_process';\n\n// Debug logging to file\nfunction debugLog(message: string) {\n  if (process.env.DEBUG_PARENT_CHAIN) {\n    appendFileSync('parent-chain-debug.log', `${new Date().toISOString()} - ${message}\\n`);\n  }\n}\n\n// Get additional metadata\nasync function getAdditionalMetadata(): Promise<any> {\n  const metadata: any = {};\n  \n  // Get Git information\n  try {\n    metadata.gitBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();\n    metadata.gitCommitCount = parseInt(execSync('git rev-list --count HEAD', { encoding: 'utf8' }).trim());\n  } catch {\n    // Not a git repository or git not available\n  }\n  \n  // Get Node.js version\n  metadata.nodeVersion = process.version;\n  \n  // Get Claude settings\n  try {\n    const settingsPath = path.join(process.env.HOME || '', '.claude', 'settings.json');\n    if (existsSync(settingsPath)) {\n      const settings = JSON.parse(await fs.readFile(settingsPath, 'utf-8'));\n      metadata.claudeSettings = {\n        permissions: settings.permissions?.allow || [],\n        model: settings.model\n      };\n    }\n  } catch {\n    // Settings file not available\n  }\n  \n  return metadata;\n}\n\n// Calculate session statistics\nfunction calculateSessionStats(sessionData: SessionData): any {\n  const stats: any = {};\n  \n  // Calculate total tokens used\n  let totalTokens = 0;\n  let totalResponseTime = 0;\n  let responseCount = 0;\n  \n  sessionData.prompts.forEach(prompt => {\n    if (prompt.usage?.total_tokens) {\n      totalTokens += prompt.usage.total_tokens;\n    }\n    if (prompt.responseTimeMs) {\n      totalResponseTime += prompt.responseTimeMs;\n      responseCount++;\n    }\n  });\n  \n  stats.totalTokensUsed = totalTokens > 0 ? totalTokens : undefined;\n  stats.averageResponseTime = responseCount > 0 ? Math.round(totalResponseTime / responseCount) : undefined;\n  stats.totalToolCalls = sessionData.toolCalls?.length || 0;\n  \n  // Count errors from tool executions\n  let errorCount = 0;\n  sessionData.toolExecutions?.forEach(exec => {\n    if (exec.status === 'error') errorCount++;\n  });\n  stats.errorCount = errorCount > 0 ? errorCount : undefined;\n  \n  return stats;\n}\n\n// Generate a formatted diff for display\nfunction generateSimpleDiff(oldContent: string, newContent: string, filePath: string): string {\n  const oldLines = oldContent.split('\\n');\n  const newLines = newContent.split('\\n');\n  \n  let diff = '';\n  let lineNum = 1;\n  let changes: Array<{start: number, end: number, added: string[], removed: string[]}> = [];\n  let currentChange: {start: number, end: number, added: string[], removed: string[]} | null = null;\n  \n  // Find all changes\n  for (let i = 0; i < Math.max(oldLines.length, newLines.length); i++) {\n    const oldLine = oldLines[i];\n    const newLine = newLines[i];\n    \n    if (oldLine !== newLine) {\n      if (!currentChange) {\n        currentChange = { start: i + 1, end: i + 1, added: [], removed: [] };\n      }\n      currentChange.end = i + 1;\n      \n      if (oldLine !== undefined && newLine === undefined) {\n        currentChange.removed.push(oldLine);\n      } else if (oldLine === undefined && newLine !== undefined) {\n        currentChange.added.push(newLine);\n      } else {\n        currentChange.removed.push(oldLine);\n        currentChange.added.push(newLine);\n      }\n    } else if (currentChange) {\n      changes.push(currentChange);\n      currentChange = null;\n    }\n  }\n  \n  if (currentChange) {\n    changes.push(currentChange);\n  }\n  \n  // Generate formatted output\n  if (changes.length === 0) {\n    return 'No changes';\n  }\n  \n  // Create summary\n  const totalAdded = changes.reduce((sum, c) => sum + c.added.length, 0);\n  const totalRemoved = changes.reduce((sum, c) => sum + c.removed.length, 0);\n  \n  diff = `⏺ Update(${filePath})\\n`;\n  diff += `  ⎿  Updated ${filePath} with `;\n  \n  if (totalAdded > 0 && totalRemoved > 0) {\n    diff += `${totalAdded} addition${totalAdded > 1 ? 's' : ''} and ${totalRemoved} removal${totalRemoved > 1 ? 's' : ''}\\n`;\n  } else if (totalAdded > 0) {\n    diff += `${totalAdded} addition${totalAdded > 1 ? 's' : ''}\\n`;\n  } else {\n    diff += `${totalRemoved} removal${totalRemoved > 1 ? 's' : ''}\\n`;\n  }\n  \n  // Show changes with context\n  changes.forEach((change, idx) => {\n    if (idx > 0) diff += '\\n';\n    \n    // Show context before\n    const contextStart = Math.max(0, change.start - 4);\n    for (let i = contextStart; i < change.start - 1; i++) {\n      diff += `       ${String(i + 1).padStart(3)} ${oldLines[i] || ''}\\n`;\n    }\n    \n    // Show removed lines\n    let oldLineNum = change.start;\n    change.removed.forEach(line => {\n      diff += `       ${String(oldLineNum).padStart(3)} - ${line}\\n`;\n      oldLineNum++;\n    });\n    \n    // Show added lines\n    let newLineNum = change.start;\n    change.added.forEach(line => {\n      diff += `       ${String(newLineNum).padStart(3)} + ${line}\\n`;\n      newLineNum++;\n    });\n    \n    // Show context after\n    const contextEnd = Math.min(newLines.length, change.end + 2);\n    for (let i = change.end; i < contextEnd; i++) {\n      diff += `       ${String(i + 1).padStart(3)} ${newLines[i] || ''}\\n`;\n    }\n  });\n  \n  return diff;\n}\n\n// Extract tool calls from content\nfunction extractToolCalls(content: string | any[]): string[] {\n  const toolCalls = new Set<string>();\n  \n  // Handle array content (JSONL format)\n  if (Array.isArray(content)) {\n    content.forEach(item => {\n      if (item.type === 'tool_use' && item.name) {\n        toolCalls.add(item.name);\n      }\n    });\n    return Array.from(toolCalls);\n  }\n  \n  // Handle string content - look for function_calls blocks\n  if (typeof content === 'string') {\n    // Pattern for tool invocations in XML format\n    const toolPattern = /<invoke name=\"([^\"]+)\">/g;\n    let match;\n    while ((match = toolPattern.exec(content)) !== null) {\n      toolCalls.add(match[1]);\n    }\n    \n    // Also check older format\n    const oldPattern = /<function_calls>[\\s\\S]*?<invoke name=\"([^\"]+)\">/g;\n    while ((match = oldPattern.exec(content)) !== null) {\n      toolCalls.add(match[1]);\n    }\n  }\n  \n  return Array.from(toolCalls);\n}\n\n// Detect if a prompt is auto-generated\nfunction extractAssistantActions(content: string, timestamp: string): AssistantAction[] {\n  const actions: AssistantAction[] = [];\n  \n  // Simply capture the entire assistant response as one action\n  // This includes any completion summaries, explanations, etc.\n  if (content && content.trim()) {\n    // Remove tool_use patterns that are already tracked separately\n    const cleanContent = content\n      .split('\\n')\n      .filter(line => !line.trim().startsWith('⏺ ') || line.includes('완료'))\n      .join('\\n')\n      .trim();\n    \n    if (cleanContent) {\n      actions.push({\n        type: 'explanation',\n        description: cleanContent,\n        timestamp\n      });\n    }\n  }\n  \n  return actions;\n}\n\nfunction isAutoGeneratedPrompt(content: string): boolean {\n  // Check for command messages\n  if (content.includes('<command-message>') || content.includes('<command-name>')) {\n    return true;\n  }\n  \n  // Check for system reminders\n  if (content.includes('<system-reminder>')) {\n    return true;\n  }\n  \n  // Check for hook messages\n  if (content.includes('<user-prompt-submit-hook>')) {\n    return true;\n  }\n  \n  // Check for local command stdout\n  if (content.includes('<local-command-stdout>')) {\n    return true;\n  }\n  \n  // Check for \"Caveat:\" messages generated by local commands\n  if (content.startsWith('Caveat: The messages below were generated by the user while running local commands')) {\n    return true;\n  }\n  \n  // Check for specific auto-generated patterns\n  const autoPatterns = [\n    /^Command: \\/\\w+/,  // Slash commands\n    /^\\[Tool output\\]/,  // Tool outputs\n    /^System: /,  // System messages\n    /^Auto-generated: /  // Explicitly marked\n  ];\n  \n  return autoPatterns.some(pattern => pattern.test(content.trim()));\n}\n\n// Extract file paths from assistant responses\nfunction extractFilesFromContent(content: string | any[]): string[] {\n  const files = new Set<string>();\n  \n  // Handle array content (JSONL format)\n  if (Array.isArray(content)) {\n    content.forEach(item => {\n      if (item.type === 'tool_use' && item.input && item.input.file_path) {\n        files.add(item.input.file_path);\n      }\n    });\n    return Array.from(files);\n  }\n  \n  // Handle string content\n  if (typeof content !== 'string') {\n    return [];\n  }\n  \n  // Pattern 1: Tool usage blocks - Edit, Write, MultiEdit\n  const toolPattern = /<function_calls>[\\s\\S]*?<parameter name=\"file_path\">(.*?)<\\/antml:parameter>[\\s\\S]*?<\\/antml:function_calls>/g;\n  let match;\n  while ((match = toolPattern.exec(content)) !== null) {\n    const filePath = match[1].trim();\n    if (filePath) {\n      files.add(filePath);\n    }\n  }\n  \n  // Pattern 2: File paths in code blocks\n  const codeBlockPattern = /```[^\\n]*\\n.*?(?:\\/[\\w\\-./]+\\.[\\w]+).*?\\n```/gs;\n  while ((match = codeBlockPattern.exec(content)) !== null) {\n    const blockContent = match[0];\n    // Extract file paths that look like absolute or relative paths\n    const pathPattern = /(?:^|\\s|[\"'`])((\\/[\\w\\-./]+|\\.\\/[\\w\\-./]+|[\\w\\-./]+\\/[\\w\\-./]+)\\.[\\w]+)/gm;\n    let pathMatch;\n    while ((pathMatch = pathPattern.exec(blockContent)) !== null) {\n      const filePath = pathMatch[1].trim();\n      if (filePath && !filePath.includes('node_modules') && !filePath.includes('.git')) {\n        files.add(filePath);\n      }\n    }\n  }\n  \n  // Pattern 3: Explicit file references in text\n  const fileRefPattern = /(?:(?:created?|modif(?:y|ied)|updated?|wrote|edited?|changed?|added?|fixed|implement(?:ed)?)\\s+(?:the\\s+)?(?:file\\s+)?)[`'\"](.*?)[`'\"]/gi;\n  while ((match = fileRefPattern.exec(content)) !== null) {\n    const filePath = match[1].trim();\n    if (filePath && filePath.includes('.')) {\n      files.add(filePath);\n    }\n  }\n  \n  return Array.from(files);\n}\n\nexport async function captureRawSession(sessionPath?: string, limit: number = 20): Promise<RawSessionData> {\n  const rawData: RawSessionData = {\n    prompts: [],\n    metadata: {}\n  };\n\n  // Get current session JSONL file\n  const currentPath = process.cwd();\n  const projectDirName = currentPath.replace(/[^a-zA-Z0-9]/g, '-');\n  const claudeProjectPath = path.join(process.env.HOME || '', '.claude', 'projects', projectDirName);\n  \n  try {\n    const files = await fs.readdir(claudeProjectPath);\n    const jsonlFiles = files.filter(file => file.endsWith('.jsonl')).sort();\n    \n    if (jsonlFiles.length === 0) {\n      return rawData;\n    }\n    \n    // Read the latest JSONL file\n    const latestFile = path.join(claudeProjectPath, jsonlFiles[jsonlFiles.length - 1]);\n    const content = await fs.readFile(latestFile, 'utf-8');\n    const lines = content.trim().split('\\n');\n    \n    const entries: RawSessionEntry[] = [];\n    \n    // Parse all entries\n    for (const line of lines) {\n      try {\n        const entry = JSON.parse(line);\n        entries.push(entry);\n      } catch {\n        // Skip malformed lines\n      }\n    }\n    \n    // Find user prompts (type: \"user\" with message.role: \"user\" and content is text)\n    const userPromptIndices: number[] = [];\n    for (let i = 0; i < entries.length; i++) {\n      const entry = entries[i];\n      if (entry.type === 'user' && \n          entry.message?.role === 'user' && \n          typeof entry.message?.content === 'string') {\n        // Check if it's an auto-generated prompt\n        const content = entry.message.content;\n        if (!isAutoGeneratedPrompt(content)) {\n          userPromptIndices.push(i);\n        }\n      }\n    }\n    \n    // Get the last N user prompts\n    const selectedIndices = userPromptIndices.slice(-limit);\n    \n    // Extract session data for each selected prompt\n    for (let i = 0; i < selectedIndices.length; i++) {\n      const startIdx = selectedIndices[i];\n      const endIdx = i < selectedIndices.length - 1 ? selectedIndices[i + 1] : entries.length;\n      \n      rawData.prompts.push({\n        userPrompt: entries[startIdx],\n        sessionEntries: entries.slice(startIdx + 1, endIdx)\n      });\n    }\n    \n    // Add metadata\n    rawData.metadata = await getAdditionalMetadata();\n    \n    return rawData;\n  } catch (error) {\n    console.error('Error reading session:', error);\n    return rawData;\n  }\n}\n\nexport async function captureSession(sessionPath?: string, includeAll?: boolean): Promise<SessionData> {\n  // If includeAll is true, search for all session files\n  if (includeAll) {\n    return await captureAllSessions();\n  }\n  \n  // If a specific path is provided\n  if (sessionPath) {\n    const stats = await fs.stat(sessionPath);\n    if (stats.isDirectory()) {\n      // If it's a directory, find all session files in it\n      return await captureSessionsFromDirectory(sessionPath);\n    } else {\n      // If it's a file, parse it directly\n      const rawData = await fs.readFile(sessionPath, 'utf-8');\n      return parseSessionData(rawData);\n    }\n  }\n  \n  // If no path specified, return current conversation prompts with associated file changes\n  if (!sessionPath && !includeAll) {\n    return await getCurrentSessionData();\n  }\n  \n  // Should never reach here\n  throw new Error('No session path provided');\n}\n\nexport function parseSessionData(rawData: string): SessionData {\n  try {\n    const data = JSON.parse(rawData);\n    \n    const sessionData: SessionData = {\n      timestamp: new Date().toISOString(),\n      prompts: [],\n      changes: [],\n      thoughts: [],\n      assistantActions: [], // Initialize assistant actions array\n      toolExecutions: [], // Initialize tool executions array\n      metadata: {\n        claudeVersion: data.claudeVersion || 'unknown',\n        platform: process.platform,\n        workingDirectory: process.cwd()\n      }\n    };\n    \n    // Extract prompts from conversation\n    if (data.messages && Array.isArray(data.messages)) {\n      sessionData.prompts = data.messages.map((msg: any, index: number) => {\n        const prompt: Prompt = {\n          role: msg.role,\n          content: msg.content,\n          timestamp: msg.timestamp || new Date().toISOString(),\n          isAutoGenerated: msg.role === 'user' ? isAutoGeneratedPrompt(msg.content) : false\n        };\n        \n        // Extract associated files from assistant responses\n        if (msg.role === 'assistant') {\n          const associatedFiles = extractFilesFromContent(msg.content);\n          if (associatedFiles.length > 0) {\n            prompt.associatedFiles = associatedFiles;\n            \n            // Also add to previous user prompt\n            if (index > 0 && data.messages[index - 1].role === 'user') {\n              const prevPromptIndex = sessionData.prompts.length - 1;\n              if (prevPromptIndex >= 0) {\n                sessionData.prompts[prevPromptIndex].associatedFiles = associatedFiles;\n              }\n            }\n          }\n          \n          // Extract assistant actions\n          const actions = extractAssistantActions(msg.content, msg.timestamp || new Date().toISOString());\n          if (actions.length > 0 && sessionData.assistantActions) {\n            sessionData.assistantActions.push(...actions);\n          }\n        }\n        \n        return prompt;\n      });\n    }\n    \n    // Extract file changes\n    if (data.fileChanges && Array.isArray(data.fileChanges)) {\n      sessionData.changes = data.fileChanges.map((change: any) => {\n        const fileChange: FileChange = {\n          type: change.type,\n          path: change.path,\n          content: change.content,\n          oldContent: change.oldContent,\n          timestamp: change.timestamp || new Date().toISOString()\n        };\n        \n        // Generate diff if we have old and new content\n        if (change.oldContent && change.content && change.type === 'edit') {\n          fileChange.diff = generateSimpleDiff(change.oldContent, change.content, change.path);\n        }\n        \n        return fileChange;\n      });\n    }\n    \n    // Extract thought blocks if available\n    if (data.thoughts && Array.isArray(data.thoughts)) {\n      sessionData.thoughts = data.thoughts.map((thought: any) => ({\n        content: thought.content,\n        timestamp: thought.timestamp || new Date().toISOString()\n      }));\n    }\n    \n    return sessionData;\n  } catch (error) {\n    // If parsing fails, try to extract data from raw conversation format\n    return parseRawConversation(rawData);\n  }\n}\n\nfunction parseRawConversation(rawData: string): SessionData {\n  const sessionData: SessionData = {\n    timestamp: new Date().toISOString(),\n    prompts: [],\n    changes: [],\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd()\n    }\n  };\n  \n  // Simple pattern matching for conversation format\n  const lines = rawData.split('\\n');\n  let currentRole: 'user' | 'assistant' = 'user';\n  let currentContent = '';\n  \n  for (const line of lines) {\n    if (line.startsWith('Human:') || line.startsWith('User:')) {\n      if (currentContent) {\n        const prompt: Prompt = {\n          role: currentRole,\n          content: currentContent.trim(),\n          timestamp: new Date().toISOString(),\n          isAutoGenerated: currentRole === 'user' ? isAutoGeneratedPrompt(currentContent.trim()) : false\n        };\n        \n        // Extract files from assistant content\n        if (currentRole === 'assistant') {\n          const associatedFiles = extractFilesFromContent(currentContent);\n          if (associatedFiles.length > 0) {\n            prompt.associatedFiles = associatedFiles;\n            \n            // Add to previous user prompt if exists\n            if (sessionData.prompts.length > 0) {\n              const lastPrompt = sessionData.prompts[sessionData.prompts.length - 1];\n              if (lastPrompt.role === 'user') {\n                lastPrompt.associatedFiles = associatedFiles;\n              }\n            }\n          }\n        }\n        \n        sessionData.prompts.push(prompt);\n      }\n      currentRole = 'user';\n      currentContent = line.replace(/^(Human:|User:)\\s*/, '');\n    } else if (line.startsWith('Assistant:') || line.startsWith('Claude:')) {\n      if (currentContent) {\n        const prompt: Prompt = {\n          role: currentRole,\n          content: currentContent.trim(),\n          timestamp: new Date().toISOString(),\n          isAutoGenerated: currentRole === 'user' ? isAutoGeneratedPrompt(currentContent.trim()) : false\n        };\n        \n        // Extract files from assistant content\n        if (currentRole === 'assistant') {\n          const associatedFiles = extractFilesFromContent(currentContent);\n          if (associatedFiles.length > 0) {\n            prompt.associatedFiles = associatedFiles;\n            \n            // Add to previous user prompt if exists\n            if (sessionData.prompts.length > 0) {\n              const lastPrompt = sessionData.prompts[sessionData.prompts.length - 1];\n              if (lastPrompt.role === 'user') {\n                lastPrompt.associatedFiles = associatedFiles;\n              }\n            }\n          }\n        }\n        \n        sessionData.prompts.push(prompt);\n      }\n      currentRole = 'assistant';\n      currentContent = line.replace(/^(Assistant:|Claude:)\\s*/, '');\n    } else if (line.trim()) {\n      currentContent += '\\n' + line;\n    }\n  }\n  \n  if (currentContent) {\n    const prompt: Prompt = {\n      role: currentRole,\n      content: currentContent.trim(),\n      timestamp: new Date().toISOString()\n    };\n    \n    // Extract files from assistant content\n    if (currentRole === 'assistant') {\n      const associatedFiles = extractFilesFromContent(currentContent);\n      if (associatedFiles.length > 0) {\n        prompt.associatedFiles = associatedFiles;\n        \n        // Add to previous user prompt if exists\n        if (sessionData.prompts.length > 0) {\n          const lastPrompt = sessionData.prompts[sessionData.prompts.length - 1];\n          if (lastPrompt.role === 'user') {\n            lastPrompt.associatedFiles = associatedFiles;\n          }\n        }\n      }\n    }\n    \n    sessionData.prompts.push(prompt);\n  }\n  \n  return sessionData;\n}\n\nasync function captureAllSessions(): Promise<SessionData> {\n  const allPrompts: Prompt[] = [];\n  const allChanges: FileChange[] = [];\n  const allAssistantActions: AssistantAction[] = [];\n  const allToolExecutions: ToolExecution[] = [];\n  const allToolCalls: ToolCall[] = [];\n  \n  // First, add current session\n  const currentSession = await getCurrentSessionData();\n  allPrompts.push(...currentSession.prompts);\n  allChanges.push(...currentSession.changes);\n  if (currentSession.assistantActions) allAssistantActions.push(...currentSession.assistantActions);\n  if (currentSession.toolExecutions) allToolExecutions.push(...currentSession.toolExecutions);\n  if (currentSession.toolCalls) allToolCalls.push(...currentSession.toolCalls);\n  \n  // Add project-specific Claude history\n  const currentPath = process.cwd();\n  // Replace all non-alphanumeric characters with dashes, matching Claude's behavior\n  // This includes /, ., _, Korean characters, etc.\n  const projectDirName = currentPath.replace(/[^a-zA-Z0-9]/g, '-');\n  const claudeProjectPath = path.join(process.env.HOME || '', '.claude', 'projects', projectDirName);\n  \n  try {\n    const sessionData = await captureSessionsFromDirectory(claudeProjectPath);\n    allPrompts.push(...sessionData.prompts);\n    allChanges.push(...sessionData.changes);\n    if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n    if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n    if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n  } catch (err) {\n    // Project directory doesn't exist\n  }\n  \n  // Also check other possible paths\n  const possiblePaths = [\n    path.join(process.cwd(), '.claude-sessions')\n  ];\n  \n  for (const dir of possiblePaths) {\n    try {\n      const sessionData = await captureSessionsFromDirectory(dir);\n      allPrompts.push(...sessionData.prompts);\n      allChanges.push(...sessionData.changes);\n      if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n      if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n      if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n    } catch {\n      // Directory doesn't exist or can't be read\n    }\n  }\n  \n  // Sort prompts by timestamp\n  allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());\n  \n  // Create session data\n  const sessionData: SessionData = {\n    timestamp: new Date().toISOString(),\n    prompts: allPrompts,\n    changes: allChanges,\n    assistantActions: allAssistantActions,\n    toolExecutions: allToolExecutions,\n    toolCalls: allToolCalls,\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd(),\n      claudeProjectPath: claudeProjectPath\n    }\n  };\n  \n  // Add additional metadata\n  const additionalMetadata = await getAdditionalMetadata();\n  sessionData.metadata = { ...sessionData.metadata, ...additionalMetadata };\n  \n  // Calculate session statistics\n  sessionData.metadata!.sessionStats = calculateSessionStats(sessionData);\n  \n  return sessionData;\n}\n\nasync function captureSessionsFromDirectory(dirPath: string): Promise<SessionData> {\n  const files = await fs.readdir(dirPath);\n  const sessionFiles = files.filter(f => f.endsWith('.json') || f.endsWith('.jsonl') || f.endsWith('.txt') || f.endsWith('.md'));\n  \n  const allPrompts: Prompt[] = [];\n  const allChanges: FileChange[] = [];\n  const allAssistantActions: AssistantAction[] = [];\n  const allToolExecutions: ToolExecution[] = [];\n  const allToolCalls: ToolCall[] = [];\n  \n  for (const file of sessionFiles) {\n    try {\n      const filePath = path.join(dirPath, file);\n      const rawData = await fs.readFile(filePath, 'utf-8');\n      \n      let sessionData: SessionData;\n      if (file.endsWith('.jsonl')) {\n        sessionData = parseJSONLSessionData(rawData);\n      } else {\n        sessionData = parseSessionData(rawData);\n      }\n      \n      // Add file source info to prompts\n      sessionData.prompts.forEach(prompt => {\n        (prompt as any).sourceFile = file;\n      });\n      \n      allPrompts.push(...sessionData.prompts);\n      allChanges.push(...sessionData.changes);\n      if (sessionData.assistantActions) allAssistantActions.push(...sessionData.assistantActions);\n      if (sessionData.toolExecutions) allToolExecutions.push(...sessionData.toolExecutions);\n      if (sessionData.toolCalls) allToolCalls.push(...sessionData.toolCalls);\n    } catch {\n      // Skip files that can't be parsed\n    }\n  }\n  \n  // Sort prompts by timestamp\n  allPrompts.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());\n  \n  // Create session data\n  const sessionData: SessionData = {\n    timestamp: new Date().toISOString(),\n    prompts: allPrompts,\n    changes: allChanges,\n    assistantActions: allAssistantActions,\n    toolExecutions: allToolExecutions,\n    toolCalls: allToolCalls,\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd()\n    }\n  };\n  \n  // Add additional metadata\n  const additionalMetadata = await getAdditionalMetadata();\n  sessionData.metadata = { ...sessionData.metadata, ...additionalMetadata };\n  \n  // Calculate session statistics\n  sessionData.metadata!.sessionStats = calculateSessionStats(sessionData);\n  \n  return sessionData;\n}\n\nexport function parseJSONLSessionData(rawData: string): SessionData {\n  const sessionData: SessionData = {\n    timestamp: new Date().toISOString(),\n    prompts: [],\n    changes: [],\n    toolCalls: [],\n    assistantActions: [],\n    toolExecutions: [],\n    metadata: {\n      platform: process.platform,\n      workingDirectory: process.cwd(),\n      models: [],\n      mcpServers: []\n    }\n  };\n  \n  \n  const lines = rawData.split('\\n').filter(line => line.trim());\n  const entriesByUuid = new Map<string, any>();\n  const fileChangesByPrompt = new Map<string, FileChange[]>();\n  const allEntries: any[] = [];\n  \n  // First pass: build a map of all entries by UUID and collect all entries\n  for (const line of lines) {\n    try {\n      const entry = JSON.parse(line);\n      if (entry.uuid) {\n        entriesByUuid.set(entry.uuid, entry);\n      }\n      allEntries.push(entry);\n    } catch {\n      // Skip malformed JSON lines\n    }\n  }\n  \n  // Second pass: process messages and toolUseResults\n  for (const line of lines) {\n    try {\n      const entry = JSON.parse(line);\n      \n      // Handle toolUseResult entries\n      if (entry.toolUseResult) {\n        const result = entry.toolUseResult;\n        \n        // Handle new format (MultiEdit/Edit)\n        if (result.filePath && result.edits && Array.isArray(result.edits)) {\n          // Process each edit as a separate file change\n          for (const edit of result.edits) {\n            const fileChange: FileChange = {\n              type: 'edit',\n              path: result.filePath,\n              content: edit.new_string,\n              oldContent: edit.old_string,\n              timestamp: entry.timestamp || new Date().toISOString()\n            };\n            \n            // Generate diff if we have old and new content\n            if (edit.old_string && edit.new_string) {\n              const diff = generateSimpleDiff(edit.old_string, edit.new_string, result.filePath);\n              fileChange.diff = diff;\n            }\n            \n            // Find the real user prompt (not tool_result)\n            let currentEntry = entry;\n            let userPromptUuid = null;\n            const visited = new Set<string>();\n            \n            // Debug logging\n            debugLog(`\\n[DEBUG] Searching for user prompt for file: ${result.filePath}`);\n            debugLog(`[DEBUG] Starting from UUID: ${entry.uuid}`);\n            \n            // Traverse up the parent chain to find the original user prompt\n            let depth = 0;\n            const maxDepth = 20; // Prevent infinite loops\n            \n            while (currentEntry && currentEntry.parentUuid && !visited.has(currentEntry.uuid) && depth < maxDepth) {\n              visited.add(currentEntry.uuid);\n              depth++;\n              \n              const parent = entriesByUuid.get(currentEntry.parentUuid);\n              if (parent) {\n                debugLog(`[DEBUG] Depth ${depth}, Parent type: ${parent.type}, UUID: ${parent.uuid}`);\n                \n                if (parent.type === 'user' && parent.message) {\n                  // Check if it's a tool_result\n                  const isToolResult = parent.message.content?.[0]?.type === 'tool_result';\n                  \n                  if (isToolResult) {\n                    // Skip tool_result messages and continue traversing\n                    debugLog(`[DEBUG] Skipping tool_result message`);\n                  } else {\n                    // Check if it's a real user message\n                    let content = '';\n                    if (typeof parent.message.content === 'string') {\n                      content = parent.message.content;\n                    } else if (Array.isArray(parent.message.content)) {\n                      const textItem = parent.message.content.find((item: any) => item.type === 'text');\n                      if (textItem && textItem.text) {\n                        content = textItem.text;\n                      }\n                    }\n                    \n                    debugLog(`[DEBUG] User message content: \"${content.substring(0, 100)}...\"`);\n                    \n                    // Exclude system messages and file change outputs\n                    if (content && \n                        !content.includes('<function_calls>') && \n                        !content.includes('Todos have been modified') &&\n                        !content.includes('<system-reminder>') &&\n                        !content.includes('Tool ran without output') &&\n                        !content.includes('⏺ Update(') &&\n                        !content.includes('⏺ Read(') &&\n                        !content.includes('This session is being continued from')) {\n                      userPromptUuid = parent.uuid;\n                      debugLog(`[DEBUG] Found real user prompt! UUID: ${userPromptUuid}`);\n                      break;\n                    } else {\n                      debugLog(`[DEBUG] Skipping system/tool message`);\n                    }\n                  }\n                }\n                currentEntry = parent;\n              } else {\n                break;\n              }\n            }\n            \n            if (depth >= maxDepth) {\n              debugLog(`[DEBUG] WARNING: Max depth ${maxDepth} reached without finding user prompt`);\n            }\n            \n            if (userPromptUuid) {\n              if (!fileChangesByPrompt.has(userPromptUuid)) {\n                fileChangesByPrompt.set(userPromptUuid, []);\n              }\n              fileChangesByPrompt.get(userPromptUuid)!.push(fileChange);\n            }\n            \n            sessionData.changes.push(fileChange);\n          }\n        }\n        // Handle old format (single edit with oldString/newString)\n        else if (result.filePath && (result.oldString || result.newString)) {\n          const fileChange: FileChange = {\n            type: 'edit',\n            path: result.filePath,\n            content: result.newString,\n            oldContent: result.oldString || result.originalFile,\n            timestamp: entry.timestamp || new Date().toISOString()\n          };\n          \n          // Generate diff if we have old and new content\n          if (result.oldString && result.newString) {\n            const diff = generateSimpleDiff(result.oldString, result.newString, result.filePath);\n            fileChange.diff = diff;\n          }\n          \n          // Store structured patch if available\n          if (result.structuredPatch) {\n            fileChange.structuredPatch = result.structuredPatch;\n          }\n          \n          // Find the real user prompt (not tool_result)\n          let currentEntry = entry;\n          let userPromptUuid = null;\n          const visited = new Set<string>();\n          let depth = 0;\n          const maxDepth = 20; // Prevent infinite loops\n          \n          // Traverse up the parent chain to find the original user prompt\n          while (currentEntry && currentEntry.parentUuid && !visited.has(currentEntry.uuid) && depth < maxDepth) {\n            visited.add(currentEntry.uuid);\n            depth++;\n            const parent = entriesByUuid.get(currentEntry.parentUuid);\n            if (parent) {\n              if (parent.type === 'user' && parent.message) {\n                // Check if it's a tool_result\n                const isToolResult = parent.message.content?.[0]?.type === 'tool_result';\n                \n                if (isToolResult) {\n                  // Skip tool_result messages and continue traversing\n                  debugLog(`[DEBUG] Skipping tool_result message`);\n                } else {\n                  // Check if it's a real user message\n                  let content = '';\n                  if (typeof parent.message.content === 'string') {\n                    content = parent.message.content;\n                  } else if (Array.isArray(parent.message.content)) {\n                    const textItem = parent.message.content.find((item: any) => item.type === 'text');\n                    if (textItem && textItem.text) {\n                      content = textItem.text;\n                    }\n                  }\n                  \n                  // Exclude system messages and file change outputs\n                  if (content && \n                      !content.includes('<function_calls>') && \n                      !content.includes('Todos have been modified') &&\n                      !content.includes('<system-reminder>') &&\n                      !content.includes('Tool ran without output') &&\n                      !content.includes('⏺ Update(') &&\n                      !content.includes('⏺ Read(') &&\n                      !content.includes('This session is being continued from')) {\n                    userPromptUuid = parent.uuid;\n                    break;\n                  }\n                }\n              }\n              currentEntry = parent;\n            } else {\n              break;\n            }\n          }\n          \n          if (depth >= maxDepth) {\n            debugLog(`[DEBUG] WARNING: Max depth ${maxDepth} reached without finding user prompt`);\n          }\n          \n          if (userPromptUuid) {\n            if (!fileChangesByPrompt.has(userPromptUuid)) {\n              fileChangesByPrompt.set(userPromptUuid, []);\n            }\n            fileChangesByPrompt.get(userPromptUuid)!.push(fileChange);\n          }\n          \n          sessionData.changes.push(fileChange);\n        }\n      }\n      \n      // Handle user messages\n      if (entry.type === 'user' && entry.message) {\n        const msg = entry.message;\n        let content = '';\n        \n        if (typeof msg.content === 'string') {\n          content = msg.content;\n        } else if (Array.isArray(msg.content)) {\n          // Handle both text and tool_result content\n          const contentParts: string[] = [];\n          let hasToolResult = false;\n          \n          msg.content.forEach((item: any) => {\n            if (item.type === 'text') {\n              contentParts.push(item.text);\n            } else if (item.type === 'tool_result') {\n              hasToolResult = true;\n              // Add tool result to assistant actions\n              if (sessionData.assistantActions && item.content) {\n                const toolResultAction: AssistantAction = {\n                  type: 'command_execution',\n                  description: `Tool result: ${item.content.substring(0, 200)}${item.content.length > 200 ? '...' : ''}`,\n                  timestamp: entry.timestamp || new Date().toISOString()\n                };\n                sessionData.assistantActions.push(toolResultAction);\n              }\n            }\n          });\n          \n          // Only process as user message if it's not just a tool result\n          if (!hasToolResult || contentParts.length > 0) {\n            content = contentParts.join('\\n');\n          }\n        }\n        \n        if (content && msg.role === 'user') {\n          const prompt: Prompt = {\n            role: 'user',\n            content: content,\n            timestamp: entry.timestamp || new Date().toISOString(),\n            isAutoGenerated: isAutoGeneratedPrompt(content),\n            uuid: entry.uuid\n          } as Prompt & { uuid?: string };\n          \n          // Check if there are associated file changes\n          const associatedChanges = fileChangesByPrompt.get(entry.uuid);\n          if (associatedChanges && associatedChanges.length > 0) {\n            prompt.associatedFiles = [...new Set(associatedChanges.map(c => c.path))];\n          }\n          \n          sessionData.prompts.push(prompt);\n        }\n      }\n      \n      // Handle assistant messages with usage info\n      if (entry.type === 'assistant' && entry.message) {\n        const msg = entry.message;\n        let content = '';\n        \n        if (Array.isArray(msg.content)) {\n          // Include both text and tool_use content\n          const contentParts: string[] = [];\n          \n          msg.content.forEach((item: any) => {\n            if (item.type === 'text') {\n              contentParts.push(item.text);\n            } else if (item.type === 'tool_use') {\n              // Format tool use as markdown\n              contentParts.push(`\\n⏺ ${item.name}`);\n              \n              // Track tool execution\n              if (sessionData.toolExecutions) {\n                const toolExecution: ToolExecution = {\n                  tool: item.name,\n                  timestamp: entry.timestamp || new Date().toISOString(),\n                  parameters: item.input,\n                  promptId: entry.parentUuid\n                };\n                sessionData.toolExecutions.push(toolExecution);\n                debugLog(`[DEBUG] Added tool execution: ${item.name}`);\n              }\n              \n              if (item.input) {\n                // Show tool parameters\n                if (item.name === 'Bash' && item.input.command) {\n                  contentParts.push(`  ⎿ ${item.input.command}`);\n                } else if (item.name === 'Edit' && item.input.file_path) {\n                  contentParts.push(`  ⎿ ${item.input.file_path}`);\n                } else if (item.name === 'TodoWrite') {\n                  contentParts.push(`  ⎿ Update Todos`);\n                } else if (item.name === 'Read' && item.input.file_path) {\n                  contentParts.push(`  ⎿ ${item.input.file_path}`);\n                }\n              }\n            }\n          });\n          \n          content = contentParts.join('\\n');\n        }\n        \n        if (content) {\n          const prompt: Prompt = {\n            role: 'assistant',\n            content: content,\n            timestamp: entry.timestamp || new Date().toISOString()\n          };\n          \n          // Extract actions from assistant response\n          const actions = extractAssistantActions(content, entry.timestamp || new Date().toISOString());\n          debugLog(`[DEBUG] Extracted ${actions.length} actions from assistant response`);\n          if (actions.length > 0 && sessionData.assistantActions) {\n            // Link actions to the previous user prompt\n            const lastUserPrompt = sessionData.prompts.filter(p => p.role === 'user').pop();\n            if (lastUserPrompt) {\n              actions.forEach(action => {\n                action.promptId = entry.parentUuid;  // Link to parent prompt\n              });\n            }\n            sessionData.assistantActions.push(...actions);\n            debugLog(`[DEBUG] Total assistant actions: ${sessionData.assistantActions.length}`);\n          }\n          \n          // Extract model info if available\n          if (entry.model || msg.model) {\n            prompt.model = entry.model || msg.model;\n            // Add to models list if not already there\n            if (sessionData.metadata?.models && prompt.model && !sessionData.metadata.models.includes(prompt.model)) {\n              sessionData.metadata.models.push(prompt.model);\n            }\n          }\n          \n          // Extract tool calls from content\n          const toolNames = extractToolCalls(msg.content);\n          if (toolNames.length > 0) {\n            prompt.toolCalls = toolNames;\n            \n            // Track all tool calls\n            toolNames.forEach(toolName => {\n              const toolCall: ToolCall = {\n                name: toolName,\n                timestamp: entry.timestamp || new Date().toISOString(),\n                isMCP: toolName.startsWith('mcp__')\n              };\n              sessionData.toolCalls?.push(toolCall);\n              \n              // Track MCP servers\n              if (toolName.startsWith('mcp__')) {\n                const serverName = toolName.split('__')[1]?.split('__')[0];\n                if (serverName && sessionData.metadata?.mcpServers) {\n                  let server = sessionData.metadata.mcpServers.find(s => s.name === serverName);\n                  if (!server) {\n                    server = { name: serverName, tools: [] };\n                    sessionData.metadata.mcpServers.push(server);\n                  }\n                  if (!server.tools.includes(toolName)) {\n                    server.tools.push(toolName);\n                  }\n                }\n              }\n            });\n          }\n          \n          // Add token usage if available\n          if (msg.usage) {\n            prompt.usage = {\n              input_tokens: msg.usage.input_tokens,\n              output_tokens: msg.usage.output_tokens,\n              cache_creation_input_tokens: msg.usage.cache_creation_input_tokens,\n              cache_read_input_tokens: msg.usage.cache_read_input_tokens,\n              total_tokens: (msg.usage.input_tokens || 0) + \n                           (msg.usage.output_tokens || 0) +\n                           (msg.usage.cache_creation_input_tokens || 0) +\n                           (msg.usage.cache_read_input_tokens || 0)\n            };\n          }\n          \n          // Calculate response time if we can find the parent user message\n          if (entry.parentUuid && entriesByUuid.has(entry.parentUuid)) {\n            const parentEntry = entriesByUuid.get(entry.parentUuid);\n            if (parentEntry.timestamp) {\n              const responseTime = new Date(entry.timestamp).getTime() - \n                                 new Date(parentEntry.timestamp).getTime();\n              prompt.responseTimeMs = responseTime;\n            }\n          }\n          \n          // Check if there are file changes associated with this assistant response\n          const parentUserUuid = entry.parentUuid;\n          if (parentUserUuid) {\n            const associatedChanges = fileChangesByPrompt.get(parentUserUuid);\n            if (associatedChanges && associatedChanges.length > 0) {\n              const associatedFiles = [...new Set(associatedChanges.map(c => c.path))];\n              prompt.associatedFiles = associatedFiles;\n              \n              // Also update the previous user prompt\n              if (sessionData.prompts.length > 0) {\n                const lastPrompt = sessionData.prompts[sessionData.prompts.length - 1];\n                if (lastPrompt.role === 'user') {\n                  lastPrompt.associatedFiles = associatedFiles;\n                }\n              }\n            }\n          }\n          \n          sessionData.prompts.push(prompt);\n        }\n      }\n      \n      // Handle tool result entries (separate from user messages with tool_result content)\n      if (entry.type === 'tool_result' && entry.content) {\n        // Update the latest tool execution with result\n        if (sessionData.toolExecutions && sessionData.toolExecutions.length > 0) {\n          // Find the most recent tool execution without a result\n          for (let i = sessionData.toolExecutions.length - 1; i >= 0; i--) {\n            if (!sessionData.toolExecutions[i].result) {\n              sessionData.toolExecutions[i].result = entry.content;\n              sessionData.toolExecutions[i].status = entry.error ? 'error' : 'success';\n              \n              // If this is an Edit/MultiEdit tool result, check for file changes\n              const tool = sessionData.toolExecutions[i].tool;\n              if ((tool === 'Edit' || tool === 'MultiEdit') && entry.toolUseResult) {\n                const result = entry.toolUseResult;\n                if (result.filePath) {\n                  // Find the corresponding file change\n                  const fileChange = sessionData.changes.find(c => \n                    c.path === result.filePath && \n                    Math.abs(new Date(c.timestamp).getTime() - new Date(entry.timestamp || '').getTime()) < 1000\n                  );\n                  \n                  if (fileChange) {\n                    sessionData.toolExecutions[i].fileChange = {\n                      filePath: result.filePath,\n                      changeType: fileChange.type,\n                      diff: fileChange.diff,\n                      oldContent: fileChange.oldContent,\n                      newContent: fileChange.content\n                    };\n                  }\n                }\n              }\n              break;\n            }\n          }\n        }\n      }\n    } catch {\n      // Skip malformed JSON lines\n    }\n  }\n  \n  \n  return sessionData;\n}\n\nasync function getCurrentSessionData(): Promise<SessionData> {\n  // Check Claude's project folder for current session\n  const currentPath = process.cwd();\n  const projectDirName = currentPath.replace(/[^a-zA-Z0-9]/g, '-');\n  const claudeProjectPath = path.join(process.env.HOME || '', '.claude', 'projects', projectDirName);\n  \n  try {\n    const sessionData = await captureSessionsFromDirectory(claudeProjectPath);\n    // Add metadata\n    sessionData.metadata = {\n      ...sessionData.metadata,\n      claudeProjectPath: claudeProjectPath\n    };\n    return sessionData;\n  } catch (err) {\n    // If project directory doesn't exist, return empty session\n    return {\n      timestamp: new Date().toISOString(),\n      prompts: [],\n      changes: [],\n      metadata: {\n        platform: process.platform,\n        workingDirectory: process.cwd(),\n        claudeProjectPath: claudeProjectPath\n      }\n    };\n  }\n}",
+        "structuredPatch": [
+          {
+            "oldStart": 334,
+            "oldLines": 14,
+            "newStart": 334,
+            "newLines": 24,
+            "lines": [
+              "   ",
+              "   try {",
+              "     const files = await fs.readdir(claudeProjectPath);",
+              "-    const jsonlFiles = files.filter(file => file.endsWith('.jsonl')).sort();",
+              "+    const jsonlFiles = files.filter(file => file.endsWith('.jsonl'));",
+              "     ",
+              "     if (jsonlFiles.length === 0) {",
+              "       return rawData;",
+              "     }",
+              "     ",
+              "-    // Read the latest JSONL file",
+              "-    const latestFile = path.join(claudeProjectPath, jsonlFiles[jsonlFiles.length - 1]);",
+              "+    // Find the most recently modified JSONL file (current session)",
+              "+    const fileStats = await Promise.all(",
+              "+      jsonlFiles.map(async (file) => {",
+              "+        const filePath = path.join(claudeProjectPath, file);",
+              "+        const stat = await fs.stat(filePath);",
+              "+        return { file, mtime: stat.mtime.getTime() };",
+              "+      })",
+              "+    );",
+              "+    ",
+              "+    // Sort by modification time (most recent first)",
+              "+    fileStats.sort((a, b) => b.mtime - a.mtime);",
+              "+    const latestFile = path.join(claudeProjectPath, fileStats[0].file);",
+              "     const content = await fs.readFile(latestFile, 'utf-8');",
+              "     const lines = content.trim().split('\\n');",
+              "     "
+            ]
+          }
+        ],
+        "userModified": false,
+        "replaceAll": false
+      }
+    },
+    {
+      "parentUuid": "30357f29-2c1e-44e5-a1dc-a2bf90fba115",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01R7pLf3V4yozUGjwnEZCQPn",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "text",
+            "text": "이제 빌드하고 테스트해보겠습니다:"
+          }
+        ],
+        "stop_reason": null,
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 1091,
+          "cache_read_input_tokens": 130720,
+          "output_tokens": 1,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHr5dRGm4stn9XAvY5y",
+      "type": "assistant",
+      "uuid": "8c2a5585-1beb-4292-b426-1742f95a83c0",
+      "timestamp": "2025-07-24T05:28:12.966Z"
+    },
+    {
+      "parentUuid": "8c2a5585-1beb-4292-b426-1742f95a83c0",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01R7pLf3V4yozUGjwnEZCQPn",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01CM7Mh2pn2MNd2njSY8ps6Q",
+            "name": "Bash",
+            "input": {
+              "command": "npm run build",
+              "description": "Build TypeScript"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 1091,
+          "cache_read_input_tokens": 130720,
+          "output_tokens": 94,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHr5dRGm4stn9XAvY5y",
+      "type": "assistant",
+      "uuid": "892c7736-c919-4d29-8131-96fbac1dd5e0",
+      "timestamp": "2025-07-24T05:28:13.858Z"
+    },
+    {
+      "parentUuid": "892c7736-c919-4d29-8131-96fbac1dd5e0",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "type": "user",
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01CM7Mh2pn2MNd2njSY8ps6Q",
+            "type": "tool_result",
+            "content": "> ccshare@0.3.0 build\n> tsc",
+            "is_error": false
+          }
+        ]
+      },
+      "uuid": "3cb8edd6-48bf-49b2-aa4b-b8294215f2b1",
+      "timestamp": "2025-07-24T05:28:14.562Z",
+      "toolUseResult": {
+        "stdout": "> ccshare@0.3.0 build\n> tsc",
+        "stderr": "",
+        "interrupted": false,
+        "isImage": false
+      }
+    },
+    {
+      "parentUuid": "3cb8edd6-48bf-49b2-aa4b-b8294215f2b1",
+      "isSidechain": false,
+      "userType": "external",
+      "cwd": "/Users/james/Development/scripts/ccshare",
+      "sessionId": "0bfe009d-8345-4731-aed0-f0edbb4530cf",
+      "version": "1.0.59",
+      "gitBranch": "main",
+      "message": {
+        "id": "msg_01TjaF8eE9RJ2nKBSYag1gyF",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-4-20250514",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_011b6BTCuBB66Ti1xvGqwq5j",
+            "name": "Bash",
+            "input": {
+              "command": "node dist/cli.js -r 1 --json > test-latest.json && jq '.sessionEntries[0].message.content' test-latest.json | head -50",
+              "description": "Test with -r 1 to see the latest prompt"
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 248,
+          "cache_read_input_tokens": 131811,
+          "output_tokens": 121,
+          "service_tier": "standard"
+        }
+      },
+      "requestId": "req_011CRRHrWcLLUQrs7C8G9JDa",
+      "type": "assistant",
+      "uuid": "07efc3a8-6a85-4dd8-8a70-e0ef01f0fc96",
+      "timestamp": "2025-07-24T05:28:20.564Z"
+    }
+  ],
+  "metadata": {
+    "gitBranch": "main",
+    "gitCommitCount": 15,
+    "nodeVersion": "v23.11.0",
+    "claudeSettings": {
+      "permissions": [
+        "Bash",
+        "WebFetch",
+        "Search",
+        "mcp__playwright__*"
+      ],
+      "model": "opus"
+    },
+    "ccshareVersion": "0.3.0",
+    "generatedAt": "2025-07-24T05:28:20.809Z",
+    "selectedPromptsCount": 1,
+    "totalEntriesCount": 58
+  }
+}

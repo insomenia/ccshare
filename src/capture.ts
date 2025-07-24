@@ -334,14 +334,24 @@ export async function captureRawSession(sessionPath?: string, limit: number = 20
   
   try {
     const files = await fs.readdir(claudeProjectPath);
-    const jsonlFiles = files.filter(file => file.endsWith('.jsonl')).sort();
+    const jsonlFiles = files.filter(file => file.endsWith('.jsonl'));
     
     if (jsonlFiles.length === 0) {
       return rawData;
     }
     
-    // Read the latest JSONL file
-    const latestFile = path.join(claudeProjectPath, jsonlFiles[jsonlFiles.length - 1]);
+    // Find the most recently modified JSONL file (current session)
+    const fileStats = await Promise.all(
+      jsonlFiles.map(async (file) => {
+        const filePath = path.join(claudeProjectPath, file);
+        const stat = await fs.stat(filePath);
+        return { file, mtime: stat.mtime.getTime() };
+      })
+    );
+    
+    // Sort by modification time (most recent first)
+    fileStats.sort((a, b) => b.mtime - a.mtime);
+    const latestFile = path.join(claudeProjectPath, fileStats[0].file);
     const content = await fs.readFile(latestFile, 'utf-8');
     const lines = content.trim().split('\n');
     

@@ -73,16 +73,18 @@ program
           console.log(chalk.cyan(`\n📝 Using ${options.recent} most recent prompts`));
         }
       } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {
-        const choices = rawData.prompts.map((p, index) => ({
-          name: `${index + 1}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,
-          value: index,
+        // Reverse the prompts to show most recent first
+        const reversedPrompts = [...rawData.prompts].reverse();
+        const choices = reversedPrompts.map((p, index) => ({
+          name: `${reversedPrompts.length - index}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,
+          value: rawData.prompts.length - 1 - index, // Map back to original index
           checked: true
         }));
         
         const { selected } = await inquirer.prompt([{
           type: 'checkbox',
           name: 'selected',
-          message: 'Select prompts to share:',
+          message: 'Select prompts to share (most recent first):',
           choices,
           pageSize: 15
         }]);
