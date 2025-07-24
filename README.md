@@ -7,13 +7,14 @@ Instantly share your Claude Code sessions on ccshare.cc - featuring beautiful sy
 - 🚀 Instant sharing to ccshare.cc with one command
 - 📝 Export Claude Code conversations online with raw session data
 - 🎨 Beautiful syntax highlighting and clean formatting
-- 📊 Automatic tech stack detection (languages, frameworks, tools, databases)
+- 📊 Automatic tech stack detection with version information and dependencies
 - 🔍 Interactive prompt selection (choose which prompts to include)
 - 📁 Reads Claude's project-specific history files automatically
 - 🎯 Preserves complete session context with raw JSONL data
 - 👀 Real-time watch mode for live session tracking
 - 🔄 Load and execute shared prompts from other sessions
 - 💡 Tracks all session data including assistant responses and tool executions
+- ⚡ Direct browser submission for reliable sharing
 
 ## Installation
 
@@ -47,9 +48,10 @@ ccshare
 ```
 
 This will:
-1. Show an interactive prompt selector (use spacebar to select/deselect)
-2. Share selected prompts to ccshare.cc
-3. Open the share page in your browser
+1. Find the most recent Claude Code session in your project
+2. Show an interactive prompt selector (newest prompts first, use spacebar to select/deselect)
+3. Share selected prompts to ccshare.cc via browser submission
+4. Open the share page in your browser
 
 ### Advanced Usage
 
@@ -63,8 +65,11 @@ ccshare --api-url https://myapi.com/shares
 # Output JSON format
 ccshare --json
 
-# Include only the N most recent prompts
+# Include only the N most recent prompts (skips selection)
 ccshare --recent 5
+
+# Fetch more prompts from session history
+ccshare --limit 50  # Default is 20
 
 # Exclude auto-generated prompts (commands, system messages)
 ccshare --exclude-auto
@@ -151,19 +156,22 @@ ccshare reads Claude Code session data from:
 3. Local `.claude-sessions/` folder for archived sessions
 
 The tool automatically:
-- Detects your project's tech stack by analyzing config files
-- Associates file changes with the prompts that caused them using UUID tracking
-- Shares to ccshare.cc via secure browser form submission
-- Generates clean, readable HTML reports (when using `--html`)
+- Finds the most recently modified JSONL file (your current session)
+- Detects your project's tech stack including versions and dependencies
+- Extracts file changes from toolUseResult entries
+- Shares to ccshare.cc via browser form submission for reliability
+- Preserves complete session context with raw JSONL data
 
 ## What Gets Shared
 
 Shared sessions include:
-- **Tech Stack Tags**: Automatically detected languages, frameworks, and tools
+- **Tech Stack Tags**: Automatically detected languages, frameworks, tools, and databases
+- **Version Information**: Package versions and dependencies from your project
 - **Prompts**: User prompts with timestamps (auto-generated prompts can be excluded)
-- **File Changes**: Syntax-highlighted diffs associated with each prompt
-- **Session Info**: Summary of total prompts, time range, and sources
-- **CLAUDE.md**: Optional project context (you'll be asked)
+- **Assistant Responses**: Complete AI responses with tool executions
+- **File Changes**: All edits and modifications tracked from toolUseResult
+- **Session Metadata**: Git info, OS details, Node version, and more
+- **Raw Session Data**: Complete JSONL entries preserving full context
 
 ## Local Session Storage
 
