@@ -195,10 +195,6 @@ program
       
       // If HTML option is used, generate HTML report
       if (options.html) {
-        // Transform data to get workflow
-        const shareData = transformToShareData(htmlData, sessionData);
-        // Add workflow to htmlData
-        htmlData.workflow = shareData.workflow;
         const html = generateHtml(htmlData);
       
       // Create reports directory if it doesn't exist

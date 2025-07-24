@@ -16,7 +16,6 @@ export interface ShareData {
   techStack: ShareTechStack;
   prompts: SharePrompt[];
   fileDiffs: ShareFileDiff[];  // File diffs at share level
-  workflow?: WorkflowItem[];  // Combined workflow in chronological order
   metadata: ShareMetadata;
   claudeMd?: string;
   models?: string[];  // List of models used
@@ -295,7 +294,6 @@ export function transformToShareData(htmlData: HtmlData, sessionData: SessionDat
     },
     prompts: sharePrompts,
     fileDiffs: transformedFileDiffs,  // File diffs at share level
-    workflow: workflow.length > 0 ? workflow : undefined,  // Combined workflow
     metadata: {
       generatedBy: 'ccshare',
       version: VERSION,
