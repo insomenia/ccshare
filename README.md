@@ -5,15 +5,15 @@ Instantly share your Claude Code sessions on ccshare.cc - featuring beautiful sy
 ## Features
 
 - 🚀 Instant sharing to ccshare.cc with one command
-- 📝 Export Claude Code conversations online or save as HTML
-- 🎨 Generate beautiful, responsive reports with syntax highlighting
+- 📝 Export Claude Code conversations online with raw session data
+- 🎨 Beautiful syntax highlighting and clean formatting
 - 📊 Automatic tech stack detection (languages, frameworks, tools, databases)
 - 🔍 Interactive prompt selection (choose which prompts to include)
 - 📁 Reads Claude's project-specific history files automatically
-- 🎯 Associates file changes with specific prompts
+- 🎯 Preserves complete session context with raw JSONL data
 - 👀 Real-time watch mode for live session tracking
 - 🔄 Load and execute shared prompts from other sessions
-- 💡 Tracks assistant actions (explanations, analysis, code changes)
+- 💡 Tracks all session data including assistant responses and tool executions
 
 ## Installation
 
