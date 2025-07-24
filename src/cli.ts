@@ -55,8 +55,8 @@ program
   .action(async (options) => {
     // Default action - share raw session data to API
     try {
-      // Use limit from options or default to 20
-      const limit = options.limit || (options.all ? 1000 : 20);
+      // Use limit from options, recent flag, or default to 20
+      const limit = options.limit || options.recent || (options.all ? 1000 : 20);
       const spinner = options.json ? null : ora('Fetching session data...').start();
       
       const rawData = await captureRawSession(options.session, limit);
@@ -66,7 +66,13 @@ program
       // Allow user to select prompts
       let selectedPrompts = rawData.prompts;
       
-      if (options.select !== false && !options.json && rawData.prompts.length > 0) {
+      // If --recent is used, skip prompt selection
+      if (options.recent) {
+        selectedPrompts = rawData.prompts.slice(-options.recent);
+        if (!options.json) {
+          console.log(chalk.cyan(`\n📝 Using ${options.recent} most recent prompts`));
+        }
+      } else if (options.select !== false && !options.json && rawData.prompts.length > 0) {
         const choices = rawData.prompts.map((p, index) => ({
           name: `${index + 1}. ${p.userPrompt.message?.content?.substring(0, 100)}...`,
           value: index,
@@ -132,12 +138,17 @@ program
           console.log(chalk.green(`\n✅ Shared successfully: ${result.url}`));
           await openUrl(result.url);
         }
-      } catch (error) {
-        console.error(chalk.red('\n❌ Error sharing session:'), error);
+      } catch (error: any) {
+        // API might return HTML login page or other errors
+        if (!options.json) {
+          console.log(chalk.yellow('\n⚠️  Direct API sharing failed, using browser submission...'));
+        }
         
         // Fallback to form submission
         const tempFilePath = await createAutoPostForm(payload, apiUrl);
-        console.log(chalk.yellow('📤 Opening browser to submit data...'));
+        if (!options.json) {
+          console.log(chalk.yellow('📤 Opening browser to submit data...'));
+        }
         await openUrl(`file://${tempFilePath}`);
       }
       

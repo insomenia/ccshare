@@ -319,14 +319,37 @@ export async function shareToAPIRaw(data: any, apiUrl: string): Promise<{ url?: 
   try {
     const response = await axios.post(apiUrl, data, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
-      maxBodyLength: Infinity
+      maxBodyLength: Infinity,
+      timeout: 10000 // 10 second timeout
     });
     
-    return { url: response.data.url || response.data.share_url };
+    // Check if response is HTML (likely a login page or error page)
+    if (typeof response.data === 'string' && response.data.includes('<!DOCTYPE html>')) {
+      throw new Error('API returned HTML instead of JSON (possibly requires authentication)');
+    }
+    
+    // Check different possible response formats
+    const url = response.data?.url || 
+                response.data?.share_url || 
+                response.data?.shareUrl ||
+                response.data?.slug ? `${apiUrl}/${response.data.slug}` : null;
+    
+    if (!url) {
+      console.error('Unexpected API response:', response.data);
+      throw new Error('No URL in API response');
+    }
+    
+    return { url };
   } catch (error: any) {
-    console.error('Share API error:', error.response?.data || error.message);
+    if (error.response?.status === 401) {
+      throw new Error('Authentication required');
+    }
+    if (error.response?.status === 404) {
+      throw new Error('API endpoint not found');
+    }
     throw error;
   }
 }
