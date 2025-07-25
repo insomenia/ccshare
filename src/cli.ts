@@ -132,16 +132,43 @@ program
         if (!options.json) {
           const spinner = ora('Generating optimized prompt with Claude...').start();
           try {
-            // Create prompt for Claude
-            const optimizationPrompt = `첨부한 내용은 Claude Code의 세션 데이터야. 이것과 동일한 것을 구현하기 위한 최적화된 프롬프트를 md 포맷으로 만들어서 결과로 리턴해줘.
-
-세션 데이터:
-${JSON.stringify(payload, null, 2)}`;
+            // Create a summary of the session data for the prompt
+            const sessionSummary = {
+              prompts: selectedPrompts.map(p => ({
+                content: p.userPrompt.message?.content || '',
+                timestamp: p.userPrompt.timestamp
+              })),
+              metadata: {
+                techStack: metadata.techStack,
+                totalPrompts: selectedPrompts.length,
+                projectName: metadata.workingDirectory?.split('/').pop()
+              }
+            };
             
-            // Execute claude -p command
-            const { stdout } = await execAsync(`claude -p '${optimizationPrompt.replace(/'/g, "'\\''")}'`, {
-              maxBuffer: 1024 * 1024 * 10 // 10MB buffer
+            // Create prompt for Claude
+            const optimizationPrompt = `Claude Code 세션 데이터를 기반으로 동일한 결과를 얻을 수 있는 최적화된 프롬프트를 만들어줘.
+
+프로젝트 정보:
+- 프로젝트명: ${sessionSummary.metadata.projectName || 'Unknown'}
+- 기술 스택: ${JSON.stringify(sessionSummary.metadata.techStack || {}, null, 2)}
+
+사용자 프롬프트들:
+${sessionSummary.prompts.map((p, i) => `${i + 1}. ${p.content}`).join('\n')}
+
+위 내용을 하나의 통합된 프롬프트로 만들어서 마크다운 형식으로 작성해줘. 프롬프트는 명확하고 구체적이어야 하며, 모든 요구사항을 포함해야 해.`;
+            
+            // Save to temp file to avoid shell escaping issues
+            const tempFile = path.join(process.env.TMPDIR || '/tmp', `ccshare-prompt-${Date.now()}.txt`);
+            await fs.writeFile(tempFile, optimizationPrompt);
+            
+            // Execute claude -p command with file
+            const { stdout } = await execAsync(`claude -p "$(cat '${tempFile}')"`, {
+              maxBuffer: 1024 * 1024 * 10, // 10MB buffer
+              timeout: 60000 // 60 second timeout
             });
+            
+            // Clean up temp file
+            await fs.unlink(tempFile).catch(() => {});
             
             // Add optimized prompt to payload
             payload.optimizedPrompt = stdout.trim();
@@ -155,14 +182,38 @@ ${JSON.stringify(payload, null, 2)}`;
         } else {
           // For JSON output, generate optimized prompt without spinner
           try {
-            const optimizationPrompt = `첨부한 내용은 Claude Code의 세션 데이터야. 이것과 동일한 것을 구현하기 위한 최적화된 프롬프트를 md 포맷으로 만들어서 결과로 리턴해줘.
-
-세션 데이터:
-${JSON.stringify(payload, null, 2)}`;
+            const sessionSummary = {
+              prompts: selectedPrompts.map(p => ({
+                content: p.userPrompt.message?.content || '',
+                timestamp: p.userPrompt.timestamp
+              })),
+              metadata: {
+                techStack: metadata.techStack,
+                totalPrompts: selectedPrompts.length,
+                projectName: metadata.workingDirectory?.split('/').pop()
+              }
+            };
             
-            const { stdout } = await execAsync(`claude -p '${optimizationPrompt.replace(/'/g, "'\\''")}'`, {
-              maxBuffer: 1024 * 1024 * 10 // 10MB buffer
+            const optimizationPrompt = `Claude Code 세션 데이터를 기반으로 동일한 결과를 얻을 수 있는 최적화된 프롬프트를 만들어줘.
+
+프로젝트 정보:
+- 프로젝트명: ${sessionSummary.metadata.projectName || 'Unknown'}
+- 기술 스택: ${JSON.stringify(sessionSummary.metadata.techStack || {}, null, 2)}
+
+사용자 프롬프트들:
+${sessionSummary.prompts.map((p, i) => `${i + 1}. ${p.content}`).join('\n')}
+
+위 내용을 하나의 통합된 프롬프트로 만들어서 마크다운 형식으로 작성해줘. 프롬프트는 명확하고 구체적이어야 하며, 모든 요구사항을 포함해야 해.`;
+            
+            const tempFile = path.join(process.env.TMPDIR || '/tmp', `ccshare-prompt-${Date.now()}.txt`);
+            await fs.writeFile(tempFile, optimizationPrompt);
+            
+            const { stdout } = await execAsync(`claude -p "$(cat '${tempFile}')"`, {
+              maxBuffer: 1024 * 1024 * 10,
+              timeout: 60000
             });
+            
+            await fs.unlink(tempFile).catch(() => {});
             
             payload.optimizedPrompt = stdout.trim();
           } catch (error: any) {
