@@ -49,6 +49,7 @@ program
   .option('--json', 'Output JSON format instead of HTML')
   .option('--exclude-auto', 'Exclude auto-generated prompts')
   .option('-l, --limit <number>', 'Maximum number of prompts to fetch from session files', parseInt)
+  .option('-o, --optimize', 'Generate optimized prompt using Claude')
   .action(async (options) => {
     // Default action - share raw session data to API
     try {
@@ -121,10 +122,54 @@ program
         totalEntriesCount: sessionEntries.length
       };
       
-      const payload = {
+      const payload: any = {
         sessionEntries,
         metadata
       };
+      
+      // Generate optimized prompt if requested
+      if (options.optimize) {
+        if (!options.json) {
+          const spinner = ora('Generating optimized prompt with Claude...').start();
+          try {
+            // Create prompt for Claude
+            const optimizationPrompt = `첨부한 내용은 Claude Code의 세션 데이터야. 이것과 동일한 것을 구현하기 위한 최적화된 프롬프트를 md 포맷으로 만들어서 결과로 리턴해줘.
+
+세션 데이터:
+${JSON.stringify(payload, null, 2)}`;
+            
+            // Execute claude -p command
+            const { stdout } = await execAsync(`claude -p '${optimizationPrompt.replace(/'/g, "'\\''")}'`, {
+              maxBuffer: 1024 * 1024 * 10 // 10MB buffer
+            });
+            
+            // Add optimized prompt to payload
+            payload.optimizedPrompt = stdout.trim();
+            
+            spinner.succeed('Optimized prompt generated');
+          } catch (error: any) {
+            spinner.fail('Failed to generate optimized prompt');
+            console.error(chalk.red('Error:'), error.message);
+            // Continue without optimized prompt
+          }
+        } else {
+          // For JSON output, generate optimized prompt without spinner
+          try {
+            const optimizationPrompt = `첨부한 내용은 Claude Code의 세션 데이터야. 이것과 동일한 것을 구현하기 위한 최적화된 프롬프트를 md 포맷으로 만들어서 결과로 리턴해줘.
+
+세션 데이터:
+${JSON.stringify(payload, null, 2)}`;
+            
+            const { stdout } = await execAsync(`claude -p '${optimizationPrompt.replace(/'/g, "'\\''")}'`, {
+              maxBuffer: 1024 * 1024 * 10 // 10MB buffer
+            });
+            
+            payload.optimizedPrompt = stdout.trim();
+          } catch (error: any) {
+            // Silent fail for JSON mode
+          }
+        }
+      }
       
       if (options.json) {
         console.log(JSON.stringify(payload, null, 2));
