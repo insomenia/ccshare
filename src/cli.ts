@@ -49,7 +49,6 @@ program
   .option('--json', 'Output JSON format instead of HTML')
   .option('--exclude-auto', 'Exclude auto-generated prompts')
   .option('-l, --limit <number>', 'Maximum number of prompts to fetch from session files', parseInt)
-  .option('-o, --optimize', 'Generate optimized prompt using Claude')
   .action(async (options) => {
     // Default action - share raw session data to API
     try {
@@ -122,105 +121,10 @@ program
         totalEntriesCount: sessionEntries.length
       };
       
-      const payload: any = {
+      const payload = {
         sessionEntries,
         metadata
       };
-      
-      // Generate optimized prompt if requested
-      if (options.optimize) {
-        if (!options.json) {
-          const spinner = ora('Generating optimized prompt with Claude...').start();
-          try {
-            // Create a summary of the session data for the prompt
-            const sessionSummary = {
-              prompts: selectedPrompts.map(p => ({
-                content: p.userPrompt.message?.content || '',
-                timestamp: p.userPrompt.timestamp
-              })),
-              metadata: {
-                techStack: metadata.techStack,
-                totalPrompts: selectedPrompts.length,
-                projectName: metadata.workingDirectory?.split('/').pop()
-              }
-            };
-            
-            // Create prompt for Claude
-            const optimizationPrompt = `Claude Code 세션 데이터를 기반으로 동일한 결과를 얻을 수 있는 최적화된 프롬프트를 만들어줘.
-
-프로젝트 정보:
-- 프로젝트명: ${sessionSummary.metadata.projectName || 'Unknown'}
-- 기술 스택: ${JSON.stringify(sessionSummary.metadata.techStack || {}, null, 2)}
-
-사용자 프롬프트들:
-${sessionSummary.prompts.map((p, i) => `${i + 1}. ${p.content}`).join('\n')}
-
-위 내용을 하나의 통합된 프롬프트로 만들어서 마크다운 형식으로 작성해줘. 프롬프트는 명확하고 구체적이어야 하며, 모든 요구사항을 포함해야 해.`;
-            
-            // Save to temp file to avoid shell escaping issues
-            const tempFile = path.join(process.env.TMPDIR || '/tmp', `ccshare-prompt-${Date.now()}.txt`);
-            await fs.writeFile(tempFile, optimizationPrompt);
-            
-            // Execute claude -p command with file
-            const { stdout } = await execAsync(`claude -p "$(cat '${tempFile}')"`, {
-              maxBuffer: 1024 * 1024 * 10, // 10MB buffer
-              timeout: 60000 // 60 second timeout
-            });
-            
-            // Clean up temp file
-            await fs.unlink(tempFile).catch(() => {});
-            
-            // Add optimized prompt to payload
-            payload.optimizedPrompt = stdout.trim();
-            
-            spinner.succeed('Optimized prompt generated');
-          } catch (error: any) {
-            spinner.fail('Failed to generate optimized prompt');
-            console.error(chalk.red('Error:'), error.message);
-            // Continue without optimized prompt
-          }
-        } else {
-          // For JSON output, generate optimized prompt without spinner
-          try {
-            const sessionSummary = {
-              prompts: selectedPrompts.map(p => ({
-                content: p.userPrompt.message?.content || '',
-                timestamp: p.userPrompt.timestamp
-              })),
-              metadata: {
-                techStack: metadata.techStack,
-                totalPrompts: selectedPrompts.length,
-                projectName: metadata.workingDirectory?.split('/').pop()
-              }
-            };
-            
-            const optimizationPrompt = `Claude Code 세션 데이터를 기반으로 동일한 결과를 얻을 수 있는 최적화된 프롬프트를 만들어줘.
-
-프로젝트 정보:
-- 프로젝트명: ${sessionSummary.metadata.projectName || 'Unknown'}
-- 기술 스택: ${JSON.stringify(sessionSummary.metadata.techStack || {}, null, 2)}
-
-사용자 프롬프트들:
-${sessionSummary.prompts.map((p, i) => `${i + 1}. ${p.content}`).join('\n')}
-
-위 내용을 하나의 통합된 프롬프트로 만들어서 마크다운 형식으로 작성해줘. 프롬프트는 명확하고 구체적이어야 하며, 모든 요구사항을 포함해야 해.`;
-            
-            const tempFile = path.join(process.env.TMPDIR || '/tmp', `ccshare-prompt-${Date.now()}.txt`);
-            await fs.writeFile(tempFile, optimizationPrompt);
-            
-            const { stdout } = await execAsync(`claude -p "$(cat '${tempFile}')"`, {
-              maxBuffer: 1024 * 1024 * 10,
-              timeout: 60000
-            });
-            
-            await fs.unlink(tempFile).catch(() => {});
-            
-            payload.optimizedPrompt = stdout.trim();
-          } catch (error: any) {
-            // Silent fail for JSON mode
-          }
-        }
-      }
       
       if (options.json) {
         console.log(JSON.stringify(payload, null, 2));

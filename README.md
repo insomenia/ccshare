@@ -14,7 +14,6 @@ Instantly share your Claude Code sessions on ccshare.cc - featuring beautiful sy
 - 🔄 Load and execute shared prompts from other sessions
 - 💡 Tracks all session data including assistant responses and tool executions
 - ⚡ Direct browser submission for reliable sharing
-- 🎯 Generate optimized prompts using Claude AI (-o option)
 
 ## Installation
 
@@ -70,13 +69,6 @@ ccshare --limit 50  # Default is 20
 
 # Exclude auto-generated prompts (commands, system messages)
 ccshare --exclude-auto
-
-# Generate optimized prompt using Claude
-ccshare -o
-ccshare --optimize
-
-# Generate optimized prompt and output as JSON
-ccshare -o --json
 ```
 
 ### Load and Execute Shared Prompts
