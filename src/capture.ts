@@ -16,14 +16,7 @@ function debugLog(message: string) {
 async function getAdditionalMetadata(): Promise<any> {
   const metadata: any = {};
   
-  // Get Git information
-  try {
-    metadata.gitBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
-    metadata.gitCommitCount = parseInt(execSync('git rev-list --count HEAD', { encoding: 'utf8' }).trim());
-    metadata.gitRemoteUrl = execSync('git config --get remote.origin.url', { encoding: 'utf8' }).trim();
-  } catch {
-    // Not a git repository or git not available
-  }
+  // Git information removed - using session data only
   
   // Get Node.js version
   metadata.nodeVersion = process.version;

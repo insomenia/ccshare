@@ -81,8 +81,6 @@ export interface ShareMetadata {
   generatedBy: string;
   version: string;
   platform: string;
-  gitBranch?: string;
-  gitCommitCount?: number;
   nodeVersion?: string;
   claudeSettings?: {
     permissions?: string[];
@@ -299,8 +297,6 @@ export function transformToShareData(htmlData: HtmlData, sessionData: SessionDat
       generatedBy: 'ccshare',
       version: VERSION,
       platform: sessionData.metadata?.platform || process.platform,
-      gitBranch: sessionData.metadata?.gitBranch,
-      gitCommitCount: sessionData.metadata?.gitCommitCount,
       nodeVersion: sessionData.metadata?.nodeVersion,
       claudeSettings: sessionData.metadata?.claudeSettings,
       sessionStats: sessionData.metadata?.sessionStats,

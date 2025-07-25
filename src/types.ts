@@ -12,8 +12,6 @@ export interface SessionData {
     claudeProjectPath?: string;
     models?: string[];  // List of models used
     mcpServers?: MCPServer[];  // MCP servers if any
-    gitBranch?: string;  // Current git branch
-    gitCommitCount?: number;  // Number of commits
     nodeVersion?: string;  // Node.js version
     claudeSettings?: {  // Claude Code settings
       permissions?: string[];

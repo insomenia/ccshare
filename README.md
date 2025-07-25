@@ -137,7 +137,7 @@ Shared sessions include:
 - **Prompts**: User prompts with timestamps (auto-generated prompts can be excluded)
 - **Assistant Responses**: Complete AI responses with tool executions
 - **File Changes**: All edits and modifications tracked from toolUseResult
-- **Session Metadata**: Git info, OS details, Node version, and more
+- **Session Metadata**: OS details, Node version, and more
 - **CLAUDE.md**: Project context file if present in your working directory
 - **Raw Session Data**: Complete JSONL entries preserving full context
 
