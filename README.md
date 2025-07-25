@@ -11,7 +11,6 @@ Instantly share your Claude Code sessions on ccshare.cc - featuring beautiful sy
 - 🔍 Interactive prompt selection (choose which prompts to include)
 - 📁 Reads Claude's project-specific history files automatically
 - 🎯 Preserves complete session context with raw JSONL data
-- 🔄 Load and execute shared prompts from other sessions
 - 💡 Tracks all session data including assistant responses and tool executions
 - ⚡ Direct browser submission for reliable sharing
 
@@ -70,30 +69,6 @@ ccshare --limit 50  # Default is 20
 # Exclude auto-generated prompts (commands, system messages)
 ccshare --exclude-auto
 ```
-
-### Load and Execute Shared Prompts
-
-You can load prompts from a shared session and execute them with Claude:
-
-```bash
-# Load and execute all prompts from a share
-ccshare load AdsrMP
-
-# Preview prompts without executing (dry run)
-ccshare load AdsrMP --dry-run
-
-# Select which prompts to execute
-ccshare load AdsrMP --select
-
-# Use a custom API URL
-ccshare load AdsrMP --api-url https://myapi.com/shares
-```
-
-This will:
-1. Fetch the shared session from the API
-2. Extract user prompts (excluding auto-generated ones)
-3. Execute each prompt sequentially using `claude -p`
-4. Show progress and handle errors gracefully
 
 ### Command Options
 
